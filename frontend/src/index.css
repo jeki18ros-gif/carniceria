@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Infinite horizontal scroll for MenuCarousel */
+@keyframes scrollX {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .group [class*="animate-[scrollX_"] { animation-play-state: paused !important; }
+}
