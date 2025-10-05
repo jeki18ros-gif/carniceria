@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // In Tailwind v4 no 'content' key is required for basic usage
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   darkMode: 'class',
   theme: {
     extend: {

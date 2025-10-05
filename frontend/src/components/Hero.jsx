@@ -28,7 +28,7 @@ export default function Hero() {
                 className="text-center font-extrabold tracking-tight text-white drop-shadow-md [text-wrap:balance] text-4xl sm:text-5xl lg:text-6xl"
                 style={{ fontFamily: 'ui-sans-serif, system-ui' }}
               >
-                CARNE DE CALIDAD AL POR MAYOR
+                CARNE DE CALIDAD
               </h1>
             </div>
 
