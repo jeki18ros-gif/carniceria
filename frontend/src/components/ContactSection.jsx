@@ -1,9 +1,9 @@
 import React from 'react'
 
 // Paleta de Colores de Marca
-const ACCENT_GOLD = '#D4AF37'; // Ajustado al dorado usado en los componentes anteriores
-const ACCENT_DARK_TEXT = 'text-gray-900'; // Heredado de .dark body
-const ACCENT_LIGHT_TEXT = 'text-gray-100'; // Heredado de .dark body
+const ACCENT_GOLD = '#D4AF37'; 
+const ACCENT_DARK_TEXT = 'text-gray-900';
+const ACCENT_LIGHT_TEXT = 'text-gray-100'; 
 
 export default function ContactSection() {
   return (

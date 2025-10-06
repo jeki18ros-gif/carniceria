@@ -5,7 +5,7 @@ import imgPollo from "../assets/otros5.jpg";
 import imgCordero from "../assets/otros6.jpg";
 import imgOtros from "../assets/relleno7.jpg";
 
-// Paleta coherente con index.css
+// Paleta coherente con index.css. 
 const DORADO = "#d4af37";
 const CATEGORIES = ["TODOS", "RES", "CERDO", "POLLO", "CORDERO", "OTROS"];
 

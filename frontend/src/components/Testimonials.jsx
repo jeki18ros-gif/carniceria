@@ -4,7 +4,7 @@ import p2 from '../assets/relleno4.jpg'
 import p3 from '../assets/relleno5.jpg'
 import p4 from '../assets/relleno6.jpg'
 
-// 🎨 Paleta de colores
+//Paleta de colores
 const DORADO = '#d4af37'
 const NEGRO = '#1a1a1a'
 const BLANCO_SUAVE = '#fafafa'

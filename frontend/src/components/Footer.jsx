@@ -2,7 +2,6 @@ import React from 'react'
 
 // Definición de colores de marca:
 const GOLD_COLOR = '#d4af37' 
-// El texto principal ahora será manejado por la clase dark-block
 
 export default function Footer() {
   return (

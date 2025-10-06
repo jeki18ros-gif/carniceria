@@ -4,7 +4,7 @@ import bg from "../assets/primera.jpg";
 export default function Hero() {
   return (
     <section className="relative isolate">
-      {/* Fondo adaptativo con degradado suave */}
+      {/*Fondo adaptativo con degradado suave */}
       <div
         className="absolute inset-0 -z-20 bg-gradient-to-b from-gray-100 to-gray-200 
                    dark:from-[#0a0a0a] dark:to-[#1a1a1a] transition-colors duration-500"

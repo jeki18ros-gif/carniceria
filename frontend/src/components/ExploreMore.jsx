@@ -10,9 +10,6 @@ export default function ExploreMore() {
         <div className="flex justify-center">
           <a
             href="/explorar"
-            // 2. Estilo del Botón: Usamos el color de marca fijo (GOLD_COLOR) para el estado inicial
-            // Esto sobrescribe el color de fondo de 'accent-block' para mantener el dorado específico.
-            // Las propiedades de texto y sombra sí usan clases Tailwind/CSS.
             className={`inline-flex items-center gap-2 rounded-2xl px-8 py-4 text-base font-bold uppercase tracking-widest text-black shadow-2xl transition duration-300 ease-in-out
                         hover:bg-black hover:text-[${GOLD_COLOR}] focus-visible:outline-2 focus-visible:outline-[${GOLD_COLOR}]/70 focus-visible:outline-offset-2 border-2 border-transparent hover:border-[${GOLD_COLOR}]
                         transform hover:scale-105`}

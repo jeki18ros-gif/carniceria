@@ -2,13 +2,11 @@ import React from 'react'
 import leftImg from '../assets/otros2.jpg'
 import rightImg from '../assets/relleno8.jpg'
 
-const GOLD_COLOR = '#D4AF37'; // Color de marca: Dorado
+const GOLD_COLOR = '#D4AF37'; 
 
 export default function AfterHero() {
   return (
-    // 1. Fondo general: Usa la clase 'dark-block' para que se adapte
-    // En modo claro será gris oscuro/negro (bg-gray-900), y en modo oscuro será blanco (bg-gray-100)
-    // Esto invierte la intención original (siempre negro), pero sigue la convención de tu CSS.
+  
     <section className="relative dark-block">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Central band: Usa la clase 'light-block' para que sea el contenedor opuesto al fondo. */}

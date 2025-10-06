@@ -7,7 +7,7 @@ export default function PromoHero() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Contenedor principal con sombra y borde dorado en modo oscuro */}
         <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/10 dark:ring-yellow-500/40 transition-all duration-500">
-          {/* Imagen de fondo */}
+          {/* Imagen de fondo*/}
           <img
             src={bg}
             alt="Presentación de comida profesional con enfoque al centro"

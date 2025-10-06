@@ -1,7 +1,7 @@
 import React from 'react'
 
 // Definición de colores de marca:
-const GOLD_COLOR = '#d4af37' // Dorado de marca
+const GOLD_COLOR = '#d4af37'
 
 export default function FeaturesGrid() {
   return (

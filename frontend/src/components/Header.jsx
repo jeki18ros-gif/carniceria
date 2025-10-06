@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import logo from '../assets/Logo-BENITO.jpg'
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 
-// --- Paleta de Marca (No se usan en CSS abstracto, pero son para elementos únicos) ---
+// --- Paleta de Marca ---
 const DORADO_HEX = '#d4af37'
 
 // --- Componente Principal ---
