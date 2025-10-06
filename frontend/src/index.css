@@ -1,9 +1,116 @@
-/* index.css — Versión corregida y compatible con Tailwind CSS v4 */
+/* index.css — Modo Claro/Oscuro Adaptativo y Accesibilidad */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Infinite horizontal scroll for MenuCarousel */
+/* ==============================
+   Tipografía base y escalado
+   ============================== */
+:root {
+  font-size: 16px;
+}
+
+html.text-sm {
+  font-size: 14px;
+}
+
+html.text-lg {
+  font-size: 18px;
+}
+
+/* ==============================
+   Fondo global y transición
+   ============================== */
+body {
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+.dark body {
+  @apply bg-[#0a0a0a] text-white;
+}
+
+/* ==============================
+   Paletas adaptativas por nivel de tono
+   ============================== */
+
+/* Fondo claro adaptable */
+.light-block {
+  @apply bg-gray-100 text-gray-900 transition-colors duration-300;
+}
+
+.dark .light-block {
+  @apply bg-gray-800 text-gray-100;
+}
+
+/* Fondo medio adaptable */
+.medium-block {
+  @apply bg-gray-300 text-gray-800 transition-colors duration-300;
+}
+
+.dark .medium-block {
+  @apply bg-gray-700 text-gray-100;
+}
+
+/* Fondo oscuro adaptable */
+.dark-block {
+  @apply bg-gray-900 text-white transition-colors duration-300;
+}
+
+.dark .dark-block {
+  @apply bg-gray-100 text-gray-900;
+}
+
+/* Fondo de acento o destacado (ej. botones principales) */
+.accent-block {
+  @apply bg-yellow-400 text-gray-900 font-semibold transition-colors duration-300;
+}
+
+.dark .accent-block {
+  @apply bg-yellow-500 text-black;
+}
+
+/* ==============================
+   Botones e iconos adaptativos
+   ============================== */
+
+/* Botón de modo oscuro/claro */
+.theme-toggle {
+  @apply flex items-center justify-center rounded-full p-2 cursor-pointer transition-colors duration-300;
+  @apply bg-gray-200 text-gray-800;
+}
+
+.theme-toggle:hover {
+  @apply bg-gray-300;
+}
+
+.dark .theme-toggle {
+  @apply bg-gray-700 text-yellow-400;
+}
+
+.dark .theme-toggle:hover {
+  @apply bg-gray-600;
+}
+
+/* ==============================
+   Accesibilidad visual (texto)
+   ============================== */
+a {
+  @apply underline-offset-2 transition-colors duration-200;
+}
+
+a:hover {
+  @apply underline;
+}
+
+.dark a {
+  @apply text-yellow-400;
+}
+
+/* ==============================
+   Animaciones e interacciones
+   ============================== */
+
+/* Scroll horizontal infinito */
 @keyframes scrollX {
   from {
     transform: translateX(0);
@@ -13,7 +120,7 @@
   }
 }
 
-/* Respeta la preferencia de movimiento reducido */
+/* Respeto de preferencias de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   .group [class*="animate-[scrollX_"] {
     animation-play-state: paused !important;
