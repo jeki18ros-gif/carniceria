@@ -9,7 +9,7 @@ export default function ContactSection() {
   return (
     // 1. Fondo de la Sección: Usa 'light-block' para que sea el fondo más claro/blanco.
     // Esto será bg-gray-100 en modo claro y bg-gray-800 en modo oscuro.
-    <section className="relative light-block py-16">
+    <section className="relative bg-[#FFF5F0] py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Título: El color se hereda de 'light-block' (negro en claro, blanco en oscuro) */}
         <h3 className={`mb-6 text-center text-3xl font-extrabold uppercase tracking-tight`}>

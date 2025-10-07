@@ -51,7 +51,7 @@ const REVIEWS = [
 
 export default function Testimonials() {
   return (
-    <section className="relative bg-white dark:bg-[#111111] py-20">
+    <section className="relative bg-[#FFF5F0] py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* 🌟 Título principal */}
         <h3 className="mb-12 text-center font-extrabold uppercase leading-tight tracking-tight">

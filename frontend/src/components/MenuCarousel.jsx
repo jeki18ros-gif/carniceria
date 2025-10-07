@@ -28,7 +28,7 @@ export default function MenuCarousel() {
   }, [active]);
 
   return (
-    <section className="relative light-block dark:dark-block py-16 transition-colors duration-500">
+    <section className="relative bg-[#FFF5F0] py-16 transition-colors duration-500">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Barra de filtros */}
         <div className="mb-12 flex flex-wrap justify-center gap-3">

@@ -3,7 +3,7 @@ import bg from "../assets/relleno10.jpg";
 
 export default function PromoHero() {
   return (
-    <section className="relative light-block dark:dark-block py-16 transition-colors duration-500">
+    <section className="relative bg-[#FFF5F0] py-16 transition-colors duration-500">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Contenedor principal con sombra y borde dorado en modo oscuro */}
         <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/10 dark:ring-yellow-500/40 transition-all duration-500">

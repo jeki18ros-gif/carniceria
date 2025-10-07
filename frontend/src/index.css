@@ -1,7 +1,5 @@
 /* index.css — Modo Claro/Oscuro Adaptativo y Accesibilidad */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* ==============================
    Tipografía base y escalado
@@ -29,14 +27,23 @@ body {
   @apply bg-[#0a0a0a] text-white;
 }
 
+/* Evitar scroll horizontal global */
+html, body {
+  overflow-x: hidden;
+}
+
+/* ==============================
+   AfterHero (controlado por tema global)
+   ============================== */
+.dark .after-hero {
+  @apply bg-[#222222] text-white;
+}
+
 /* ==============================
    Paletas adaptativas por nivel de tono
    ============================== */
 
 /* Fondo claro adaptable */
-.light-block {
-  @apply bg-gray-100 text-gray-900 transition-colors duration-300;
-}
 
 .dark .light-block {
   @apply bg-gray-800 text-gray-100;
@@ -120,9 +127,27 @@ a:hover {
   }
 }
 
+/* Flecha del CTA del hero: movimiento horizontal suave */
+@keyframes arrowMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* Flotación vertical sutil */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 /* Respeto de preferencias de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   .group [class*="animate-[scrollX_"] {
     animation-play-state: paused !important;
+  }
+  [class*="animate-[arrowMove_"] {
+    animation: none !important;
+  }
+  [class*="animate-[floatY_"] {
+    animation: none !important;
   }
 }

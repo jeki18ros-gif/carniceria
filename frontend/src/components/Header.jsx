@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import logo from '../assets/Logo-BENITO.jpg'
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 
+
 // --- Paleta de Marca ---
 const DORADO_HEX = '#d4af37'
 
@@ -9,6 +10,15 @@ const DORADO_HEX = '#d4af37'
 export default function Header() {
   const [theme, setTheme] = useState('light')
   const [fontSize, setFontSize] = useState('normal')
+  const [scrolled, setScrolled] = useState(false)
+
+  // Inicializar desde localStorage (opcional)
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme')
+    const savedFont = localStorage.getItem('fontSize')
+    if (savedTheme === 'dark' || savedTheme === 'light') setTheme(savedTheme)
+    if (savedFont === 'small' || savedFont === 'normal' || savedFont === 'large') setFontSize(savedFont)
+  }, [])
 
   // Modo oscuro: Aplica 'dark' a <html>
   useEffect(() => {
@@ -17,90 +27,68 @@ export default function Header() {
     } else {
       document.documentElement.classList.remove('dark')
     }
-    // Opcional: Guardar la preferencia del usuario en localStorage
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  // Tamaño de fuente: Aplica 'text-sm' o 'text-lg' a <html>
+  // Tamaño de fuente en <html>
   useEffect(() => {
     document.documentElement.classList.remove('text-sm', 'text-lg')
-    if (fontSize === 'small') {
-      document.documentElement.classList.add('text-sm')
-    } else if (fontSize === 'large') {
-      document.documentElement.classList.add('text-lg')
-    }
-    // Opcional: Guardar la preferencia del usuario en localStorage
+    if (fontSize === 'small') document.documentElement.classList.add('text-sm')
+    if (fontSize === 'large') document.documentElement.classList.add('text-lg')
     localStorage.setItem('fontSize', fontSize)
   }, [fontSize])
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
-  }
+  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'))
 
-  // NOTE: El cuerpo (body) ya será adaptativo gracias a la clase .dark en <html> y tu index.css
+  // Detectar scroll para cambiar estilo del header
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
+  const linkBase = `transition-colors transition-transform duration-200 ease-out hover:scale-110 hover:text-yellow-400 ${scrolled ? 'text-gray-900 dark:text-gray-100' : 'text-white'}`
   return (
-    <header className="relative z-20">
+    <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* CONTENEDOR PRINCIPAL: Usa 'medium-block' para un fondo intermedio */}
-        <div className="relative mt-6 rounded-3xl medium-block shadow-xl ring-1 ring-black/20 dark:ring-white/50 overflow-visible">
-          {/* LOGO CENTRAL */}
-          <div className="absolute inset-x-0 -top-8 flex justify-center pointer-events-none z-10">
-            {/* El anillo debe mantener el color dorado de la marca, ya que no es un color de paleta genérica */}
-            <div className="h-[90px] w-[90px] overflow-hidden rounded-full ring-4 ring-white shadow-lg dark:ring-[${DORADO_HEX}] pointer-events-auto">
-              <img
-                src={logo}
-                alt="Benito Logo"
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
+        {/* Sección flotante con margen, borde y fondo adaptativo */}
+        <div
+          className={`mt-3 mb-2 rounded-2xl border backdrop-blur-md transition-colors duration-300 ${
+            scrolled
+              ? 'bg-white/95 dark:bg-[#222222]/90 border-black/10 dark:border-white/10 shadow-lg'
+              : 'bg-black/25 dark:bg-white/10 border-white/20'
+          }`}
+        >
+        {/* NAVBAR en rejilla: logo izquierda, links centro, controles derecha */}
+        <nav className="relative grid grid-cols-3 items-center h-16 sm:h-20 px-4 sm:px-6">
+          {/* Logo izquierda */}
+          <div className="flex items-center">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-full ring-2 ring-white/90 shadow-lg dark:ring-yellow-500/60 transition-transform duration-200 ease-out hover:scale-105">
+              <img src={logo} alt="Benito Logo" className="h-full w-full object-cover" loading="lazy" />
             </div>
           </div>
 
-          {/* NAVBAR */}
-          <nav className="relative flex items-center justify-between px-6 py-4 sm:px-8 z-20">
+          {/* Enlaces en el centro */}
+          <ul className="hidden sm:flex justify-center gap-8 text-base font-semibold">
+            <li><a href="#productos" className={linkBase}>PRODUCTOS</a></li>
+            <li><a href="#nosotros" className={linkBase}>NOSOTROS</a></li>
+            <li><a href="#resenas" className={linkBase}>RESEÑAS</a></li>
+            <li><a href="#contacto" className={linkBase}>CONTACTO</a></li>
+          </ul>
 
-            {/* Enlaces Izquierda - Usan la clase base text-gray-900/text-white de body, y hover adaptativo por index.css */}
-            <ul className="hidden gap-8 text-base font-semibold sm:flex">
-              <li>
-                <a href="#productos" className="transition-colors hover:text-yellow-400">PRODUCTOS</a>
-              </li>
-              <li>
-                <a href="#nosotros" className="transition-colors hover:text-yellow-400">NOSOTROS</a>
-              </li>
-            </ul>
-
-            {/* Espaciador */}
-            <div className="h-0 w-24 sm:w-32" aria-hidden="true" />
-
-            {/* Enlaces Derecha + Controles */}
-            <div className="flex items-center gap-4">
-              <ul className="hidden gap-8 text-base font-semibold sm:flex">
-                <li>
-                  <a href="#resenas" className="transition-colors hover:text-yellow-400">RESEÑAS</a>
-                </li>
-                <li>
-                  <a href="#contacto" className="transition-colors hover:text-yellow-400">CONTACTO</a>
-                </li>
-              </ul>
-
-              {/* Controles - Borde adaptativo */}
-              <div className="flex items-center gap-2 border-l border-gray-400/50 dark:border-white/20 pl-4">
-                <DarkModeToggle theme={theme} toggleTheme={toggleTheme} />
-                <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} />
-              </div>
-
-              {/* Botón Móvil - Usa la clase accent-block para botón principal */}
-              <button
-                className="sm:hidden inline-flex items-center rounded-xl px-3 py-2 text-sm shadow-sm accent-block"
-                aria-label="Abrir menú"
-              >
-                Menú
-              </button>
+          {/* Controles a la derecha */}
+          <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center gap-2 border-l border-white/30 dark:border-white/20 pl-4">
+              <DarkModeToggle theme={theme} toggleTheme={toggleTheme} />
+              <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} />
             </div>
-          </nav>
-        </div>
+            {/* Botón Móvil */}
+            <button className="sm:hidden inline-flex items-center rounded-xl px-3 py-2 text-sm shadow-sm accent-block" aria-label="Abrir menú">Menú</button>
+          </div>
+        </nav>
       </div>
+    </div>
     </header>
   )
 }
@@ -108,12 +96,11 @@ export default function Header() {
 // --- 2. Botón Modo Oscuro ---
 function DarkModeToggle({ theme, toggleTheme }) {
   const Icon = theme === 'dark' ? SunIcon : MoonIcon
-
   return (
-    // Usa la clase 'theme-toggle' de tu index.css para los estilos de fondo y hover
     <button
       onClick={toggleTheme}
-      className={`theme-toggle p-3 md:p-3.5 shadow-md outline-none focus:ring-4 focus:ring-yellow-400/50 dark:focus:ring-white/50`}
+      className="p-2.5 md:p-3 text-white transition-transform duration-200 ease-out hover:scale-110 outline-none"
+      aria-label="Cambiar tema"
     >
       <Icon className="h-6 w-6" />
     </button>
@@ -129,19 +116,17 @@ function FontSizeSelector({ fontSize, setFontSize }) {
   ]
 
   return (
-    // Usa 'light-block' para el contenedor del selector para que se adapte
-    <div className="flex rounded-xl light-block p-1.5 ring-1 ring-black/20 dark:ring-white/10">
+    // Contenedor transparente, sin fondo
+    <div className="flex rounded-xl p-1.5">
       {sizes.map(({ label, value }) => (
         <button
           key={value}
           onClick={() => setFontSize(value)}
           aria-label={`Tamaño de fuente ${value}`}
-          className={`px-3 py-2 text-base font-bold transition-all duration-200 uppercase rounded-lg outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500
+          className={`px-3 py-2 text-base font-bold transition-all duration-200 ease-out uppercase rounded-lg outline-none hover:scale-105
             ${fontSize === value
-              // Usa la clase 'accent-block' para el botón seleccionado
-              ? 'accent-block shadow-md'
-              // Para el no seleccionado, usamos los colores adaptativos de tu CSS.
-              : 'text-gray-600 dark:text-white/70 hover:text-yellow-500'
+              ? 'text-yellow-400'
+              : 'text-white/90 hover:text-yellow-400'
             }`}
         >
           {label}

@@ -5,7 +5,7 @@ const GOLD_COLOR = '#fceebeff' // Color de marca dorado
 export default function ExploreMore() {
   return (
     // 1. Fondo de la Sección: Usa 'light-block' para el fondo adaptable (gris claro/oscuro)
-    <section className="light-block py-12">
+    <section className="bg-[#FFF5F0] py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-center">
           <a

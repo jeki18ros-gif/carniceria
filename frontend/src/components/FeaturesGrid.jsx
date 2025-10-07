@@ -5,9 +5,7 @@ const GOLD_COLOR = '#d4af37'
 
 export default function FeaturesGrid() {
   return (
-    // 1. Fondo de la sección: Usa 'dark-block'. En modo claro es negro/gris oscuro (invirtiendo tu intención original de blanco).
-    // Si quieres que el fondo sea siempre el más claro (blanco/gris claro), usa 'light-block'. Ajustamos a 'light-block' para mantener el alto contraste inicial.
-    <section className="relative light-block py-20">
+    <section className="relative bg-[#FFF5F0] py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Título principal: El color se hereda de 'light-block' (negro en claro, blanco/gris en oscuro) */}
         <h3 className="mb-14 text-center text-4xl font-extrabold sm:text-5xl">
