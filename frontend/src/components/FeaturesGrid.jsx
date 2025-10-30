@@ -5,6 +5,7 @@ const GOLD_COLOR = '#d4af37'
 
 export default function FeaturesGrid() {
   return (
+    <section id="nosotros" className="py-20 bg-gray-50 dark:bg-gray-900">
     <section className="relative bg-[#FFF5F0] py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Título principal: El color se hereda de 'light-block' (negro en claro, blanco/gris en oscuro) */}
@@ -68,6 +69,7 @@ export default function FeaturesGrid() {
           </div>
         </div>
       </div>
+    </section>
     </section>
   )
 }
