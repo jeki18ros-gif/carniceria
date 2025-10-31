@@ -1,19 +1,26 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 
 // Definición de colores de marca:
-const GOLD_COLOR = '#d4af37'
+const GOLD_COLOR = '#F0B100'
 
 export default function FeaturesGrid() {
   return (
-    <section id="nosotros" className="py-20 bg-gray-50 dark:bg-gray-900">
-    <section className="relative bg-[#FFF5F0] py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Título principal: El color se hereda de 'light-block' (negro en claro, blanco/gris en oscuro) */}
-        <h3 className="mb-14 text-center text-4xl font-extrabold sm:text-5xl">
+    <motion.section
+      id="nosotros"
+      className="py-20 bg-[#FFF5F0] modo-oscuro transition-colors duration-700"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut', type: 'tween' }}
+      viewport={{ once: true, amount: 0.2 }}
+    >
+    <section className="relative bg-[#FFF5F0] py-20 modo-oscuro transition-colors duration-700">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        <h3 className="ext-3xl sm:text-6xl font-extrabold mb-12 uppercase tracking-wide">
           Nuestros Valores
         </h3>
         
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 ">
           {/* Componente Feature 1 */}
           <Feature
             icon={
@@ -50,40 +57,37 @@ export default function FeaturesGrid() {
         </div>
       </div>
 
-      {/* Franja de Promoción (Promo ribbon) */}
-      <div className="relative mt-16">
-        <div className="absolute inset-x-0 -bottom-8 z-10">
-          {/* Fondo de la franja: Usa 'dark-block'. Esto invierte la paleta de colores. */}
-          {/* Será oscuro con texto claro/dorado en modo claro, y claro con texto oscuro/dorado en modo oscuro. */}
-          <div className="mx-auto max-w-none rotate-[-2deg] dark-block py-4 shadow-xl ring-2 ring-[${GOLD_COLOR}]/50">
-            <div className="mx-auto flex max-w-7xl items-center overflow-hidden">
-              {/* Texto: Color fijo de marca dorado */}
-              <p className="animate-none whitespace-nowrap text-center text-lg font-extrabold uppercase tracking-[0.3em]" style={{ color: GOLD_COLOR }}>
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={i} className="mx-6 inline-block">
-                    * ENVÍO A DOMICILIO DISPONIBLE *
-                  </span>
+      {/* Cinta inferior de promoción: ancho completo con carrusel infinito */}
+      <div className="relative">
+        <div className="absolute inset-x-0 mt-20 z-10">
+          <div className="w-full rotate-[-2deg] py-7 shadow-xl" style={{ backgroundColor: GOLD_COLOR }}>
+            <div className="flex w-full overflow-hidden text-black">
+              <div className="flex min-w-full shrink-0 items-center gap-12 whitespace-nowrap animate-[scrollX_60s_linear_infinite] text-2xl sm:text-3xl font-extrabold uppercase tracking-[0.25em]">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <span key={`a-${i}`}>* ENTREGA A DOMICILIO DISPONIBLE *</span>
                 ))}
-              </p>
+              </div>
+              <div className="flex min-w-full shrink-0 items-center gap-12 whitespace-nowrap animate-[scrollX_60s_linear_infinite] text-2xl sm:text-3xl font-extrabold uppercase tracking-[0.25em]" aria-hidden="true">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <span key={`b-${i}`}>* ENTREGA A DOMICILIO DISPONIBLE *</span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
-    </section>
+      </section>
+    </motion.section>
   )
 }
 
 function Feature({ icon, title, desc }) {
   return (
-    // 2. Diseño de la tarjeta: Usa 'medium-block'. Esto crea un contraste con el fondo 'light-block'.
-    <div className="rounded-xl medium-block p-10 text-center shadow-xl ring-2 ring-black/10 dark:ring-white/10 transition duration-300 ease-in-out hover:ring-2 hover:ring-[${GOLD_COLOR}] transform hover:-translate-y-1">
+    <div className="rounded-xl p-10 text-center shadow-xl ring-3 ring-black/2 transition duration-500 ease-in-out hover:ring-yellow-400 transform hover:-translate-y-1">
       {/* Contenedor del ícono */}
       <div className="mb-4 flex justify-center">{icon}</div>
-      {/* Título: El color se hereda de 'medium-block' (negro en claro, gris claro en oscuro) */}
       <h4 className="mb-3 text-xl font-bold uppercase">{title}</h4>
-      {/* Descripción: Color de texto adaptable con una tonalidad más clara */}
-      <p className="text-base text-gray-600 dark:text-gray-300">{desc}</p>
+      <p className="text-base text-dark">{desc}</p>
     </div>
   )
 }

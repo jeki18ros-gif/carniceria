@@ -1,19 +1,25 @@
-import React from 'react'
 
-const GOLD_COLOR = '#fceebeff' // Color de marca dorado
+import { motion } from "framer-motion";
 
 export default function ExploreMore() {
   return (
     // 1. Fondo de la Sección: Usa 'light-block' para el fondo adaptable (gris claro/oscuro)
-    <section className="bg-[#FFF5F0] py-12">
+    <motion.section
+      className="modo-oscuro bg-[#FFF5F0] py-20 transition-colors duration-700"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut", type: "tween" }}
+      viewport={{ once: true, amount: 0.2 }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex justify-center">
           <a
-            href="/explorar"
-            className={`inline-flex items-center gap-2 rounded-2xl px-8 py-4 text-base font-bold uppercase tracking-widest text-black shadow-2xl transition duration-300 ease-in-out
-                        hover:bg-black hover:text-[${GOLD_COLOR}] focus-visible:outline-2 focus-visible:outline-[${GOLD_COLOR}]/70 focus-visible:outline-offset-2 border-2 border-transparent hover:border-[${GOLD_COLOR}]
-                        transform hover:scale-105`}
-            style={{ backgroundColor: GOLD_COLOR }}
+            href="https://lesalimentsbenito.onrender.com/"
+            target="_blank"
+            className={`accent-block inline-flex items-center gap-2 rounded-2xl  
+                           px-6 py-3 text-base font-bold uppercase tracking-widest no-underline
+                           shadow-2xl hover:scale-110 hover:shadow-xl active:scale-95 
+                           transition-transform duration-300 ease-out`}
           >
             Explorar más
             {/* El ícono */}
@@ -23,6 +29,6 @@ export default function ExploreMore() {
           </a>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }

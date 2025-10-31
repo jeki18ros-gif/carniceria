@@ -32,48 +32,22 @@ html, body {
   overflow-x: hidden;
 }
 
-/* ==============================
-   AfterHero (controlado por tema global)
-   ============================== */
-.dark .after-hero {
-  @apply bg-[#222222] text-white;
+.dark .modo-oscuro {
+  @apply bg-[#1a1a1a] text-white;
 }
 
-/* ==============================
-   Paletas adaptativas por nivel de tono
-   ============================== */
-
-/* Fondo claro adaptable */
-
-.dark .light-block {
-  @apply bg-gray-800 text-gray-100;
-}
-
-/* Fondo medio adaptable */
-.medium-block {
-  @apply bg-gray-300 text-gray-800 transition-colors duration-300;
-}
-
-.dark .medium-block {
-  @apply bg-gray-700 text-gray-100;
-}
-
-/* Fondo oscuro adaptable */
-.dark-block {
-  @apply bg-gray-900 text-white transition-colors duration-300;
-}
-
-.dark .dark-block {
-  @apply bg-gray-100 text-gray-900;
-}
 
 /* Fondo de acento o destacado (ej. botones principales) */
 .accent-block {
-  @apply bg-yellow-400 text-gray-900 font-semibold transition-colors duration-300;
+  @apply bg-yellow-400 text-gray-900 font-bold transition-colors duration-300;
 }
 
 .dark .accent-block {
   @apply bg-yellow-500 text-black;
+}
+
+.dark .titulo-seccion {
+  @apply text-yellow-500;
 }
 
 /* ==============================

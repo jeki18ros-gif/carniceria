@@ -1,12 +1,19 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import leftImg from '../assets/otros2.jpg'
 import rightImg from '../assets/relleno8.jpg'
 
-const GOLD_COLOR = '#D4AF37'
+const GOLD_COLOR = '#F0B100'
 
 export default function AfterHero() {
   return (
-    <section className="after-hero relative min-h-[70vh] bg-[#FFF5F0] text-gray-900">
+    <motion.section
+      className="modo-oscuro relative min-h-[70vh] bg-[#FFF5F0] text-gray-900 transition-colors duration-700"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut', type: 'tween' }}
+      viewport={{ once: true, amount: 0.2 }}
+    >
       <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center px-4 py-12 sm:px-6 lg:px-8">
         {/* Banda central a todo el ancho del contenedor */}
         <div className="relative isolate mx-auto flex w-full items-center justify-between gap-6 px-0 sm:gap-10">
@@ -50,7 +57,7 @@ export default function AfterHero() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 

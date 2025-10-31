@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 import {
   FaceSmileIcon,
   FaceFrownIcon,
@@ -8,8 +9,6 @@ import {
 
 //  Paleta de colores
 const DORADO = '#d4af37'
-const NEGRO = '#1a1a1a'
-const BLANCO_SUAVE = '#fafafa'
 
 // Reseñas simuladas iniciales
 const INITIAL_REVIEWS = [
@@ -77,24 +76,31 @@ export default function Testimonials() {
   }
 
   return (
-    <section id="resenas" className="py-20 bg-white dark:bg-gray-800">
-      <section className="relative bg-[#FFF5F0] py-20">
+    <motion.section
+      id="resenas"
+      className="modo-oscuro py-20 bg-[#FFF5F0] transition-colors duration-700"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut', type: 'tween' }}
+      viewport={{ once: true, amount: 0.2 }}
+    >
+      <section className="modo-oscuro relative bg-[#FFF5F0] py-20 transition-colors duration-700">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Título principal */}
-          <h3 className="mb-12 text-center font-extrabold uppercase leading-tight tracking-tight">
-            <span className="block text-xl sm:text-2xl" style={{ color: DORADO }}>
+          <h3 className="mb-12 text-center font-extrabold uppercase leading-tight tracking-tight ">
+            <span className="block text-[#d4af37] text-xl sm:text-5xl titulo-seccion">
               Clientes que ya confían en
             </span>
-            <span className="block text-3xl sm:text-4xl text-[#1a1a1a] dark:text-white">
-              BISTORA
+            <span className="block text-3xl sm:text-4xl text-dark">
+              NUESTRO SERVICIO
             </span>
           </h3>
 
           {/* Botón para añadir reseña */}
-          <div className="text-center mb-8">
+          <div className=" text-center mb-8">
             <button
               onClick={() => setShowForm(!showForm)}
-              className="px-5 py-2 rounded-xl bg-[#1a1a1a] text-white hover:bg-[#d4af37] hover:text-black transition"
+              className=" px-5 py-2 rounded-xl bg-[#1a1a1a] text-white hover:bg-[#d4af37] hover:text-black transition"
             >
               {showForm ? 'Cancelar' : 'Dejar una reseña'}
             </button>
@@ -156,7 +162,7 @@ export default function Testimonials() {
           </div>
         </div>
       </section>
-    </section>
+    </motion.section>
   )
 }
 

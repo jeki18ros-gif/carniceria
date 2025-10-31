@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import logo from '../assets/Logo-BENITO.jpg'
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
 
@@ -50,7 +51,12 @@ export default function Header() {
 
   const linkBase = `transition-colors transition-transform duration-200 ease-out hover:scale-110 hover:text-yellow-400 ${scrolled ? 'text-gray-900 dark:text-gray-100' : 'text-white'}`
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <motion.header
+      className="fixed inset-x-0 top-0 z-50 transition-colors duration-700"
+      initial={{ y: '-100%', opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Sección flotante con margen, borde y fondo adaptativo */}
         <div
@@ -89,7 +95,7 @@ export default function Header() {
         </nav>
       </div>
     </div>
-    </header>
+    </motion.header>
   )
 }
 
