@@ -1,11 +1,15 @@
-/* index.css — Modo Claro/Oscuro Adaptativo y Accesibilidad */
+/* index.css — Modo Claro/Oscuro Adaptativo — Paleta DORADO / NEGRO AZULADO / CREMITA */
 @import "tailwindcss";
 
 /* ==============================
-   Tipografía base y escalado
-   ============================== */
+    CONFIGURACIÓN BASE
+    ============================== */
 :root {
   font-size: 16px;
+  color-scheme: light dark;
+  --color-dorado: #d4af37;
+  --color-oscuro: #0d1b2a; /* Negro azulado */
+  --color-claro: #fffaf3; /* Cremita blanco */
 }
 
 html.text-sm {
@@ -16,141 +20,154 @@ html.text-lg {
   font-size: 18px;
 }
 
-/* ==============================
-   Fondo global y transición
-   ============================== */
-body {
-  @apply bg-white text-gray-900 transition-colors duration-300;
-}
-
-.dark body {
-  @apply bg-[#0a0a0a] text-white;
-}
-
-/* Evitar scroll horizontal global */
 html, body {
-  overflow-x: hidden;
+  @apply overflow-x-hidden transition-colors duration-300 ease-in-out;
 }
 
 /* ==============================
-   AfterHero (controlado por tema global)
-   ============================== */
-.dark .after-hero {
-  @apply bg-[#222222] text-white;
+    FONDOS Y TEXTO PRINCIPALES
+    ============================== */
+body {
+  @apply min-h-screen bg-[var(--color-claro)] text-black;
+}
+
+:root.dark body {
+  @apply bg-[var(--color-oscuro)] text-white;
 }
 
 /* ==============================
-   Paletas adaptativas por nivel de tono
-   ============================== */
+    BLOQUES DE COLOR ADAPTATIVOS
+    ============================== */
 
-/* Fondo claro adaptable */
-
-.dark .light-block {
-  @apply bg-gray-800 text-gray-100;
+/* Fondo claro — texto oscuro */
+.light-block {
+  @apply bg-[var(--color-claro)] text-black transition-colors duration-300;
+}
+:root.dark .light-block {
+  @apply bg-[var(--color-oscuro)] text-white;
 }
 
-/* Fondo medio adaptable */
+/* Fondo medio — neutro adaptable */
 .medium-block {
-  @apply bg-gray-300 text-gray-800 transition-colors duration-300;
+  @apply bg-gray-200 text-gray-800 transition-colors duration-300;
 }
-
-.dark .medium-block {
+:root.dark .medium-block {
   @apply bg-gray-700 text-gray-100;
 }
 
-/* Fondo oscuro adaptable */
+/* Fondo oscuro — se invierte en modo claro */
 .dark-block {
-  @apply bg-gray-900 text-white transition-colors duration-300;
+  @apply bg-[var(--color-oscuro)] text-white transition-colors duration-300;
+}
+:root.dark .dark-block {
+  @apply bg-[var(--color-claro)] text-black;
 }
 
-.dark .dark-block {
-  @apply bg-gray-100 text-gray-900;
-}
-
-/* Fondo de acento o destacado (ej. botones principales) */
+/* ==============================
+    BOTONES — DORADO SIEMPRE
+    ============================== */
+.btn,
 .accent-block {
-  @apply bg-yellow-400 text-gray-900 font-semibold transition-colors duration-300;
+  /* En modo claro: Fondo dorado con texto negro */
+  @apply bg-[var(--color-dorado)] text-black font-semibold rounded-2xl px-4 py-2 
+  border-2 border-transparent transition-all duration-300 ease-in-out;
 }
 
-.dark .accent-block {
-  @apply bg-yellow-500 text-black;
+.btn:hover,
+.accent-block:hover {
+  @apply scale-105 shadow-xl border-yellow-500;
 }
 
-/* ==============================
-   Botones e iconos adaptativos
-   ============================== */
-
-/* Botón de modo oscuro/claro */
-.theme-toggle {
-  @apply flex items-center justify-center rounded-full p-2 cursor-pointer transition-colors duration-300;
-  @apply bg-gray-200 text-gray-800;
+/* Corregido: En modo oscuro el fondo sigue dorado, pero el texto cambia a BLANCO */
+:root.dark .btn,
+:root.dark .accent-block {
+  @apply bg-[var(--color-dorado)] text-white; /* <--- CAMBIO AQUÍ: de text-black a text-white */
 }
 
-.theme-toggle:hover {
-  @apply bg-gray-300;
-}
-
-.dark .theme-toggle {
-  @apply bg-gray-700 text-yellow-400;
-}
-
-.dark .theme-toggle:hover {
-  @apply bg-gray-600;
+:root.dark .btn:hover,
+:root.dark .accent-block:hover {
+  @apply brightness-110 shadow-2xl border-yellow-400;
 }
 
 /* ==============================
-   Accesibilidad visual (texto)
-   ============================== */
+    BOTONES CON FONDO OSCURO ADAPTATIVO
+    ============================== */
+/* Ejemplo: botones con base negro-azulado o cremita */
+.btn-alt {
+  @apply font-semibold rounded-2xl px-4 py-2 transition-all duration-300 ease-in-out;
+  @apply bg-[var(--color-oscuro)] text-white;
+}
+
+.btn-alt:hover {
+  @apply scale-105 shadow-xl;
+}
+
+/* En modo claro cambia a fondo cremita y texto oscuro */
+:root.dark .btn-alt {
+  @apply bg-[var(--color-claro)] text-black;
+}
+
+/* ==============================
+    ENLACES Y TEXTO DORADO
+    ============================== */
 a {
-  @apply underline-offset-2 transition-colors duration-200;
+  @apply underline-offset-2 transition-colors duration-200 text-[var(--color-dorado)];
 }
 
 a:hover {
   @apply underline;
 }
 
-.dark a {
-  @apply text-yellow-400;
+/* El texto dorado se mantiene en ambos modos */
+.text-dorado {
+  color: var(--color-dorado);
 }
 
 /* ==============================
-   Animaciones e interacciones
-   ============================== */
-
-/* Scroll horizontal infinito */
-@keyframes scrollX {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+    SWITCH DE TEMA
+    ============================== */
+.theme-toggle {
+  @apply flex items-center justify-center rounded-full p-2 cursor-pointer transition-colors duration-300;
+  @apply bg-[var(--color-claro)] text-black;
 }
 
-/* Flecha del CTA del hero: movimiento horizontal suave */
+.theme-toggle:hover {
+  @apply bg-gray-300;
+}
+
+:root.dark .theme-toggle {
+  @apply bg-[var(--color-oscuro)] text-[var(--color-dorado)];
+}
+
+:root.dark .theme-toggle:hover {
+  @apply bg-gray-700;
+}
+
+/* ==============================
+    ANIMACIONES SUAVES
+    ============================== */
+@keyframes scrollX {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 @keyframes arrowMove {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(4px); }
 }
 
-/* Flotación vertical sutil */
 @keyframes floatY {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
 
-/* Respeto de preferencias de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
-  .group [class*="animate-[scrollX_"] {
-    animation-play-state: paused !important;
-  }
-  [class*="animate-[arrowMove_"] {
+  * {
     animation: none !important;
-  }
-  [class*="animate-[floatY_"] {
-    animation: none !important;
+    transition: none !important;
   }
 }
+
 html {
   scroll-behavior: smooth;
 }

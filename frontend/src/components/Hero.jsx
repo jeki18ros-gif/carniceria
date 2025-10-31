@@ -1,52 +1,45 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import bg from "../assets/relleno10.jpg";
 
 export default function Hero() {
   return (
     <section className="relative isolate min-h-screen">
-      {/*Fondo adaptativo con degradado suave */}
       <div
         className="absolute inset-0 -z-20 bg-gradient-to-b from-gray-100 to-gray-200 
-                   dark:from-[#0a0a0a] dark:to-[#1a1a1a] transition-colors duration-500"
-        aria-hidden="true"
+                   dark:from-[#0a0a0a] dark:to-[#1a1a1a]"
       />
 
       <div className="relative w-full">
-        {/* Contenedor de imagen a pantalla completa sin márgenes laterales */}
         <div className="relative mt-0 overflow-hidden group">
           <img
             src={bg}
             alt="Carne de alta calidad servida en cena gourmet"
-            className="h-screen w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03]"
-            loading="eager"
+            className="h-screen w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
 
-          {/* Capa oscura para contraste */}
           <div
             className="absolute inset-0 bg-black/55 mix-blend-multiply 
-                       dark:bg-black/60 transition-all duration-500"
-            aria-hidden="true"
+                         dark:bg-black/60"
           />
 
-          {/* Contenido centrado sobre la imagen */}
+          {/* Contenido principal */}
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 sm:px-12 text-center">
             <h1
-              className="font-extrabold tracking-tight text-yellow-400 
-                         drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] 
-                         text-4xl sm:text-5xl lg:text-6xl transition-colors duration-300"
-              style={{ fontFamily: "ui-sans-serif, system-ui" }}
+              className="font-extrabold tracking-tight text-dorado 
+                           drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] 
+                           text-4xl sm:text-5xl lg:text-6xl"
+              style={{ fontFamily: 'ui-sans-serif, system-ui' }}
             >
               CARNE DE CALIDAD SUPERIOR
             </h1>
 
-            {/* CTA centrado debajo del título */}
             <div className="mt-8">
-              <a
-                href="#"
+              <Link
+                to="/orden-de-compra"
                 className="accent-block inline-flex items-center gap-2 rounded-2xl 
-                           px-6 py-3 text-base font-bold uppercase tracking-widest no-underline
-                           shadow-xl hover:scale-110 hover:shadow-2xl active:scale-95 
-                           transition-transform duration-300 ease-out"
+                            px-6 py-3 text-base font-bold uppercase tracking-widest no-underline
+                            shadow-xl transition-transform duration-300 ease-out"
               >
                 Orden de compra
                 <svg
@@ -61,7 +54,7 @@ export default function Hero() {
                     clipRule="evenodd"
                   />
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

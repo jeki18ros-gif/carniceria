@@ -1,18 +1,13 @@
 import React from "react";
-
-// Color dorado de marca
-const GOLD_COLOR = "#d4af37";
-
 export default function FooterCarniceria() {
+  const doradoVar = "var(--color-dorado)";
+
   return (
-    <footer className="bg-neutral-900 text-white">
-      {/* Sección superior */}
+    <footer className="bg-[var(--color-oscuro)] text-white">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-12 lg:grid-cols-4">
-        {/* Marca */}
         <div>
           <h4
-            className="text-5xl font-extrabold tracking-tight"
-            style={{ color: GOLD_COLOR }}
+            className="text-5xl font-extrabold tracking-tight text-dorado"
           >
             CARNES BISTORA
           </h4>
@@ -23,19 +18,15 @@ export default function FooterCarniceria() {
           <div className="mt-6">
             <a
               href="#comprar"
-              className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-widest text-black shadow-xl transition duration-300 hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-              style={{ backgroundColor: GOLD_COLOR }}
+              className="accent-block inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-widest shadow-xl transition duration-300 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             >
               Comprar ahora
             </a>
           </div>
         </div>
-
-        {/* Horarios */}
         <div>
           <h5
-            className="text-sm font-extrabold uppercase tracking-widest"
-            style={{ color: GOLD_COLOR }}
+            className="text-sm font-extrabold uppercase tracking-widest text-dorado" // Usa text-dorado
           >
             Horarios
           </h5>
@@ -45,12 +36,9 @@ export default function FooterCarniceria() {
             <li>Domingo: Cerrado</li>
           </ul>
         </div>
-
-        {/* Contacto */}
         <div>
           <h5
-            className="text-sm font-extrabold uppercase tracking-widest"
-            style={{ color: GOLD_COLOR }}
+            className="text-sm font-extrabold uppercase tracking-widest text-dorado" // Usa text-dorado
           >
             Contacto
           </h5>
@@ -60,27 +48,21 @@ export default function FooterCarniceria() {
           <p className="text-sm text-gray-300 mt-2">📞 +51 987 654 321</p>
           <p className="text-sm text-gray-300 mt-1">✉️ contacto@bistora.pe</p>
           <div className="mt-5 flex items-center gap-4">
-            <SocialIcon name="Instagram" />
-            <SocialIcon name="Facebook" />
-            <SocialIcon name="YouTube" />
+            <SocialIcon name="Instagram" hoverColor={doradoVar} />
+            <SocialIcon name="Facebook" hoverColor={doradoVar} />
+            <SocialIcon name="YouTube" hoverColor={doradoVar} />
           </div>
         </div>
-
-        {/* Ilustración temática */}
         <div className="flex items-center justify-center lg:justify-end">
-          <MeatDoodle color={GOLD_COLOR} />
+          <MeatDoodle color={doradoVar} />
         </div>
       </div>
-
-      {/* Separador */}
-      <div className="h-0.5 w-full" style={{ backgroundColor: `${GOLD_COLOR}80` }} />
-
-      {/* Enlaces inferiores */}
+      <div className="h-0.5 w-full bg-[var(--color-dorado)] opacity-50" />
       <div className="mx-auto max-w-7xl px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <LinkColumn title="Nosotros" links={["Inicio", "Historia", "Galería"]} />
-        <LinkColumn title="Clientes" links={["Pedidos", "Ofertas", "Afiliados"]} />
-        <LinkColumn title="Legal" links={["Política de Privacidad", "Términos"]} />
-        <LinkColumn title="Recursos" links={["Contacto", "Preguntas Frecuentes"]} />
+        <LinkColumn title="Nosotros" links={["Inicio", "Historia", "Galería"]} hoverColor={doradoVar} />
+        <LinkColumn title="Clientes" links={["Pedidos", "Ofertas", "Afiliados"]} hoverColor={doradoVar} />
+        <LinkColumn title="Legal" links={["Política de Privacidad", "Términos"]} hoverColor={doradoVar} />
+        <LinkColumn title="Recursos" links={["Contacto", "Preguntas Frecuentes"]} hoverColor={doradoVar} />
       </div>
 
       <p className="mt-8 text-center text-xs text-gray-400 pb-6">
@@ -90,12 +72,11 @@ export default function FooterCarniceria() {
   );
 }
 
-function LinkColumn({ title, links }) {
+function LinkColumn({ title, links, hoverColor }) {
   return (
     <div>
       <h6
-        className="mb-3 text-sm font-extrabold uppercase tracking-widest"
-        style={{ color: GOLD_COLOR }}
+        className="mb-3 text-sm font-extrabold uppercase tracking-widest text-dorado" 
       >
         {title}
       </h6>
@@ -104,7 +85,10 @@ function LinkColumn({ title, links }) {
           <li key={l}>
             <a
               href="#"
-              className="transition text-gray-300 hover:text-[#d4af37]"
+              className="transition text-gray-300"
+              style={{ '--tw-text-opacity': 1, '--tw-text-hover-color': hoverColor, color: 'rgb(209 213 219 / var(--tw-text-opacity))' }}
+              onMouseOver={(e) => e.currentTarget.style.color = hoverColor}
+              onMouseOut={(e) => e.currentTarget.style.color = 'rgb(209 213 219 / var(--tw-text-opacity))'}
             >
               {l}
             </a>
@@ -115,7 +99,9 @@ function LinkColumn({ title, links }) {
   );
 }
 
-function SocialIcon({ name }) {
+function SocialIcon({ name, hoverColor }) {
+  const hoverClass = `transition hover:text-[${hoverColor}]`;
+
   const icons = {
     Instagram: (
       <svg
@@ -123,7 +109,7 @@ function SocialIcon({ name }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
-        className="h-6 w-6 transition hover:text-[#d4af37]"
+        className={hoverClass}
       >
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
         <path d="M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -134,7 +120,7 @@ function SocialIcon({ name }) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="currentColor"
-        className="h-6 w-6 transition hover:text-[#d4af37]"
+        className={hoverClass}
       >
         <path d="M13 14H9v-3h4V8h-4V5H9v3H5v3h4v8h4v-8h3l1-3h-4V6a2 2 0 012-2z" />
       </svg>
@@ -143,7 +129,7 @@ function SocialIcon({ name }) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="currentColor"
-        className="h-6 w-6 transition hover:text-[#d4af37]"
+        className={hoverClass}
       >
         <path d="M19.615 3.161C18.683 2.502 16.715 2 12 2S5.317 2.502 4.385 3.161A4.852 4.852 0 002 6.5v11C2 20.311 3.689 22 5.5 22h13c1.811 0 3.5-1.689 3.5-3.5v-11a4.852 4.852 0 00-2.385-3.339zM10 15V9l5 3-5 3z" />
       </svg>
