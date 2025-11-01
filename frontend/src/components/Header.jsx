@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../Theme/ThemeContext";
 import logo from "../assets/Logo-BENITO.jpg";
+=======
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import logo from '../assets/Logo-BENITO.jpg'
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'
+>>>>>>> 01237090e53e7608a34e2923bb70ee44b90235e4
 
 export default function Header() {
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
@@ -22,7 +29,12 @@ export default function Header() {
   }`;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <motion.header
+      className="fixed inset-x-0 top-0 z-50 transition-colors duration-700"
+      initial={{ y: '-100%', opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className={`mt-3 mb-2 rounded-2xl border backdrop-blur-md transition-colors duration-300 ${
@@ -60,8 +72,14 @@ export default function Header() {
           </nav>
         </div>
       </div>
+<<<<<<< HEAD
     </header>
   );
+=======
+    </div>
+    </motion.header>
+  )
+>>>>>>> 01237090e53e7608a34e2923bb70ee44b90235e4
 }
 
 function DarkModeToggle({ theme, toggleTheme }) {

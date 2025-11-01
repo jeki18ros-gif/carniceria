@@ -26,7 +26,18 @@ export default function ContactSection() {
   }
 
   return (
+<<<<<<< HEAD
     <section id="contacto" className="light-block py-20 transition-colors duration-300">
+=======
+    <motion.section
+      id="contacto"
+      className="relative py-20 bg-gradient-to-b from-[#FFF5F0] to-[#FDFCFB] dark:from-gray-900 dark:to-gray-800"
+      initial={{ y: 40, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: 'easeOut', type: 'tween' }}
+      viewport={{ once: true, amount: 0.2 }}
+    >
+>>>>>>> 01237090e53e7608a34e2923bb70ee44b90235e4
       <div className="mx-auto max-w-6xl px-6 lg:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ opacity: 0, x: -40 }}
@@ -144,6 +155,11 @@ export default function ContactSection() {
           )}
         </motion.form>
       </div>
+<<<<<<< HEAD
     </section>
   )
+=======
+    </motion.section>
+  );
+>>>>>>> 01237090e53e7608a34e2923bb70ee44b90235e4
 }

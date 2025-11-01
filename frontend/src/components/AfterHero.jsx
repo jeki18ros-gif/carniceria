@@ -1,12 +1,15 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import leftImg from '../assets/otros2.jpg'
 import rightImg from '../assets/relleno8.jpg'
+
+const GOLD_COLOR = '#D4AF37'
 
 export default function AfterHero() {
   const doradoVar = "var(--color-dorado)";
 
   return (
-    <section className="after-hero relative min-h-[70vh] light-block">
+    <section className="after-hero relative min-h-[70vh] bg-[#FFF5F0] text-gray-900">
       <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="relative isolate mx-auto flex w-full items-center justify-between gap-6 px-0 sm:gap-10">
           <div className="relative block shrink-0 mr-2 sm:mr-6 lg:mr-10">
@@ -43,7 +46,7 @@ export default function AfterHero() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 function FlowerPortrait({ src, alt, accentColor }) {

@@ -24,53 +24,14 @@ html, body {
   @apply overflow-x-hidden transition-colors duration-300 ease-in-out;
 }
 
-/* ==============================
-    FONDOS Y TEXTO PRINCIPALES
-    ============================== */
-body {
-  @apply min-h-screen bg-[var(--color-claro)] text-black;
+.dark .modo-oscuro {
+  @apply bg-[#1a1a1a] text-white;
 }
 
-:root.dark body {
-  @apply bg-[var(--color-oscuro)] text-white;
-}
 
-/* ==============================
-    BLOQUES DE COLOR ADAPTATIVOS
-    ============================== */
-
-/* Fondo claro — texto oscuro */
-.light-block {
-  @apply bg-[var(--color-claro)] text-black transition-colors duration-300;
-}
-:root.dark .light-block {
-  @apply bg-[var(--color-oscuro)] text-white;
-}
-
-/* Fondo medio — neutro adaptable */
-.medium-block {
-  @apply bg-gray-200 text-gray-800 transition-colors duration-300;
-}
-:root.dark .medium-block {
-  @apply bg-gray-700 text-gray-100;
-}
-
-/* Fondo oscuro — se invierte en modo claro */
-.dark-block {
-  @apply bg-[var(--color-oscuro)] text-white transition-colors duration-300;
-}
-:root.dark .dark-block {
-  @apply bg-[var(--color-claro)] text-black;
-}
-
-/* ==============================
-    BOTONES — DORADO SIEMPRE
-    ============================== */
-.btn,
+/* Fondo de acento o destacado (ej. botones principales) */
 .accent-block {
-  /* En modo claro: Fondo dorado con texto negro */
-  @apply bg-[var(--color-dorado)] text-black font-semibold rounded-2xl px-4 py-2 
-  border-2 border-transparent transition-all duration-300 ease-in-out;
+  @apply bg-yellow-400 text-gray-900 font-bold transition-colors duration-300;
 }
 
 .btn:hover,
@@ -87,6 +48,10 @@ body {
 :root.dark .btn:hover,
 :root.dark .accent-block:hover {
   @apply brightness-110 shadow-2xl border-yellow-400;
+}
+
+.dark .titulo-seccion {
+  @apply text-yellow-500;
 }
 
 /* ==============================
