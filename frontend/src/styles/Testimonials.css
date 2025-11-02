@@ -1,0 +1,158 @@
+/* ===========================================================
+   🎨 Testimonials.css — Estilos totalmente aislados por tema
+   =========================================================== */
+
+/* --------------
+   🌞 / 🌚 Fondos y tema general
+   -------------- */
+.isolated-theme.testimonials {
+  background-color: #f5f5dc; /* Modo claro: cremita */
+  color: #111827; /* Texto oscuro */
+  padding: 4rem 1rem;
+  text-align: center;
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+.dark .isolated-theme.testimonials {
+  background-color: #1e293b; /* Modo oscuro: negro azulado */
+  color: #f5f5dc; /* Texto cremita */
+}
+
+/* --------------
+   🏷️ Título principal de la sección
+   -------------- */
+.isolated-theme.testimonials .testimonials-title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 3rem;
+  line-height: 1.2;
+}
+
+.isolated-theme.testimonials .testimonials-title .title-small {
+  display: block;
+  font-size: 1.25rem;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.isolated-theme.testimonials .testimonials-title .title-big {
+  display: block;
+  font-size: 2.25rem;
+  color: inherit;
+  font-weight: 900;
+}
+
+@media (min-width: 640px) {
+  .isolated-theme.testimonials .testimonials-title .title-small {
+    font-size: 2rem;
+  }
+  .isolated-theme.testimonials .testimonials-title .title-big {
+    font-size: 3rem;
+  }
+}
+
+/* --------------
+   ⭐ Botón de acción
+   -------------- */
+.isolated-theme.testimonials .testimonials-button {
+  background: linear-gradient(to right, #facc15, #eab308);
+  color: #111;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dark .isolated-theme.testimonials .testimonials-button {
+  background: linear-gradient(to right, #facc15, #eab308);
+  color: #fff;
+}
+
+.isolated-theme.testimonials .testimonials-button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+/* --------------
+   💬 Tarjetas de reseña
+   -------------- */
+.isolated-theme.testimonials .review-card {
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  flex: 0 0 auto;
+  width: 300px;
+}
+
+.dark .isolated-theme.testimonials .review-card {
+  background-color: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+}
+
+.isolated-theme.testimonials .review-card:hover {
+  transform: translateY(-4px);
+}
+
+/* --------------
+   🌟 Estrellas
+   -------------- */
+.isolated-theme.testimonials .star {
+  color: #facc15;
+}
+
+/* --------------
+   ✏️ Texto de la reseña
+   -------------- */
+.isolated-theme.testimonials .review-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.isolated-theme.testimonials .review-body {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-bottom: 0.75rem;
+}
+
+.isolated-theme.testimonials .review-author {
+  font-style: italic;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* --------------
+   🎞️ Carrusel infinito
+   -------------- */
+.isolated-theme.testimonials .carousel-track {
+  display: flex;
+  gap: 2rem;
+  animation: scrollX 30s linear infinite;
+  will-change: transform;
+}
+
+.isolated-theme.testimonials .carousel-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.isolated-theme.testimonials .carousel-track:hover {
+  animation-play-state: paused;
+}
+
+/* Animación */
+@keyframes scrollX {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

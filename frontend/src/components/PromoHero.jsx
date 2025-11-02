@@ -41,7 +41,7 @@ export default function PromoHero() {
           </h2>
 
           <p
-            className="mt-5 max-w-2xl text-base sm:text-lg text-gray-100 
+            className=" texto-normal mt-5 max-w-2xl text-base sm:text-lg text-gray-100 
                        dark:text-gray-300 transition-colors duration-300"
           >
             Somos proveedores especializados en la distribución de carnes de

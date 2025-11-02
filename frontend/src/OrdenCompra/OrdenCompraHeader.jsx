@@ -17,11 +17,9 @@ export function OrdenCompraHeader() {
   }, []);
 
   const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
-
   const scrolledHeaderClass = scrolled
     ? "relative bg-white/60 dark:bg-gray-900/50 backdrop-blur-xl border border-white/20 dark:border-gray-700/40 shadow-lg"
     : "relative bg-gradient-to-b from-black/20 to-black/0 dark:from-gray-800/30 dark:to-gray-900/10 backdrop-blur-xl border border-white/10 dark:border-gray-700/20";
-
   const titleTextColor = scrolled ? "text-gray-900 dark:text-gray-100" : "text-white";
 
   return (

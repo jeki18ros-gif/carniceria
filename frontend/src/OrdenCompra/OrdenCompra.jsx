@@ -8,8 +8,6 @@ import { DetalleProductoModal } from './DetalleProductoModal';
 import { MiniCarritoModal } from './MiniCarritoModal'; 
 import { FormularioCliente } from './FormularioCliente'; 
 
-// ------------------------
-
 export default function OrdenDeCompra() {
     // 1. Estado del Carrito y Producto Detalle
     const [seleccionados, setSeleccionados] = useState({});
@@ -45,7 +43,6 @@ export default function OrdenDeCompra() {
         setSeleccionados(prev => {
             const nuevo = { ...prev };
             delete nuevo[id];
-            // Si no quedan productos, ocultar el sidebar (aunque el botón flotante aparecerá)
             if (Object.keys(nuevo).length === 0) {
                 setMostrarCarrito(false);
             }
@@ -69,8 +66,6 @@ export default function OrdenDeCompra() {
 
     return (
         <div 
-            // 1. ELIMINAMOS el color de fondo fijo (bg-[#fdfaf4])
-            // Ahora la raíz de la app tomará el color del body (adaptativo)
             className="min-h-screen flex flex-col pt-24 sm:pt-28"
         >
             <OrdenCompraHeader />
@@ -105,7 +100,7 @@ export default function OrdenDeCompra() {
                 onAddToCart={handleAddToCart}
             />
 
-            {/* 2. Carrito Lateral/Flotante (No necesita cambios internos, ya se adaptó) */}
+            {/* 2. Carrito Lateral/Flotante */}
             <MiniCarritoModal
                 seleccionados={seleccionados}
                 onToggleVisibility={toggleMiniCarrito} 

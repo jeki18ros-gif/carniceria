@@ -1,0 +1,167 @@
+/* ===============================
+   📞 Contact Section Styles
+   =============================== */
+
+/* Fondo general y colores de texto */
+.contact-section {
+  transition: background-color 0.4s ease, color 0.4s ease;
+  padding: 5rem 1.5rem;
+  background: linear-gradient(to bottom, #FFF5E1, #FDFCFB);
+  color: #222;
+}
+
+.dark .contact-section {
+  background: linear-gradient(to bottom, #0D1B2A, #1B263B);
+  color: #F5F5F5;
+}
+
+/* 🧭 Título y descripción */
+.contact-section h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: inherit;
+}
+
+.contact-section p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: inherit;
+}
+
+/* 📩 Datos de contacto */
+.contact-info {
+  margin-top: 2rem;
+}
+
+.contact-info div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.contact-info svg {
+  color: #D4AF37;
+  flex-shrink: 0;
+}
+
+/* 💌 Formulario */
+.contact-form {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.4s ease;
+}
+
+.dark .contact-form {
+  background-color: rgba(17, 25, 40, 0.8);
+}
+
+/* Etiquetas */
+.contact-form label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Inputs */
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #F5F5F5;
+  color: #222;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.dark .contact-form input,
+.dark .contact-form textarea {
+  background-color: #1E2A3A;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #F5F5F5;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border: 2px solid #D4AF37;
+}
+
+/* Botón dorado */
+.contact-form button {
+  background-color: #D4AF37;
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.contact-form button:hover {
+  background-color: #b6932e;
+  transform: scale(1.03);
+}
+
+.contact-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mensaje de éxito */
+.success-message {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2ECC71;
+}
+
+.dark .success-message {
+  color: #27AE60;
+}
+
+/* ===============================
+   📱 Responsividad
+   =============================== */
+@media (min-width: 768px) {
+  .contact-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .contact-section {
+    padding: 3rem 1.2rem;
+  }
+
+  .contact-form {
+    padding: 1.5rem;
+  }
+}

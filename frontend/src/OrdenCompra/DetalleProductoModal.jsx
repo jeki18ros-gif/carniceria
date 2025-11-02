@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function DetalleProductoModal({ producto, onClose, onAddToCart }) {
   // Nuevo estado para el valor numérico de la cantidad
   const [cantidadValor, setCantidadValor] = useState('');
-  // Nuevo estado para la unidad de medida (kilos, unidades, etc.)
   const [cantidadUnidad, setCantidadUnidad] = useState('kg');
   const [observacion, setObservacion] = useState('');
 

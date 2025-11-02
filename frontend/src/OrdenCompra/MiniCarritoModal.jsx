@@ -4,9 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { productos } from './ListaProductos';// Asume que Seleccion y productos están disponibles
 import { XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
-
-// NOTA: Se ha renombrado 'onClose' a 'onToggleVisibility' para reflejar
-// que esta función se usa para abrir O cerrar el sidebar, dependiendo del contexto.
 export function MiniCarritoModal({ seleccionados, onToggleVisibility, onContinue, onRemoveItem, isVisible }) {
     // La lógica para obtener los ítems sigue siendo la misma
     const itemsEnCarrito = Object.entries(seleccionados).map(([idStr, data]) => {

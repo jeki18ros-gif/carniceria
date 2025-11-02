@@ -1,0 +1,85 @@
+/* ------------------------------
+    📦 Contenedor Principal (Review Card)
+------------------------------ */
+.isolated-theme .review-card {
+    /* --- ESTRUCTURA Y TAMAÑO CLAVE --- */
+    padding: 24px; /* Aumentamos el relleno para dar aire */
+    width: 100%; /* Ocupa todo el espacio disponible */
+    max-width: 350px; /* Limita el ancho máximo en pantallas grandes */
+    min-height: 200px; /* Asegura una altura mínima consistente */
+    
+    /* --- FLEXBOX PARA ALINEACIÓN VERTICAL --- */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el footer hacia abajo */
+
+    /* --- ESTILOS VISUALES EXISTENTES --- */
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #111827;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    /* Para el problema del texto largo que desborda */
+    overflow-wrap: break-word; 
+}
+
+.dark .isolated-theme .review-card {
+    background-color: rgba(30, 41, 59, 0.9);
+    color: #f9fafb; 
+    border: 1px solid rgba(250, 204, 21, 0.2);
+}
+
+/* ------------------------------
+    📝 Título y Cuerpo del Texto
+------------------------------ */
+.isolated-theme .review-card h4 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: inherit !important;
+    overflow-wrap: break-word; 
+    word-break: break-word; /* Para asegurar que el "holiiii..." se rompa */
+    margin-bottom: 0.5rem; /* Pequeño espacio debajo del título */
+}
+
+
+.isolated-theme .review-card p {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem; /* Espacio extra para separar del footer si no hay línea */
+    flex-grow: 1; /* Permite que el párrafo empuje el footer hacia abajo si el texto es corto */
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: inherit !important;
+    opacity: 0.9;
+    overflow-wrap: break-word; 
+    word-break: break-word;
+}
+
+
+/* Nombre (span con clase .review-name) */
+.isolated-theme .review-card .review-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    opacity: 0.85;
+    color: inherit !important;
+}
+
+/* ... (El resto de tus estilos de iconos y hover se mantienen sin cambios) ... */
+/* ------------------------------
+   ⭐ Iconos y Hover
+------------------------------ */
+.isolated-theme .review-card svg { /* Estrellas y Avatares */
+    color: #facc15;
+}
+
+.dark .isolated-theme .review-card svg {
+    color: #facc15;
+}
+
+/* Hover */
+.isolated-theme .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .isolated-theme .review-card:hover {
+    box-shadow: 0 4px 12px rgba(250, 204, 21, 0.15);
+}

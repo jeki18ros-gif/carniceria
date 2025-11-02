@@ -1,0 +1,62 @@
+/* afterhero.css */
+
+/* ==============================
+   AfterHero Componente Estilos Específicos
+   ============================== */
+
+/* Keyframes para el texto que se desplaza */
+@keyframes scrollX {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+/* Keyframes para el efecto de imagen flotante */
+@keyframes floatY {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); } /* Ajusta la distancia */
+  100% { transform: translateY(0); }
+}
+/* ==============================
+   Temas específicos para AfterHero
+   ============================== */
+.afterhero {
+  --ah-bg-light: #f5f5dc;   /* Blanco cremita */
+  --ah-bg-dark: #1e293b;    /* Negro azulado */
+  --ah-text-light: #1e293b; /* Texto oscuro */
+  --ah-text-dark: #f5f5dc;  /* Texto claro */
+}
+
+/* Fondo + texto principal */
+.afterhero {
+  background-color: var(--ah-bg-light);
+  color: var(--ah-text-light);
+  transition: background-color 0.7s ease, color 0.7s ease;
+}
+
+/* Modo oscuro */
+.dark .afterhero {
+  background-color: var(--ah-bg-dark);
+  color: var(--ah-text-dark);
+}
+
+/* Asegura que el texto del AfterHero no sea sobrescrito por las reglas globales */
+.afterhero h2,
+.afterhero span,
+.afterhero p,
+.afterhero .titulo-seccion {
+  color: inherit !important; /* Hereda el color general del AfterHero */
+}
+
+/* Mantiene el dorado fijo */
+.afterhero .text-gold {
+  color: #F0B100 !important;
+}
+
+/* Cinta inferior: texto negro ↔ blanco según modo */
+.afterhero .scrolling-text {
+  color: var(--ah-text-light);
+}
+
+.dark .afterhero .scrolling-text {
+  color: var(--ah-text-dark);
+}

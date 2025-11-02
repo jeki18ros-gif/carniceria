@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/* ==============================
+   Variables globales de color
+   ============================== */
+:root {
+  /* 🎨 FONDOS */
+  --color-bg-light: #f5f5dc; /* Blanco Cremita */
+  --color-bg-dark: #1e293b;  /* Negro Azulado (Gris pizarra oscuro) */
+
+  /* TEXTO PRINCIPAL / TÍTULOS (Blanco en claro -> cambiado a Oscuro para Header/Hero, Dorado en oscuro) */
+  --color-heading-light: #ffffff; /* Gris Oscuro para que se vea sobre fondos claros */
+  --color-heading-dark: #facc15;  /* Dorado */
+
+  /* TEXTO SECUNDARIO / NORMAL (Gris Oscuro en claro, Ámbar en oscuro) */
+  --color-subtext-light: #ffffff; /* Gris oscuro para legibilidad */
+  --color-subtext-dark: #fde68a; /* Amarillo/Ámbar */
+
+  /* ... (Resto de variables de botón y acento) ... */
+  --color-button-bg-light: linear-gradient(to right, #facc15, #eab308);
+  --color-button-bg-dark: linear-gradient(to right, #facc15, #eab308);
+
+  --color-button-text-light: #111827;
+  --color-button-text-dark: #f9fafb;
+
+  --color-accent-light: #eab308;
+  --color-accent-dark: #facc15;
+}
+
+/* ==============================
+   Base global y Body
+   ============================== */
+body {
+  @apply transition-colors duration-500 antialiased;
+  /* El color de texto ya NO se define aquí globalmente para no anular a Tailwind */
+  background-color: var(--color-bg-light);
+}
+
+.dark body {
+  background-color: var(--color-bg-dark);
+}
+
+/* ==============================
+   Tipografía General (SOLO CLASES ESPECÍFICAS)
+   ============================== */
+/* Usado en Hero y Testimonials (para títulos principales) */
+.titulo-seccion {
+  color: var(--color-heading-light);
+  @apply font-extrabold tracking-tight transition-colors duration-300;
+}
+
+.dark .titulo-seccion {
+  color: var(--color-heading-dark);
+}
+
+/* Usado en Hero (para párrafos principales) */
+.texto-normal {
+  color: var(--color-subtext-light);
+  @apply transition-colors duration-300;
+}
+
+.dark .texto-normal {
+  color: var(--color-subtext-dark);
+}
+
+/* ⚠️ Se mantienen tus estilos de botones, enlaces, y controles de tema/fuente, ya que usan CLASES específicas o selectores de botón. */
+/* ==============================
+   BOTONES
+   ============================== */
+.btn,
+button,
+.link-btn {
+  background: var(--color-button-bg-light);
+  color: var(--color-button-text-light);
+  @apply inline-flex items-center justify-center gap-2
+         font-bold uppercase tracking-widest rounded-full
+         px-8 py-3 transition-all duration-300 ease-out
+         shadow-[0_0_20px_rgba(234,179,8,0.4)]
+         hover:shadow-[0_0_25px_rgba(250,204,21,0.6)]
+         hover:scale-110 active:scale-95 no-underline;
+}
+
+.dark .btn,
+.dark button,
+.dark .link-btn {
+  background: var(--color-button-bg-dark);
+  color: var(--color-button-text-dark);
+}
+
+/* ==============================
+   ENLACES GENERALES
+   ============================== */
+a {
+  color: #eab308;
+  @apply underline-offset-2 transition-colors duration-200;
+}
+
+a:hover {
+  @apply underline;
+}
+
+.dark a {
+  color: #facc15;
+}
+
+/* ==============================
+   Controles de Tema/Fuente (Clases genéricas)
+   ============================== */
+.theme-toggle {
+  @apply flex items-center justify-center rounded-full p-2 cursor-pointer transition-colors duration-300;
+  background-color: transparent !important;
+  color: var(--color-heading-light);
+  border: none !important;
+}
+
+.theme-toggle:hover {
+  color: var(--color-accent-light);
+  transform: scale(1.1);
+}
+
+.dark .theme-toggle {
+  color: var(--color-heading-light);
+}
+
+.dark .theme-toggle:hover {
+  color: var(--color-accent-dark);
+}
+.isolated-theme .review-card {
+    /* Aquí sí se procesan las utilidades de Tailwind correctamente */
+    @apply flex flex-col justify-between p-6 w-80 h-auto sm:h-[18rem] 
+           rounded-3xl shadow-xl flex-shrink-0 cursor-grab;
+}
+.font-size-container {
+  background: transparent !important;
+  @apply flex items-center gap-1;
+}
+
+.font-size-btn {
+  background: transparent !important;
+  border: none !important;
+  color: var(--color-heading-light);
+  font-weight: 600;
+  @apply px-2 py-1 uppercase transition-colors duration-300 cursor-pointer;
+}
+
+.font-size-btn:hover {
+  color: var(--color-accent-light);
+  transform: scale(1.05);
+}
+
+.dark .font-size-btn:hover {
+  color: var(--color-accent-dark);
+}
+
+.font-size-btn.active,
+.dark .font-size-btn.active {
+  color: var(--color-accent-dark);
+  text-shadow: 0 0 4px rgba(250, 204, 21, 0.5);
+}
+
+
+/* ==============================
+   Clases de color Fijo Global
+   ============================== */
+.text-gold {
+  color: #F0B100 !important;
+}
+
+.bg-gold {
+  background-color: #F0B100 !important;
+}
+
+.dark .text-gold {
+  color: #F0B100 !important;
+}
+
+.dark .bg-gold {
+  background-color: #F0B100 !important;
+}
+
+/* ==============================
+   Ajustes visuales y scroll (globales)
+   ============================== */
+html, body {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-"] {
+    animation: none !important;
+  }
+}

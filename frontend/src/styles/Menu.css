@@ -1,0 +1,63 @@
+/* ==============================
+   Tema personalizado para el Menú
+   ============================== */
+
+.menu-section {
+  /* Variables locales */
+  --menu-bg-light: #f5f5dc;   /* Blanco cremita */
+  --menu-bg-dark: #1e293b;    /* Negro azulado */
+  --menu-text-light: #1e293b; /* Texto oscuro */
+  --menu-text-dark: #f5f5dc;  /* Texto claro */
+}
+
+/* Fondo y texto por defecto */
+.menu-section {
+  background-color: var(--menu-bg-light);
+  color: var(--menu-text-light);
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* En modo oscuro */
+.dark .menu-section {
+  background-color: var(--menu-bg-dark);
+  color: var(--menu-text-dark);
+}
+
+/* Textos principales dentro del menú */
+.menu-section h2,
+.menu-section h3,
+.menu-section p,
+.menu-section span {
+  color: inherit !important; /* Hereda según el modo */
+}
+
+/* Tarjetas */
+.menu-section .product-card {
+  background-color: var(--menu-bg-light);
+  color: var(--menu-text-light);
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+.dark .menu-section .product-card {
+  background-color: var(--menu-bg-dark);
+  color: var(--menu-text-dark);
+}
+
+/* Botones de categorías — mantienen fondo amarillo */
+.menu-section button {
+  background: linear-gradient(to right, #facc15, #eab308);
+  color: #111 !important;
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-section button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.5);
+}
+
+/* Chips (pequeños badges dorados) */
+.menu-section .chip {
+  background: linear-gradient(to right, #facc15, #eab308);
+  color: #111 !important;
+}

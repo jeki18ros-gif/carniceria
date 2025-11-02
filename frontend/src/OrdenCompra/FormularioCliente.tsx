@@ -12,9 +12,7 @@ export function FormularioCliente({ onSubmit }: FormularioClienteProps) {
       {/* El color del texto se adapta automáticamente gracias a 'light-block' */}
       <h2 className="text-2xl font-semibold mb-4">Datos del Cliente</h2>
       <form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        
         {/* === Campos de Formulario === */}
-        {/* Se usa 'medium-block' para los campos para darles un fondo ligeramente diferente y asegurar la adaptación */}
         <input 
           required 
           placeholder="Nombre y Apellido" 

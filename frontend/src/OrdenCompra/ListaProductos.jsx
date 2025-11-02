@@ -92,8 +92,6 @@ export const productos = [
     { id: 44, nombre: 'Carne de Venado', imagen: productoPlaceholder, descripcion: 'Corte de caza para estofados o platos gourmet.', categoria: 'Especial' },
 ];
 
-// --------------------------------------------------------------------------
-
 // COMPONENTE: CATEGORÍAS PRINCIPALES
 const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
   return (

@@ -1,0 +1,101 @@
+/* 🎨 Colores base */
+:root {
+  --gold: #d4af37;
+  --cream-bg: #faf6f1;
+  --cream-text: #1c1c1c;
+  --dark-bg: #0c1a24;
+  --dark-text: #f5f2ea;
+}
+
+/* 🌞 Modo claro (por defecto) */
+footer {
+  background-color: var(--cream-bg);
+  color: var(--cream-text);
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* 🌙 Modo oscuro */
+.dark footer {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* 🟡 Botones y enlaces dorados */
+footer a,
+footer button {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+footer a:hover,
+footer button:hover {
+  color: var(--gold);
+  transform: scale(1.05);
+}
+
+/* ✨ Botón principal */
+footer .accent-block {
+  background-color: var(--gold);
+  color: #000;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+footer .accent-block:hover {
+  background-color: #e6c04f;
+  transform: translateY(-3px);
+}
+
+/* 🌐 Títulos dorados */
+footer h4,
+footer h5,
+footer h6 {
+  color: var(--gold) !important;
+  letter-spacing: 2px;
+}
+
+/* 📜 Texto secundario */
+footer p,
+footer li {
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* 🧭 Íconos sociales */
+footer .social-icon {
+  color: var(--gold);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+footer .social-icon:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+/* 🪶 Separador */
+footer .separator {
+  background-color: rgba(212, 175, 55, 0.6);
+  height: 2px;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+/* 📱 Responsivo */
+@media (max-width: 768px) {
+  footer {
+    text-align: center;
+  }
+
+  footer .accent-block {
+    display: inline-block;
+    margin-top: 1rem;
+  }
+
+  footer .grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+}

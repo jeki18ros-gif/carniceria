@@ -1,0 +1,36 @@
+/* ==============================
+   Estilo adaptable ExploreMore
+   ============================== */
+
+.explore-section {
+  --explore-bg-light: #f5f5dc;   /* Blanco cremita */
+  --explore-bg-dark: #1e293b;    /* Negro azulado */
+  --explore-text-light: #1e293b; /* Texto oscuro */
+  --explore-text-dark: #f5f5dc;  /* Texto claro */
+
+  background-color: var(--explore-bg-light);
+  color: var(--explore-text-light);
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* En modo oscuro */
+.dark .explore-section {
+  background-color: var(--explore-bg-dark);
+  color: var(--explore-text-dark);
+}
+
+/* Botón fijo en dorado */
+.explore-section .accent-block {
+  background: linear-gradient(to right, #facc15, #eab308);
+  color: #111 !important;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.explore-section .accent-block:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.5);
+}
