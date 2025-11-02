@@ -53,9 +53,9 @@ export default function PromoHero() {
           {/* Botón CTA opcional */}
           <a
             href="#contacto"
-            className="mt-8 accent-block inline-flex items-center justify-center 
-                       rounded-2xl px-6 py-3 text-base font-bold uppercase tracking-widest 
-                       shadow-xl hover:scale-105 hover:shadow-2xl active:scale-95 
+            className="mt-8 inline-flex items-center justify-center 
+                       px-6 py-3 text-base font-bold uppercase tracking-widest 
+                       hover:scale-105 hover:active:scale-95 
                        transition-all duration-300"
           >
             Contáctanos

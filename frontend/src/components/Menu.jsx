@@ -40,7 +40,7 @@ export default function MenuGrid() {
       transition={{ duration: 0.6, ease: "easeOut", type: "tween" }}
       viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mt-20">
         {/* Título principal */}
         <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-10 sm:mb-12 uppercase tracking-wide">
           Nuestra Selección Destacada

@@ -52,11 +52,60 @@
   color: #F0B100 !important;
 }
 
-/* Cinta inferior: texto negro ↔ blanco según modo */
-.afterhero .scrolling-text {
-  color: var(--ah-text-light);
+/* ==============================
+   Cinta inferior (ENTREGA A DOMICILIO)
+   ============================== */
+
+/* Fondo dorado fijo */
+.afterhero .promo-banner {
+  background-color: #f0b100 !important;
+  overflow: hidden;
+  position: relative;
+  transform: rotate(-2deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
-.dark .afterhero .scrolling-text {
-  color: var(--ah-text-dark);
+/* Contenedor del texto animado */
+.afterhero .scrolling-text-wrapper {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Texto animado */
+.afterhero .scrolling-text {
+  display: flex;
+  min-width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  gap: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  letter-spacing: 0.25em;
+  color: #111; /* negro fijo */
+  animation: scrollX 60s linear infinite;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Efecto de desplazamiento infinito */
+@keyframes scrollX {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+/* Efecto flotante opcional (si se desea añadir sobre el banner) */
+@keyframes floatY {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .afterhero .scrolling-text {
+    font-size: 1.2rem;
+    letter-spacing: 0.15em;
+  }
 }

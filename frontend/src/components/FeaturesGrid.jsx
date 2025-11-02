@@ -14,7 +14,7 @@ export default function FeaturesGrid() {
       transition={{ duration: 0.6, ease: 'easeOut', type: 'tween' }}
       viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mt-15">
         <h3 className="text-3xl sm:text-6xl font-extrabold mb-12 uppercase tracking-wide">
           Nuestros Valores
         </h3>
@@ -83,7 +83,7 @@ export default function FeaturesGrid() {
       </div>
 
       {/* Cinta inferior dorada animada */}
-<div className="relative mt-24">
+<div className="relative mt-40">
   <div className="absolute inset-x-0 z-10 promo-banner py-8">
     <div className="scrolling-text-wrapper">
       {/* Primera tanda */}

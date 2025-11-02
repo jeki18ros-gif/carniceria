@@ -55,7 +55,7 @@ export default function Testimonials() {
       viewport={{ once: true, amount: 0.2 }}
     >
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-15">
 
         {/* 🏷️ Título (Se mantiene bien usando las clases globales/Tailwind) */}
         <h3 className="testimonials-title">
