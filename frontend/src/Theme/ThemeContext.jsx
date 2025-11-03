@@ -1,27 +1,31 @@
-// src/context/ThemeContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(null); // 👈 null hasta detectar el tema
   const [fontSize, setFontSize] = useState("normal");
 
-  // --- Cargar preferencias ---
+  // ✅ Detectar tema inicial ANTES de renderizar la UI
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const savedFont = localStorage.getItem("fontSize");
-    if (savedTheme === "dark" || savedTheme === "light") setTheme(savedTheme);
-    if (["small", "normal", "large"].includes(savedFont)) setFontSize(savedFont);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const activeTheme = savedTheme || (prefersDark ? "dark" : "light");
+
+    // Aplicar la clase "dark" inmediatamente
+    document.documentElement.classList.toggle("dark", activeTheme === "dark");
+    setTheme(activeTheme);
   }, []);
 
-  // --- Aplicar tema global ---
+  // ✅ Aplicar cambios cuando el tema cambie manualmente
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
+    if (theme) {
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      localStorage.setItem("theme", theme);
+    }
   }, [theme]);
 
-  // --- Aplicar tamaño de fuente ---
+  // ✅ Controlar tamaño de fuente global
   useEffect(() => {
     document.documentElement.classList.remove("text-sm", "text-lg");
     if (fontSize === "small") document.documentElement.classList.add("text-sm");
@@ -29,8 +33,18 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("fontSize", fontSize);
   }, [fontSize]);
 
+  // ✅ Alternar tema fácilmente
+  const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+
+  // 🚫 Bloquear render hasta tener el tema
+  if (theme === null) {
+    return (
+      <div className="min-h-screen bg-[#fffaf3] dark:bg-[#0d1b2a] transition-colors duration-300" />
+    );
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, fontSize, setFontSize }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, fontSize, setFontSize }}>
       {children}
     </ThemeContext.Provider>
   );

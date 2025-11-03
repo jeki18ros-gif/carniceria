@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
-import OrdenDeCompra from "./OrdenCompra/OrdenCompra";
+import OrdenDeCompra from "./OrdenCompra/OrdenCompra"; // ruta corregida
 import Header from "./components/Header";
-import {useTheme } from "./Theme/ThemeContext";
+import { ThemeProvider, useTheme } from "./Theme/ThemeContext"; // ✅ importa ThemeProvider
 
 function AppContent() {
   const { theme } = useTheme();
@@ -28,8 +28,10 @@ function AppContent() {
 
 export default function App() {
   return (
+    <ThemeProvider>  {/* ✅ Debe envolver TODO, incluyendo el Router */}
       <Router>
         <AppContent />
       </Router>
+    </ThemeProvider>
   );
 }

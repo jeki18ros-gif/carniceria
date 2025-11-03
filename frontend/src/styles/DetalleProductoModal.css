@@ -1,0 +1,108 @@
+/* src/styles/DetalleProductoModal.css */
+:root {
+  /* 🎨 Colores base */
+  --color-dorado: #ffd700;
+  --ah-bg-light: #f5f5dc; /* blanco cremita */
+  --ah-bg-dark: #1e293b; /* negro azulado */
+  --ah-text-light: #1e293b;
+  --ah-text-dark: #f5f5dc;
+}
+
+/* ⚠️ AISLAMIENTO DEL TEMA: Estas variables solo se definirán dentro del contenedor .ah-theme */
+.ah-theme.light-mode {
+  --ah-bg: var(--ah-bg-light);
+  --ah-text: var(--ah-text-light);
+}
+
+.ah-theme.dark-mode {
+  --ah-bg: var(--ah-bg-dark);
+  --ah-text: var(--ah-text-dark);
+}
+
+/* 🔳 Fondo del modal */
+.detalle-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  transition: background-color 0.4s ease;
+}
+
+/* 📦 Contenedor principal del modal - Fondo y texto ahora dependen de --ah-bg/--ah-text */
+.detalle-modal {
+  background-color: var(--ah-bg); 
+  color: var(--ah-text); 
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 1.5rem;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Estilos para el texto dentro del modal, para asegurar que hereden el color */
+.detalle-modal p,
+.detalle-modal label,
+.detalle-modal h3,
+.detalle-modal div { 
+  color: inherit; 
+}
+
+/* Títulos específicos que deben ser dorados */
+.detalle-modal .text-dorado {
+  color: var(--color-dorado);
+}
+
+/* ✨ Botones Dorados */
+.detalle-modal .boton-dorado {
+  background-color: var(--color-dorado);
+  color: white; 
+  font-weight: 700;
+  border: none;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.detalle-modal .boton-dorado:hover {
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.detalle-modal .boton-dorado:active {
+  transform: scale(0.97);
+}
+
+/* 📝 Inputs, Selects y Textareas */
+.detalle-modal input,
+.detalle-modal select,
+.detalle-modal textarea {
+  background: transparent; 
+  border: 1px solid var(--ah-text); /* Borde adaptativo */
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--ah-text); /* Texto de entrada adaptativo */
+}
+
+.detalle-modal input:focus,
+.detalle-modal select:focus,
+.detalle-modal textarea:focus {
+  border-color: var(--color-dorado);
+  outline: none;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Estilos para el input de cantidad con manejo de error */
+.input-error {
+  border-color: red !important;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.4) !important;
+}
+
+/* Estilo para el borde inferior del H3 */
+.detalle-modal h3.border-b {
+  border-color: var(--ah-text); 
+  border-bottom-width: 1px; 
+}
+
+/* 📱 Responsivo */
+@media (max-width: 768px) {
+  .detalle-modal {
+    padding: 1rem;
+  }
+}

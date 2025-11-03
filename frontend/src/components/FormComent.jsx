@@ -90,8 +90,7 @@ function LoginSimulator({ onLoginSuccess }) {
       )}
 
       <button onClick={handleSimulatedLogin} className="google-button">
-        <svg viewBox="0 0 48 48" className="h-5 w-5">
-        </svg>
+        <svg viewBox="0 0 48 48" className="h-5 w-5"></svg>
         <span>Simular Inicio de Sesión con Google</span>
       </button>
     </div>
@@ -126,6 +125,17 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
   const [userName, setUserName] = useState("")
   const [formData, setFormData] = useState({ title: "", body: "", stars: 5, name: "" })
   const [formError, setFormError] = useState(null)
+  const [theme, setTheme] = useState("light")
+
+  // 🌓 Detecta el tema activo y se actualiza en tiempo real
+  useEffect(() => {
+    const root = document.documentElement
+    const observer = new MutationObserver(() => {
+      setTheme(root.classList.contains("dark") ? "dark" : "light")
+    })
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     document.body.classList.toggle("overflow-hidden", isOpen)
@@ -138,20 +148,15 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
   }
 
   const handleChange = (e) => {
-  const { name, value } = e.target
-  setFormError(null)
-
-  if (name === "title" && value.length > 40) return
-
-  // 🔢 Control de máximo 200 palabras
-  if (name === "body") {
-    const wordCount = value.trim().split(/\s+/).length
-    if (wordCount > 100) return // no permite más palabras
+    const { name, value } = e.target
+    setFormError(null)
+    if (name === "title" && value.length > 40) return
+    if (name === "body") {
+      const wordCount = value.trim().split(/\s+/).length
+      if (wordCount > 100) return
+    }
+    setFormData({ ...formData, [name]: value })
   }
-
-  setFormData({ ...formData, [name]: value })
-}
-
 
   const isFormValid = useMemo(() => {
     return (
@@ -175,8 +180,20 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.75 }} exit={{ opacity: 0 }} onClick={onClose} className="overlay" />
-          <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 100 }} className="form-panel">
+          {/* 🔒 Ya no cierra al hacer clic fuera */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.75 }}
+            exit={{ opacity: 0 }}
+            className={`overlay ${theme === "dark" ? "overlay-dark" : "overlay-light"}`}
+          />
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className={`form-panel ${theme === "dark" ? "dark" : "light"}`}
+          >
             <div className="form-header">
               <h2><PencilSquareIcon className="h-6 w-6" /> Escribir Nueva Reseña</h2>
               <button onClick={onClose}><XMarkIcon className="h-6 w-6" /></button>
@@ -216,11 +233,12 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
                   disabled={!isAuthenticated}
                 />
               </label>
-<small className="char-count">
-  {formData.body.trim() === "" 
-    ? 0 
-    : formData.body.trim().split(/\s+/).length} / 100 palabras
-</small>
+
+              <small className="char-count">
+                {formData.body.trim() === "" 
+                  ? 0 
+                  : formData.body.trim().split(/\s+/).length} / 100 palabras
+              </small>
 
               <div className="rating-container">
                 <label>¿Cómo calificarías?</label>
