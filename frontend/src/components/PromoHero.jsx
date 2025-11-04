@@ -5,8 +5,7 @@ import bg from "../assets/relleno9.jpg";
 export default function PromoHero() {
   return (
     // 1. La sección es relativa y ya no tiene padding vertical
-    <motion.section
-      className="relative bg-[#FFF5F0] transition-colors duration-500"
+    <motion.section className="relative overflow-hidden bg-[#FFF5F0] transition-colors duration-500"
       initial={{ y: 40, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut", type: "tween" }}
@@ -24,10 +23,6 @@ export default function PromoHero() {
         className="absolute inset-0 bg-black/60 mix-blend-multiply transition-colors duration-500"
         aria-hidden="true"
       />
-
-      {/* 4. Contenedor de contenido centrado (horizontal) y con padding */}
-      {/* Añadimos 'relative' para que esté sobre la imagen/capa */}
-      {/* Añadimos padding vertical aquí (aumentado para más espacio) */}
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-32 lg:py-40">
         
         {/* 5. Contenido alineado a la izquierda */}
@@ -41,7 +36,7 @@ export default function PromoHero() {
           </h2>
 
           <p
-            className=" texto-normal mt-5 max-w-2xl text-base sm:text-lg text-gray-100 
+            className="mt-5 max-w-2xl text-base sm:text-lg text-gray-100 
                        dark:text-gray-300 transition-colors duration-300"
           >
             Somos proveedores especializados en la distribución de carnes de
@@ -53,9 +48,9 @@ export default function PromoHero() {
           {/* Botón CTA opcional */}
           <a
             href="#contacto"
-            className="mt-8 inline-flex items-center justify-center 
-                       px-6 py-3 text-base font-bold uppercase tracking-widest 
-                       hover:scale-105 hover:active:scale-95 
+            className="mt-8 accent-block inline-flex items-center justify-center 
+                       rounded-2xl px-6 py-3 text-base font-bold uppercase tracking-widest 
+                       shadow-xl hover:scale-105 hover:shadow-2xl active:scale-95 
                        transition-all duration-300"
           >
             Contáctanos

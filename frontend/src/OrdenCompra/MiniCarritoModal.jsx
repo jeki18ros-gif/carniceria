@@ -1,122 +1,180 @@
+// src/components/MiniCarritoModal.jsx
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Asegúrate que las rutas para Seleccion y productos sean correctas en tu proyecto
-import { productos } from './ListaProductos';// Asume que Seleccion y productos están disponibles
+import { productos } from './productosData';
 import { XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import clsx from 'clsx';
+import { useTheme } from "../Theme/ThemeContext";
 
-export function MiniCarritoModal({ seleccionados, onToggleVisibility, onContinue, onRemoveItem, isVisible }) {
-    // La lógica para obtener los ítems sigue siendo la misma
-    const itemsEnCarrito = Object.entries(seleccionados).map(([idStr, data]) => {
-        const id = parseInt(idStr);
-        // Usamos la función find en el array de productos importado
-        const productoInfo = productos.find(p => p.id === id); 
-        return {
-            id,
-            nombre: productoInfo?.nombre || 'Producto Desconocido',
-            imagen: productoInfo?.imagen || '',
-            ...data, // Esto incluye 'cantidad' y 'observacion'
-        };
-    }).filter(item => item.cantidad); // Filtra los items que no tienen cantidad especificada
+export function MiniCarritoModal({
+  seleccionados,
+  onToggleVisibility,
+  onContinue,
+  onRemoveItem,
+  onEditItem,
+  isVisible
+}) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
-    // Si no hay ítems, no renderizamos nada, ni siquiera el botón flotante.
-    if (itemsEnCarrito.length === 0) return null;
+  // Convertimos seleccionados en array con datos del producto
+  const itemsEnCarrito = Object.entries(seleccionados)
+    .map(([idStr, data]) => {
+      const id = parseInt(idStr);
+      const productoInfo = productos.find(p => p.id === id);
+      return {
+        id,
+        nombre: productoInfo?.nombre || 'Producto Desconocido',
+        imagen: productoInfo?.imagen || 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item',
+        ...data,
+      };
+    })
+    .filter(item => item.cantidad);
 
-    // ----------------------------------------------------------------------
-    // 1. Botón Flotante para REABRIR (Siempre visible si hay productos y está oculto)
-    // ----------------------------------------------------------------------
-    if (!isVisible) {
-        return (
-            <motion.button
-                // Usamos la clase 'btn' para el estilo dorado adaptativo
-                onClick={onToggleVisibility} 
-                className="fixed bottom-6 right-6 p-4 rounded-full shadow-xl z-50 flex items-center space-x-2 btn"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-                <ShoppingCartIcon className="w-6 h-6" />
-                <span className="font-bold hidden sm:inline">Tu Orden</span>
-                <span className="inline-flex items-center justify-center ml-1 w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full">
-                    {itemsEnCarrito.length}
-                </span>
-            </motion.button>
-        );
-    }
+  // Si no hay nada seleccionado ni visible, no mostrar nada
+  if (!isVisible && itemsEnCarrito.length === 0) return null;
 
-    // ----------------------------------------------------------------------
-    // 2. Panel Lateral (Mini Carrito)
-    // ----------------------------------------------------------------------
+  // 🛒 Botón flotante
+  if (!isVisible && itemsEnCarrito.length > 0) {
     return (
-        <AnimatePresence>
-            <motion.div
-                className="fixed inset-y-0 right-0 z-50 flex justify-end pointer-events-none" 
-            >
-                {/* Modal del Carrito (Ahora un Sidebar) */}
-                <motion.div
-                    // Usa 'light-block' para el fondo adaptable (cremita/oscuro) y el color de texto
-                    className="light-block h-full w-full max-w-xs shadow-2xl p-6 flex flex-col pointer-events-auto"
-                    initial={{ x: '100%' }}
-                    animate={{ x: 0 }}
-                    exit={{ x: '100%' }}
-                    transition={{ type: "tween", duration: 0.3 }}
-                >
-                    <div className="flex justify-between items-center border-b pb-4">
-                        {/* El color del texto se adapta gracias a 'light-block' */}
-                        <h3 className="text-xl font-bold">Tu Orden ({itemsEnCarrito.length})</h3>
-                        <button 
-                            onClick={onToggleVisibility} 
-                            // Usa 'hover:medium-block' para el fondo del botón de cerrar y 'text-gray-700' para el ícono
-                            className="flex items-center space-x-1 p-1 rounded-lg text-sm text-gray-500 hover:medium-block transition-colors" 
-                            aria-label="Ocultar carrito para seguir comprando"
-                        >
-                            <span>Ocultar</span>
-                            <XMarkIcon className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    <div className="flex-grow overflow-y-auto py-4 space-y-4">
-                        {itemsEnCarrito.map((item) => (
-                            <div key={item.id} className="flex items-start gap-3 border-b pb-3">
-                                <img 
-                                    src={item.imagen} 
-                                    alt={item.nombre} 
-                                    className="w-12 h-12 object-cover rounded-md flex-shrink-0" 
-                                />
-                                <div className="flex-grow">
-                                    {/* El color del texto se adapta gracias a 'light-block' */}
-                                    <p className="font-semibold text-sm leading-tight">{item.nombre}</p>
-                                    {/* Usa la variable CSS para el color dorado en la cantidad */}
-                                    <p className="text-xs text-gray-500 mt-0.5">
-                                        Cantidad: <span className="font-medium text-[var(--color-dorado)]">{item.cantidad}</span>
-                                    </p>
-                                    {item.observacion && <p className="text-xs text-gray-400 italic mt-0.5 max-w-full overflow-hidden whitespace-nowrap text-ellipsis">Obs: {item.observacion}</p>}
-                                </div>
-                                <button 
-                                    onClick={() => onRemoveItem(item.id)} 
-                                    className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
-                                    aria-label={`Eliminar ${item.nombre} de la orden`}
-                                >
-                                    <XMarkIcon className="w-4 h-4" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="pt-4 border-t">
-                        {/* El color del texto se adapta gracias a 'light-block' */}
-                        <p className="text-sm text-gray-700 mb-4">
-                            *El precio final se calculará y confirmará por nuestros asesores.
-                        </p>
-                        <button
-                            onClick={onContinue}
-                            // Estilo de botón oscuro, usando la variable de color principal oscuro
-                            className="w-full bg-[var(--color-dark-blue)] hover:opacity-90 text-white py-3 rounded-lg font-bold transition-all"
-                        >
-                            <span className="text-lg">Finalizar Orden</span>
-                        </button>
-                    </div>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+      <motion.button
+        onClick={onToggleVisibility}
+        className="fixed bottom-6 right-6 p-4 rounded-full shadow-xl z-50 flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-400 text-black transition-colors"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      >
+        <ShoppingCartIcon className="w-6 h-6" />
+        <span className="font-bold hidden sm:inline">Tu Orden</span>
+        <span className="inline-flex items-center justify-center ml-2 px-2 py-1 bg-black text-yellow-400 rounded-full text-xs font-bold">
+          {itemsEnCarrito.length}
+        </span>
+      </motion.button>
     );
+  }
+
+  // 🧾 Modal del carrito
+  return (
+    <AnimatePresence>
+      {isVisible && itemsEnCarrito.length > 0 && (
+        <motion.div
+          className={clsx(
+            'fixed bottom-6 right-6 w-80 max-w-[90%] sm:w-96 rounded-xl shadow-2xl flex flex-col z-50 transition-colors duration-300',
+            isDark
+              ? 'bg-gray-900 text-gray-100 border border-gray-700'
+              : 'bg-white text-gray-900 border border-gray-200'
+          )}
+          initial={{ opacity: 0, scaleY: 0, y: 50 }}
+          animate={{ opacity: 1, scaleY: 1, y: 0, transition: { duration: 0.4 } }}
+          exit={{ opacity: 0, scaleY: 0, y: 50, transition: { duration: 0.3 } }}
+          style={{ transformOrigin: 'bottom', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        >
+          {/* Botón de cerrar */}
+          <button
+            onClick={onToggleVisibility}
+            className={`absolute top-3 right-3 p-1 rounded-full transition-colors duration-200 ${
+              isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+            }`}
+            title="Cerrar carrito"
+          >
+            <XMarkIcon className="w-5 h-5 text-gray-500" />
+          </button>
+
+          {/* Título */}
+          <h3
+            className={clsx(
+              'text-xl font-bold p-4 border-b transition-colors duration-300',
+              isDark ? 'border-gray-700' : 'border-gray-200'
+            )}
+          >
+            Tu Orden ({itemsEnCarrito.length})
+          </h3>
+
+          {/* Lista de items */}
+          <div className="flex flex-col gap-4 px-4 py-4 overflow-y-auto" style={{ flexGrow: 1 }}>
+            {itemsEnCarrito.map((item) => (
+              <div
+                key={item.id}
+                className={clsx(
+                  'flex items-start gap-3 border-b border-dashed pb-4 transition-colors duration-300',
+                  isDark ? 'border-gray-700' : 'border-gray-300'
+                )}
+              >
+                <img
+                  src={item.imagen}
+                  alt={item.nombre}
+                  className="w-14 h-14 object-cover rounded-lg flex-shrink-0 shadow-md"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item';
+                  }}
+                />
+                <div className="flex-grow min-w-0">
+                  <p className="font-semibold text-base leading-tight truncate">{item.nombre}</p>
+                  <p className="text-sm text-yellow-500 mt-0.5">
+                    Cantidad: <span className="font-bold">{item.cantidad}</span>
+                  </p>
+                  {item.especificaciones &&
+                    Object.entries(item.especificaciones).map(
+                      ([key, value]) =>
+                        value && (
+                          <p
+                            key={key}
+                            className={`text-xs mt-0.5 truncate ${
+                              isDark ? 'text-gray-400' : 'text-gray-500'
+                            }`}
+                          >
+                            {key}: <span className="font-medium">{value}</span>
+                          </p>
+                        )
+                    )}
+                  {item.especificaciones?.observacion && (
+                    <p
+                      className={`text-xs italic mt-0.5 truncate ${
+                        isDark ? 'text-gray-400' : 'text-gray-500'
+                      }`}
+                    >
+                      Obs: {item.especificaciones.observacion}
+                    </p>
+                  )}
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex flex-col gap-1 items-center flex-shrink-0 ml-2">
+                  <button
+                    onClick={() => onEditItem(item)}
+                    className="text-blue-500 hover:text-blue-400 text-sm font-medium transition-colors"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => onRemoveItem(item.id)}
+                    className="text-red-500 hover:text-red-400 transition-colors"
+                    title="Eliminar producto"
+                  >
+                    <XMarkIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Botón Continuar */}
+          <div
+            className={clsx(
+              'px-4 py-3 border-t flex flex-col gap-2 transition-colors duration-300',
+              isDark ? 'border-gray-700' : 'border-gray-200'
+            )}
+          >
+            <button
+              onClick={onContinue}
+              className="py-2 rounded-lg font-semibold bg-yellow-500 hover:bg-yellow-400 text-black transition-colors shadow-md"
+            >
+              Continuar con la Orden
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }

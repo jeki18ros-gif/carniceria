@@ -1,0 +1,98 @@
+/* =============================== */
+/* 🌟 Variables de Color y Tema    */
+/* =============================== */
+
+:root {
+  /* Color Dorado Principal (Para bordes, acentos, y botones activos) */
+  --color-dorado: #d4af37;
+  
+  /* Colores Base del Tema Claro */
+  --color-fondo-claro: #f5f5f5; /* Fondo general de la página */
+  --color-texto-claro: #1a1a1a;
+  
+  /* Colores para los "Bloques" de la UI */
+  --color-light-block-bg: #fcfcfc; /* Fondo de las tarjetas de producto */
+  --color-medium-block-bg: #eeeeee; /* Fondo de la barra de categorías/búsqueda */
+}
+
+/* 🌙 Modo Oscuro (Aplicado al body o a un contenedor principal con la clase 'dark') */
+.dark {
+  /* Colores Base del Tema Oscuro */
+  --color-fondo-oscuro: #0a0a0a;
+  --color-texto-oscuro: #fdfdfd;
+
+  /* Colores para los "Bloques" de la UI en Modo Oscuro */
+  --color-light-block-bg: #1a1a1a; /* Fondo de las tarjetas de producto */
+  --color-medium-block-bg: #2d2d2d; /* Fondo de la barra de categorías/búsqueda */
+}
+
+/* =============================== */
+/*       🧱 Clases de Bloques      */
+/* =============================== */
+
+/* 💡 light-block: Usado para las Tarjetas de Producto */
+.light-block {
+  background-color: var(--color-light-block-bg);
+  color: var(--color-texto-claro);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark .light-block {
+  color: var(--color-texto-oscuro);
+}
+
+/* 📊 medium-block: Usado para la Barra de Categorías y Búsqueda */
+.medium-block {
+  background-color: var(--color-medium-block-bg);
+  color: var(--color-texto-claro);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark .medium-block {
+  color: var(--color-texto-oscuro);
+}
+
+/* --- Asegúrate de que los colores de texto y fondo se apliquen al body --- */
+body {
+  background-color: var(--color-fondo-claro);
+  color: var(--color-texto-claro);
+}
+
+.dark body {
+  background-color: var(--color-fondo-oscuro);
+  color: var(--color-texto-oscuro);
+}
+
+/* =============================== */
+/*       🔎 Estilos Específicos     */
+/* =============================== */
+
+/* El input de búsqueda hereda el fondo del medium-block */
+.medium-block input[type="text"] {
+    /* Aseguramos que el input tenga el fondo del bloque y el texto sea visible */
+    background-color: transparent;
+    color: inherit; /* Hereda el color de texto del padre (light/dark) */
+    outline: none;
+}
+
+/* Estilos de enfoque para el input de búsqueda */
+.medium-block input[type="text"]:focus {
+    /* Quitamos el anillo por defecto si Tailwind no lo hace */
+    --tw-ring-shadow: none;
+}
+
+/* Estilo para los iconos dentro del medium-block */
+.medium-block svg {
+    color: inherit; /* Los iconos también cambian de color con el texto */
+}
+
+/* =============================== */
+/*       🖼️ Estilos de Imágenes      */
+/* =============================== */
+
+/* Evita problemas de renderizado de imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}

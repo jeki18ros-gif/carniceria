@@ -10,11 +10,11 @@ export default function OrdenDeCompra() {
     const [theme, setTheme] = useState('light');
     const [seleccionados, setSeleccionados] = useState({});
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+    const [productoEditar, setProductoEditar] = useState(null);
     const [mostrarCarrito, setMostrarCarrito] = useState(false);
     const [view, setView] = useState('productos');
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
-    // 🌓 Detectar modo actual al montar
     useEffect(() => {
         const root = document.documentElement;
         const storedTheme = localStorage.getItem('theme');
@@ -22,7 +22,6 @@ export default function OrdenDeCompra() {
         setTheme(isDark ? 'dark' : 'light');
     }, []);
 
-    // ✨ Mantener sincronizado el cambio manual de tema (si el usuario cambia desde header)
     useEffect(() => {
         const observer = new MutationObserver(() => {
             setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
@@ -32,12 +31,20 @@ export default function OrdenDeCompra() {
     }, []);
 
     const toggleMiniCarrito = () => setMostrarCarrito(prev => !prev);
+
     const handleSelectProduct = (producto) => setProductoSeleccionado(producto);
-    const handleAddToCart = (id, cantidad, observacion) => {
-        setSeleccionados(prev => ({ ...prev, [id]: { cantidad, observacion } }));
+
+    // Añadir o actualizar producto en el carrito
+    const handleAddToCart = (id, cantidad, especificaciones) => {
+        setSeleccionados(prev => ({
+            ...prev,
+            [id]: { cantidad, especificaciones }
+        }));
         setMostrarCarrito(true);
         setProductoSeleccionado(null);
+        setProductoEditar(null);
     };
+
     const handleRemoveItem = (id) => {
         setSeleccionados(prev => {
             const nuevo = { ...prev };
@@ -46,11 +53,26 @@ export default function OrdenDeCompra() {
             return nuevo;
         });
     };
+
+    const handleEditItem = (item) => {
+        const cantidadSplit = item.cantidad.split(' ');
+        const cantidadValor = cantidadSplit[0];
+        const cantidadUnidad = cantidadSplit[1] || 'kg';
+        setProductoEditar({
+            id: item.id,
+            cantidadValor,
+            cantidadUnidad,
+            especificaciones: item.especificaciones
+        });
+        setProductoSeleccionado(item); // Abrir modal
+    };
+
     const handleContinueToForm = () => {
         setMostrarCarrito(false);
         setView('formulario');
         window.scrollTo(0, 0);
     };
+
     const handleSubmitOrder = (e) => {
         e.preventDefault();
         console.log('Orden final enviada:', { seleccionados, datosCliente: '...' });
@@ -70,17 +92,26 @@ export default function OrdenDeCompra() {
                         </>
                     )}
                     {view === 'formulario' && (
-                        <>
-                            <h2 className="text-3xl font-extrabold mb-8">Completa tu Orden</h2>
-                            <FormularioCliente onSubmit={handleSubmitOrder} />
-                        </>
-                    )}
-                </div>
+  <>
+    <h2 className="text-3xl font-extrabold mb-8">Completa tu Orden</h2>
+    <FormularioCliente
+      onSubmit={handleSubmitOrder}
+      seleccionados={seleccionados}
+      onEditItem={handleEditItem}
+      onRemoveItem={handleRemoveItem}
+    />
+  </>
+)}
+             </div>
             </main>
 
             <DetalleProductoModal
                 producto={productoSeleccionado}
-                onClose={() => setProductoSeleccionado(null)}
+                productoEditar={productoEditar}
+                onClose={() => {
+                    setProductoSeleccionado(null);
+                    setProductoEditar(null);
+                }}
                 onAddToCart={handleAddToCart}
             />
 
@@ -89,6 +120,7 @@ export default function OrdenDeCompra() {
                 onToggleVisibility={toggleMiniCarrito}
                 onContinue={handleContinueToForm}
                 onRemoveItem={handleRemoveItem}
+                onEditItem={handleEditItem}
                 isVisible={mostrarCarrito}
             />
 

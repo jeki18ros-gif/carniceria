@@ -6,17 +6,27 @@
   --ah-bg-dark: #1e293b; /* negro azulado */
   --ah-text-light: #1e293b;
   --ah-text-dark: #f5f5dc;
+  
+  /* Colores para inputs específicos */
+  --ah-input-bg-light: #ffffff;
+  --ah-input-bg-dark: #374151; /* gray-700 para inputs en modo oscuro */
+  --ah-border-light: #d1d5db; /* gray-300 */
+  --ah-border-dark: #4b5563; /* gray-600 */
 }
 
 /* ⚠️ AISLAMIENTO DEL TEMA: Estas variables solo se definirán dentro del contenedor .ah-theme */
 .ah-theme.light-mode {
   --ah-bg: var(--ah-bg-light);
   --ah-text: var(--ah-text-light);
+  --ah-input-bg: var(--ah-input-bg-light);
+  --ah-border: var(--ah-border-light);
 }
 
 .ah-theme.dark-mode {
   --ah-bg: var(--ah-bg-dark);
   --ah-text: var(--ah-text-dark);
+  --ah-input-bg: var(--ah-input-bg-dark);
+  --ah-border: var(--ah-border-dark);
 }
 
 /* 🔳 Fondo del modal */
@@ -52,7 +62,7 @@
 /* ✨ Botones Dorados */
 .detalle-modal .boton-dorado {
   background-color: var(--color-dorado);
-  color: white; 
+  color: var(--ah-text-light); /* Aseguramos que el texto del botón sea oscuro */
   font-weight: 700;
   border: none;
   border-radius: 0.75rem;
@@ -69,24 +79,54 @@
   transform: scale(0.97);
 }
 
-/* 📝 Inputs, Selects y Textareas */
-.detalle-modal input,
-.detalle-modal select,
-.detalle-modal textarea {
-  background: transparent; 
-  border: 1px solid var(--ah-text); /* Borde adaptativo */
+/* 📝 Inputs, Selects y Textareas - ESTILOS ADAPTATIVOS POR CLASE */
+/* Se redefinen para usar las clases añadidas en el JS */
+.input-ah-theme,
+.select-ah-theme,
+.input-ah-theme[type="date"],
+textarea {
+  /* Propiedades de color y fondo adaptativas */
+  background-color: var(--ah-input-bg) !important; 
+  color: var(--ah-text) !important;
+  border: 1px solid var(--ah-border); 
+
+  /* Propiedades de layout base (tomadas de tus estilos anteriores) */
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  color: var(--ah-text); /* Texto de entrada adaptativo */
+  transition: all 0.3s ease;
+  width: 100%; /* Asegura que la clase se aplique bien al 100% de ancho */
 }
 
-.detalle-modal input:focus,
-.detalle-modal select:focus,
-.detalle-modal textarea:focus {
+/* Estilo de enfoque (Focus) */
+.input-ah-theme:focus,
+.select-ah-theme:focus,
+textarea:focus {
   border-color: var(--color-dorado);
   outline: none;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
 }
+
+/* Estilos específicos para SELECT (para flecha) */
+.select-ah-theme {
+  appearance: none; /* Quita el estilo nativo de la flecha */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem; /* Espacio para la flecha */
+}
+
+/* Flecha para Selects en Modo Claro (Gris oscuro) */
+.light-mode .select-ah-theme {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%231e293b"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
+}
+
+/* Flecha para Selects en Modo Oscuro (Blanco cremoso) */
+.dark-mode .select-ah-theme {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%23f5f5dc"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>');
+}
+
 
 /* Estilos para el input de cantidad con manejo de error */
 .input-error {

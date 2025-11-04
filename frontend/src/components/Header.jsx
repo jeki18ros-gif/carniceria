@@ -65,14 +65,25 @@ export default function Header() {
     >
       <div className="mx-auto w-full max-w-7xl px-3 sm:px-6 lg:px-8 relative">
         <div className={floatingContainerClasses}>
-          <nav className="relative flex items-center justify-between min-h-[4rem] sm:h-20 px-3 sm:px-6">
-            
-            {/* --- LOGO --- */}
-            <div className="flex items-center overflow-hidden">
-              <div className="h-14 w-14 sm:h-20 sm:w-20 overflow-hidden rounded-full ring-2 ring-gray-900/90 shadow-lg dark:ring-[var(--color-accent-dark)]/60 hover:scale-105 transition-transform">
-                <img src={logo} alt="Benito Logo" className="h-full w-full object-cover" loading="lazy" />
-              </div>
-            </div>
+          <nav className="relative flex items-center justify-between h-20 sm:h-24 px-3 sm:px-6 items-center">
+          {/* --- LOGO --- */}
+{/* --- LOGO --- */}
+<div className="flex items-center justify-start">
+  <div
+    className="h-[3.8rem] w-[3.8rem] sm:h-18 sm:w-18 
+               rounded-[1.6rem] sm:rounded-[1.8rem]
+               overflow-hidden ring-2 ring-white/70 dark:ring-gray-700 
+               shadow-md hover:scale-105 transition-transform 
+               flex items-center justify-center bg-black/80"
+  >
+    <img
+      src={logo}
+      alt="Benito Logo"
+      className="h-full w-full object-cover scale-[1.5]" // ⬅️ Zoom interno
+      loading="lazy"
+    />
+  </div>
+</div>
 
             {/* --- LINKS GRANDES --- */}
             <ul className="hidden sm:flex justify-center gap-8 text-base text-white dark:text-white flex-wrap">

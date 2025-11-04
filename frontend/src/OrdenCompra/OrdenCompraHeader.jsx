@@ -1,81 +1,143 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import logo from "../assets/Logo-BENITO.jpg";
 import clsx from "clsx";
 import { useTheme } from "../Theme/ThemeContext";
+import "../styles/OrdenCompraHeader.css";
 
 export function OrdenCompraHeader() {
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  const [showFontOptions, setShowFontOptions] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
+  // 🔍 Detecta scroll + tamaño de pantalla
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
-    onScroll();
+    const onResize = () => setIsMobile(window.innerWidth <= 640);
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  const scrolledHeaderClass = scrolled
-    ? "relative bg-white/60 dark:bg-gray-900/50 backdrop-blur-xl border border-white/20 dark:border-gray-700/40 shadow-lg"
-    : "relative bg-gradient-to-b from-black/20 to-black/0 dark:from-gray-800/30 dark:to-gray-900/10 backdrop-blur-xl border border-white/10 dark:border-gray-700/20";
-  const titleTextColor = scrolled ? "text-gray-900 dark:text-gray-100" : "text-white";
 
-  return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={clsx("mt-3 mb-2 rounded-2xl overflow-hidden transition-all duration-300", scrolledHeaderClass)}>
-          <nav className="relative grid grid-cols-3 items-center h-16 sm:h-20 px-4 sm:px-6">
-            <div className="flex items-center">
-              <img src={logo} alt="Benito Logo" className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover ring-2 ring-white/80 dark:ring-yellow-500/60 shadow-md hover:scale-105 transition-transform" />
-            </div>
-
-            <h1 className={`text-center text-xl sm:text-2xl font-extrabold ${titleTextColor}`}>ORDEN DE COMPRA</h1>
-
-            <div className="flex items-center justify-end gap-3">
-              <div className="hidden md:flex items-center gap-2 border-l border-white/30 dark:border-white/20 pl-4">
-                <DarkModeToggle theme={theme} toggleTheme={toggleTheme} scrolled={scrolled} />
-                <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} scrolled={scrolled} />
-              </div>
-
-              <button onClick={() => window.history.back()} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-yellow-500 hover:bg-yellow-600 text-gray-900 shadow-md">
-                <ArrowLeftIcon className="w-5 h-5" />
-                <span className="hidden sm:inline">Volver</span>
-              </button>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </header>
+  const scrolledHeaderClass = clsx(
+    "transition-all duration-500 rounded-3xl shadow-lg",
+    scrolled
+      ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border border-gray-300/20 dark:border-gray-800/20"
+      : "bg-white/50 dark:bg-gray-800/60 backdrop-blur-2xl border border-gray-200/10 dark:border-gray-700/20"
   );
-}
 
-function DarkModeToggle({ theme, toggleTheme, scrolled }) {
-  const Icon = theme === "dark" ? SunIcon : MoonIcon;
-  const iconColor = scrolled ? "text-gray-900 dark:text-gray-100" : "text-white";
+  const titleTextColor = scrolled
+    ? "text-gray-900 dark:text-gray-100"
+    : "text-white dark:text-gray-100";
+
   return (
-    <button onClick={toggleTheme} className={clsx("p-2.5 hover:scale-110 transition", iconColor)}>
-      <Icon className="h-6 w-6" />
+    <>
+      {/* 🌟 HEADER PRINCIPAL */}
+      <header className="fixed inset-x-0 top-2 z-50 flex justify-center">
+        <div className="max-w-6xl w-[92%] sm:w-[90%] md:w-[80%]">
+          <div className={clsx("overflow-hidden", scrolledHeaderClass)}>
+            <nav className="orden-nav">
+  {/* (1) LOGO */}
+  <div className="header-logo flex items-center justify-start">
+    <img
+      src={logo}
+      alt="Benito Logo"
+      className="h-14 w-14 sm:h-16 sm:w-16 rounded-full object-cover ring-2 ring-white/70 dark:ring-gray-700 shadow-md hover:scale-105 transition-transform"
+    />
+  </div>
+
+  {/* (2) TÍTULO */}
+  <h1
+    className={`header-title text-center font-extrabold ${titleTextColor} 
+      text-lg sm:text-2xl break-words leading-tight`}
+  >
+    ORDEN DE COMPRA
+  </h1>
+
+  {/* (3) BOTONES AGRUPADOS */}
+  <div className="header-actions">
+    {/* Tema */}
+    <button
+      onClick={toggleTheme}
+      className="header-button"
+      aria-label="Cambiar tema"
+    >
+      {theme === "dark" ? (
+        <SunIcon className="h-5 w-5" />
+      ) : (
+        <MoonIcon className="h-5 w-5" />
+      )}
     </button>
+
+    {/* Fuente o lupa */}
+    {!isMobile && (
+      <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} />
+    )}
+    {isMobile && (
+      <button
+        onClick={() => setShowFontOptions(!showFontOptions)}
+        className="header-button search-btn"
+        aria-label="Opciones de fuente"
+      >
+        <MagnifyingGlassIcon className="h-5 w-5" />
+      </button>
+    )}
+
+    {/* Volver */}
+    <button
+      onClick={() => window.history.back()}
+      className="header-button back-btn flex items-center gap-2"
+    >
+      <ArrowLeftIcon className="h-5 w-5" />
+      <span className="hidden sm:inline">Volver</span>
+    </button>
+  </div>
+</nav>
+          </div>
+        </div>
+      </header>
+
+      {/*Menú de fuentes flotante fuera del header */}
+      {showFontOptions && isMobile && (
+        <div
+          className="fixed top-[5.5rem] right-4 bg-white/95 dark:bg-gray-900/95 p-4 rounded-2xl 
+                     border border-gray-300/30 dark:border-gray-700/40 shadow-xl z-[60]"
+        >
+          <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} />
+        </div>
+      )}
+    </>
   );
 }
 
-function FontSizeSelector({ fontSize, setFontSize, scrolled }) {
-  const base = scrolled ? "text-gray-600 dark:text-gray-300" : "text-white/90";
-  const active = "text-yellow-500";
+// 🔠 Selector de tamaño de fuente
+function FontSizeSelector({ fontSize, setFontSize }) {
   const sizes = [
     { label: "A-", value: "small" },
     { label: "A", value: "normal" },
     { label: "A+", value: "large" },
   ];
+
   return (
-    <div className="flex rounded-xl p-1.5">
+    <div className="flex gap-1">
       {sizes.map(({ label, value }) => (
         <button
           key={value}
           onClick={() => setFontSize(value)}
-          className={`px-2 py-1 text-base font-bold uppercase ${fontSize === value ? active : base}`}
+          className="header-button text-xs px-2 py-1"
+          style={{
+            background: fontSize === value ? "var(--gold-color)" : "transparent",
+            color: fontSize === value ? "var(--dark-bg)" : "var(--gold-color)",
+          }}
         >
           {label}
         </button>
