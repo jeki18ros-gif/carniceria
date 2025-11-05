@@ -68,15 +68,13 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
 
 // --------------------------------------------------------------------------
 // COMPONENTE: LISTA DE PRODUCTOS
-export function ListaProductos({ onSelectProduct, selectedProducts = [] }) {
+export function ListaProductos({ onSelectProduct, selectedProducts = [], searchTerm = '' }) {
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
     const [hoveredProduct, setHoveredProduct] = useState(null);
 
-    const productosFiltrados = productos.filter(producto => 
-        categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada
-    );
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
 
-    const getDisplayCategory = (categoria) => {
+const getDisplayCategory = (categoria) => {
         switch (categoria) {
             case 'Res': return 'CARNE DE RES';
             case 'Cerdo': return 'CARNE DE CERDO';
@@ -88,25 +86,44 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [] }) {
         }
     };
 
+
+    const productosFiltrados = productos.filter(producto => {
+        // 1. Filtrar por categoría
+        const categoriaMatch = categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada;
+        
+        // 2. Filtrar por término de búsqueda (si existe)
+        const searchMatch = normalizedSearchTerm === '' || 
+                    producto.nombre.toLowerCase().includes(normalizedSearchTerm) ||
+                    producto.descripcion.toLowerCase().includes(normalizedSearchTerm) ||
+                    // APLICAR CAMBIO AQUÍ: Usar operador OR (||) para un fallback a cadena vacía
+                    (producto.tipoCorte || '').toLowerCase().includes(normalizedSearchTerm) || 
+                    getDisplayCategory(producto.categoria).toLowerCase().includes(normalizedSearchTerm);
+
+        return categoriaMatch && searchMatch;
+    });
+
     const isProductSelected = (producto) => 
         selectedProducts.some(p => p.id === producto.id);
-
+    const showCategories = normalizedSearchTerm === '';
     return (
         <div>
-            <CategoriasPrincipales 
-                onSelectCategory={setCategoriaSeleccionada}
-                activeCategory={categoriaSeleccionada}
-            />
-
-            <h2 className="text-2xl font-bold text-center mb-6">
-                {categoriaSeleccionada === 'Todos' 
-                    ? 'Todos los Productos' 
-                    : getDisplayCategory(categoriaSeleccionada)}
+            {showCategories && (
+                <CategoriasPrincipales 
+                    onSelectCategory={setCategoriaSeleccionada}
+                    activeCategory={categoriaSeleccionada}
+                />
+            )}
+<h2 className="text-2xl font-bold text-center mb-6">
+                {normalizedSearchTerm !== '' 
+                    ? `Resultados para "${searchTerm}"` 
+                    : categoriaSeleccionada === 'Todos' 
+                        ? 'Todos los Productos' 
+                        : getDisplayCategory(categoriaSeleccionada)}
             </h2>
 
             {productosFiltrados.length === 0 ? (
                 <p className="text-center text-gray-500">
-                    No se encontraron productos en esta categoría.
+                    No se encontraron productos que coincidan con los criterios.
                 </p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-10">

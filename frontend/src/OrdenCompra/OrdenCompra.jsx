@@ -14,6 +14,7 @@ export default function OrdenDeCompra() {
     const [mostrarCarrito, setMostrarCarrito] = useState(false);
     const [view, setView] = useState('productos');
     const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const root = document.documentElement;
@@ -88,7 +89,36 @@ export default function OrdenDeCompra() {
                     {view === 'productos' && (
                         <>
                             <h2 className="text-3xl font-extrabold mb-8">Elige tus Cortes</h2>
-                            <ListaProductos onSelectProduct={handleSelectProduct} />
+                            {/* Componente de Búsqueda (Input) */}
+                            <div className="mb-8 relative medium-block rounded-xl shadow-inner p-3">
+    <input
+        type="text"
+        placeholder="Buscar productos por nombre..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[var(--color-dorado)] focus:outline-none py-2 px-1 text-lg transition-colors pr-10" // Añadir pr-10 para dejar espacio al icono
+    />
+    
+    {searchTerm ? (
+        // Botón/Icono para limpiar
+        <button
+            onClick={() => setSearchTerm('')}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors"
+            aria-label="Limpiar búsqueda"
+        >
+            {/* Icono de cerrar (X) de Heroicons */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    ) : (
+        // Icono de Lupa (solo visible si no hay texto)
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+    )}
+</div>
+                            <ListaProductos onSelectProduct={handleSelectProduct} searchTerm={searchTerm} />
                         </>
                     )}
                     {view === 'formulario' && (
