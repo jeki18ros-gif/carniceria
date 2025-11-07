@@ -1,11 +1,13 @@
 // src/components/DetalleProductoModal.jsx
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from "../Theme/ThemeContext";
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import '../styles/DetalleProductoModal.css';
 
 export function DetalleProductoModal({ producto, productoEditar, onClose, onAddToCart }) {
+  const { t } = useTranslation();
   const [cantidadValor, setCantidadValor] = useState('');
   const [cantidadUnidad, setCantidadUnidad] = useState('kg');
   const [tipoCorte, setTipoCorte] = useState('');
@@ -103,19 +105,19 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
             <div>
               <h2 className="text-3xl font-bold text-dorado tracking-wide mb-2">{producto.nombre}</h2>
               <p className="text-base leading-relaxed">{producto.descripcion}</p>
-              <p className="text-xs mt-3 italic">La imagen es referencial.</p>
+              <p className="text-xs mt-3 italic">{t('detalleProductoModal.image_note')}</p>
             </div>
           </div>
 
           <div className="flex flex-col space-y-5">
             <div className="flex-grow max-h-[80vh] md:max-h-[60vh] overflow-y-auto pr-2"> 
               {/* 🔢 Cantidad */}
-              <label className="block text-sm font-medium mb-1">Cantidad requerida</label>
+              <label className="block text-sm font-medium mb-1">{t('detalleProductoModal.quantity.label')}</label>
               <div className="flex space-x-3 mb-4">
                 <input
                   ref={inputRef}
                   type="number"
-                  placeholder="Ej: 2 o 0.5"
+                  placeholder={t('detalleProductoModal.quantity.placeholder')}
                   value={cantidadValor}
                   onChange={(e) => { setCantidadValor(e.target.value); if (e.target.value.trim()) setError(false); }}
                   min="0.1"
@@ -123,129 +125,128 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
                   className={`flex-grow transition-all input-ah-theme ${error ? 'input-error' : 'input-normal'}`}
                 />
                 <select value={cantidadUnidad} onChange={(e) => setCantidadUnidad(e.target.value)} className="w-32 select-ah-theme">
-                  <option value="kg">Kilos (kg)</option>
-                  <option value="lb">Libras (lb)</option>
-                  <option value="unidad">Unidades</option>
-                  <option value="caja">Cajas</option>
+                  <option value="kg">{t('detalleProductoModal.quantity.units.kg')}</option>
+                  <option value="lb">{t('detalleProductoModal.quantity.units.lb')}</option>
+                  <option value="unidad">{t('detalleProductoModal.quantity.units.units')}</option>
+                  <option value="caja">{t('detalleProductoModal.quantity.units.boxes')}</option>
                 </select>
               </div>
-              {error && <p className="text-sm text-red-500 mt-1 mb-4">⚠️ Por favor, indica una cantidad válida.</p>}
+              {error && <p className="text-sm text-red-500 mt-1 mb-4">{t('detalleProductoModal.quantity.invalid')}</p>}
 
               {/* 🍖 Presentación */}
-              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">Presentación</h4>
+              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('detalleProductoModal.sections.presentacion.title')}</h4>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="block text-sm mb-1">Tipo de corte</label>
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.presentacion.tipo_corte.label')}</label>
                   <select
                     value={tipoCorte}
                     onChange={(e) => setTipoCorte(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="fileteado">Fileteado</option>
-                    <option value="en trozos">En trozos</option>
-                    <option value="molido">Molido</option>
-                    <option value="en tiras">En tiras</option>
-                    <option value="entero">Entero</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="fileteado">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.fileteado')}</option>
+                    <option value="en trozos">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.trozos')}</option>
+                    <option value="molido">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.molido')}</option>
+                    <option value="en tiras">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.tiras')}</option>
+                    <option value="entero">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.entero')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Parte específica</label>
+                  <label className="block text.sm mb-1">{t('detalleProductoModal.sections.presentacion.parte_especifica.label')}</label>
                   <select
                     value={parte}
                     onChange={(e) => setParte(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="lomo fino">Lomo fino</option>
-                    <option value="costilla">Costilla</option>
-                    <option value="pierna">Pierna</option>
-                    <option value="entero">Entero</option>
-                    <option value="pecho">Pecho</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="lomo fino">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.lomo_fino')}</option>
+                    <option value="costilla">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.costilla')}</option>
+                    <option value="pierna">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.pierna')}</option>
+                    <option value="pecho">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.pecho')}</option>
                   </select>
                 </div>
               </div>
 
               {/* ❄️ Estado del producto */}
-              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">Estado del producto</h4>
+              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('detalleProductoModal.sections.estado_producto.title')}</h4>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="block text-sm mb-1">Estado</label>
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.estado_producto.estado.label')}</label>
                   <select
                     value={estado}
                     onChange={(e) => setEstado(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="fresca">Fresca</option>
-                    <option value="congelada">Congelada</option>
-                    <option value="curada">Curada</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="fresca">{t('detalleProductoModal.sections.estado_producto.estado.options.fresca')}</option>
+                    <option value="congelada">{t('detalleProductoModal.sections.estado_producto.estado.options.congelada')}</option>
+                    <option value="curada">{t('detalleProductoModal.sections.estado_producto.estado.options.curada')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Con hueso o sin hueso</label>
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.estado_producto.hueso.label')}</label>
                   <select
                     value={hueso}
                     onChange={(e) => setHueso(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="con hueso">Con hueso</option>
-                    <option value="sin hueso">Sin hueso</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="con hueso">{t('detalleProductoModal.sections.estado_producto.hueso.options.con_hueso')}</option>
+                    <option value="sin hueso">{t('detalleProductoModal.sections.estado_producto.hueso.options.sin_hueso')}</option>
                   </select>
                 </div>
               </div>
 
               {/* 📦 Empaque y grasa */}
-              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">Empaque y grasa</h4>
+              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('detalleProductoModal.sections.empaque_grasa.title')}</h4>
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="block text-sm mb-1">Empaque</label>
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.empaque_grasa.empaque.label')}</label>
                   <select
                     value={empaque}
                     onChange={(e) => setEmpaque(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="al vacio">Al vacío</option>
-                    <option value="bandeja">Bandeja</option>
-                    <option value="bolsa">Bolsa</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="al vacio">{t('detalleProductoModal.sections.empaque_grasa.empaque.options.vacuum')}</option>
+                    <option value="bandeja">{t('detalleProductoModal.sections.empaque_grasa.empaque.options.tray')}</option>
+                    <option value="bolsa">{t('detalleProductoModal.sections.empaque_grasa.empaque.options.bag')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Grasa</label>
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.empaque_grasa.grasa.label')}</label>
                   <select
                     value={grasa}
                     onChange={(e) => setGrasa(e.target.value)}
                     // ✨ Clase para adaptar el select al tema
                     className="w-full select-ah-theme"
                   >
-                    <option value="">Seleccionar...</option>
-                    <option value="con grasa">Con grasa</option>
-                    <option value="sin grasa">Sin grasa</option>
+                    <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                    <option value="con grasa">{t('detalleProductoModal.sections.empaque_grasa.grasa.options.con_grasa')}</option>
+                    <option value="sin grasa">{t('detalleProductoModal.sections.empaque_grasa.grasa.options.sin_grasa')}</option>
                   </select>
                 </div>
               </div>
 
               {/* 🔥 Tipo de cocción */}
-              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">Tipo de cocción</h4>
+              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('detalleProductoModal.sections.tipo_coccion.title')}</h4>
               <select
                 value={coccion}
                 onChange={(e) => setCoccion(e.target.value)}
                 // ✨ Clase para adaptar el select al tema
                 className="w-full select-ah-theme mb-4"
               >
-                <option value="">Seleccionar...</option>
-                <option value="a la parrilla">A la parrilla</option>
-                <option value="al horno">Al horno</option>
-                <option value="guisado">Guisado</option>
-                <option value="frito">Frito</option>
-                <option value="otros">Otros</option>
+                <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
+                <option value="a la parrilla">{t('detalleProductoModal.sections.tipo_coccion.options.parrilla')}</option>
+                <option value="al horno">{t('detalleProductoModal.sections.tipo_coccion.options.horno')}</option>
+                <option value="guisado">{t('detalleProductoModal.sections.tipo_coccion.options.guisado')}</option>
+                <option value="frito">{t('detalleProductoModal.sections.tipo_coccion.options.frito')}</option>
+                <option value="otros">{t('detalleProductoModal.sections.tipo_coccion.options.otros')}</option>
               </select>
 
               {/* 📅 Entrega */}
@@ -261,7 +262,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
 
               <label className="block text-sm mt-4 mb-1">Comentarios adicionales</label>
               <textarea
-                placeholder="Ej: filetes de 2 cm, empaquetado doble, recojo en tienda sábado 4 p.m."
+                placeholder={t('formularioCliente.fields.comments.placeholder')}
                 value={observacion}
                 onChange={(e) => setObservacion(e.target.value)}
                 // ✨ Clase para adaptar el textarea al tema

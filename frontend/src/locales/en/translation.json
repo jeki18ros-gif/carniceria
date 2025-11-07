@@ -1,0 +1,461 @@
+{
+  "header": {
+    "logo_alt": "Benito Logo",
+    "nav": {
+      "productos": "PRODUCTS",
+      "nosotros": "ABOUT US",
+      "resenas": "REVIEWS",
+      "contacto": "CONTACT"
+    },
+    "aria": {
+      "font_size": "Font size",
+      "open_menu": "Open menu",
+      "theme_toggle": "Toggle theme"
+    },
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "hero": {
+    "image_alt": "High-quality meat served in a gourmet dinner setting",
+    "title": "PREMIUM QUALITY MEAT",
+    "description": "We select only the finest cuts for a unique culinary experience.",
+    "cta_order": "Place Order"
+  },
+  "afterHero": {
+    "image_left_alt": "Satisfied customer enjoying a meal",
+    "image_right_alt": "Happy person in a pleasant setting",
+    "title": "WE OFFER QUALITY PRODUCTS AT BENITO, YOU’LL DISCOVER THE TRUE FLAVOR OF OUR MEAT.",
+    "banner_delivery": "★ HOME DELIVERY AVAILABLE ★"
+  },
+  "featuresGrid": {
+    "title": "Our Values",
+    "features": {
+      "calidad": {
+        "title": "GUARANTEED QUALITY",
+        "description": "We carefully select and inspect every batch to ensure freshness and traceability from origin."
+      },
+      "procesos": {
+        "title": "CLEAN PROCESSES",
+        "description": "We comply with strict sanitary and food safety protocols at every stage of production."
+      },
+      "logistica": {
+        "title": "EFFICIENT LOGISTICS",
+        "description": "On-time, flexible deliveries with a controlled cold chain to preserve flavor."
+      }
+    },
+    "banner_delivery": "★ HOME DELIVERY AVAILABLE ★"
+  },
+  "menu": {
+    "title": "Our Featured Selection",
+    "categories": {
+      "todos": "ALL",
+      "res": "BEEF",
+      "cerdo": "PORK",
+      "pollo": "CHICKEN",
+      "cordero": "LAMB",
+      "otros": "OTHERS"
+    },
+    "items": {
+      "res": {
+        "title": "Beef",
+        "description": "Selected cuts, ready for grill or barbecue.",
+        "chips": ["Fresh", "Premium Cut"]
+      },
+      "cerdo": {
+        "title": "Pork",
+        "description": "Juicy and tender, perfect for barbecue.",
+        "chips": ["Juicy", "BBQ"]
+      },
+      "pollo": {
+        "title": "Fresh Chicken",
+        "description": "Lean and versatile, ideal for light recipes.",
+        "chips": ["High Protein", "Lean"]
+      },
+      "cordero": {
+        "title": "Lamb",
+        "description": "Rich flavor and tender texture.",
+        "chips": ["Slow Roast"]
+      },
+      "otros": {
+        "title": "Artisanal Sausages",
+        "description": "A curated selection of cured and smoked products.",
+        "chips": ["Handcrafted", "Smoked"]
+      }
+    }
+  },
+  "promoHero": {
+    "image_alt": "Professional food presentation with focus on the center",
+    "title": "PERFECT FOOD, PROFESSIONAL SERVICE",
+    "description": "We are specialized suppliers dedicated to distributing high-quality meats in bulk. Our mission is to ensure freshness, reliability, and consistent supply for restaurants, hotels, and businesses across the country.",
+    "cta_contact": "Contact Us"
+  },
+  "exploreMore": {
+    "cta": "Explore More"
+  },
+  "contactSection": {
+    "title": "Contact Us",
+    "description": "If you have questions, comments, or need assistance, send us a message. Our team will be happy to help.",
+    "form": {
+      "labels": {
+        "name": "Your Name",
+        "email": "Your Email",
+        "message": "Your Message"
+      },
+      "placeholders": {
+        "name": "John Doe",
+        "email": "email@example.com",
+        "message": "Write your inquiry..."
+      },
+      "buttons": {
+        "sending": "Sending...",
+        "submit": "Send Message"
+      },
+      "success": "Message sent successfully. Thank you for contacting us!"
+    }
+  },
+  "footer": {
+    "brand": "LES ALIMENTS BENITO",
+    "blurb": "We offer fresh and frozen products of the highest quality with personalized service.",
+    "schedule": {
+      "title": "Business Hours",
+      "week": "Monday to Friday: 8:00 AM - 8:00 PM",
+      "saturday": "Saturday: 8:00 AM - 6:00 PM",
+      "sunday": "Sunday: Closed"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "copyright": "© {{year}} LES ALIMENTS BENITO"
+  },
+  "testimonials": {
+    "title_small": "Clients who already trust",
+    "title_big": "OUR SERVICE",
+    "button_leave_review": "Leave a Review",
+    "initial_reviews": {
+      "r1": {
+        "title": "ABSOLUTELY DELIGHTED!",
+        "body": "The quality and flavor are consistent with every delivery. Perfect for my restaurant.",
+        "name": "— Andrea L."
+      },
+      "r2": {
+        "title": "IMPECCABLE SERVICE",
+        "body": "Impeccable attention and precise cuts. You can tell they care about every step.",
+        "name": "— Carlos M."
+      },
+      "r3": {
+        "title": "ALWAYS FRESH",
+        "body": "Always fresh, well-packed, and delivered at the right temperature.",
+        "name": "— Fernanda R."
+      },
+      "r4": {
+        "title": "INTENSE FLAVORS",
+        "body": "Bold flavors and perfectly prepared cuts. My customers love it.",
+        "name": "— Jorge R."
+      }
+    }
+  },
+  "formComent": {
+    "login": {
+      "title": "Log In to Comment",
+      "simulation": "Simulation:",
+      "intro": "Enter your real name to display it as the review author.",
+      "labels": {
+        "email": "Email (simulated)",
+        "password": "Password (min. 6 characters)",
+        "displayName": "Your Name (e.g., John Smith)"
+      },
+      "errors": {
+        "fill_all": "Please fill out all fields correctly."
+      },
+      "actions": {
+        "simulate_login": "Simulate Login"
+      }
+    },
+    "rating": {
+      "labels": {
+        "very_bad": "Bad experience",
+        "bad": "Fair",
+        "ok": "Acceptable",
+        "good": "Good experience",
+        "excellent": "Excellent",
+        "none": "No rating"
+      }
+    },
+    "form": {
+      "title": "New Review",
+      "session_as": "Logged in as",
+      "fields": {
+        "title": {
+          "label": "Title * (Max. 40 characters)",
+          "placeholder": "e.g., Excellent service"
+        },
+        "body": {
+          "label": "Review * (Max. 100 words)",
+          "placeholder": "Describe your experience...",
+          "counter_suffix": "words (Minimum 5 required)"
+        },
+        "rating": {
+          "label": "How would you rate it?"
+        }
+      },
+      "actions": {
+        "submit": "Submit Review"
+      },
+      "helper": {
+        "note": "Your feedback helps other users."
+      },
+      "messages": {
+        "invalid_form": "Please make sure you’re logged in, entered a title, and wrote at least 5 words.",
+        "success": "Thank you for your review, {{userName}}! It will be submitted shortly."
+      }
+    }
+  },
+  "miniCarritoModal": {
+    "floating_button": "Your Order",
+    "title": "Your Order",
+    "close_title": "Close Cart",
+    "labels": {
+      "cantidad": "Quantity:",
+      "obs_prefix": "Note:"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete_title": "Remove Product",
+      "continue": "Proceed to Order"
+    },
+    "unknown_product": "Unknown Product"
+  },
+  "formularioCliente": {
+    "title": "Customer Information",
+    "fields": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Full Name"
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "Phone Number"
+      },
+      "email": {
+        "label": "Email Address",
+        "placeholder": "Email Address"
+      },
+      "address": {
+        "label": "Address",
+        "placeholder": "Address"
+      },
+      "delivery_method": {
+        "label": "Delivery Method",
+        "options": {
+          "pickup": "In-store Pickup",
+          "delivery": "Home Delivery"
+        }
+      },
+      "preferred_time": {
+        "label": "Preferred Delivery Time"
+      },
+      "comments": {
+        "placeholder": "Additional comments (optional)"
+      }
+    },
+    "warnings": {
+      "pricing": "Product prices are not listed. Once your order is submitted, our team will contact you with a personalized quote based on your selections and quantities."
+    },
+    "summary_title": "Your Order Summary:",
+    "actions": {
+      "submit": "Submit Order and Await Quote",
+      "delete_item": "Remove Product"
+    },
+    "unknown_product": "Unknown Product"
+  },
+  "detalleProductoModal": {
+    "image_note": "Image for reference only.",
+    "quantity": {
+      "label": "Required Quantity",
+      "placeholder": "e.g., 2 or 0.5",
+      "units": {
+        "kg": "Kilograms (kg)",
+        "lb": "Pounds (lb)",
+        "units": "Units",
+        "boxes": "Boxes"
+      },
+      "invalid": "⚠️ Please enter a valid quantity."
+    },
+    "sections": {
+      "presentacion": {
+        "title": "Presentation",
+        "tipo_corte": {
+          "label": "Cut Type",
+          "options": {
+            "select": "Select...",
+            "fileteado": "Filleted",
+            "trozos": "Chopped",
+            "molido": "Ground",
+            "tiras": "Strips",
+            "entero": "Whole"
+          }
+        },
+        "parte_especifica": {
+          "label": "Specific Part",
+          "options": {
+            "lomo_fino": "Tenderloin",
+            "costilla": "Rib",
+            "pierna": "Leg",
+            "pecho": "Brisket"
+          }
+        }
+      },
+      "estado_producto": {
+        "title": "Product Condition",
+        "estado": {
+          "label": "Condition",
+          "options": {
+            "fresca": "Fresh",
+            "congelada": "Frozen",
+            "curada": "Cured"
+          }
+        },
+        "hueso": {
+          "label": "With or Without Bone",
+          "options": {
+            "con_hueso": "With Bone",
+            "sin_hueso": "Boneless"
+          }
+        }
+      },
+      "empaque_grasa": {
+        "title": "Packaging and Fat",
+        "empaque": {
+          "label": "Packaging",
+          "options": {
+            "vacuum": "Vacuum Sealed",
+            "tray": "Tray",
+            "bag": "Bag"
+          }
+        },
+        "grasa": {
+          "label": "Fat",
+          "options": {
+            "con_grasa": "With Fat",
+            "sin_grasa": "Lean"
+          }
+        }
+      },
+      "tipo_coccion": {
+        "title": "Cooking Type",
+        "options": {
+          "parrilla": "Grilled",
+          "horno": "Oven-Baked",
+          "guisado": "Stewed",
+          "frito": "Fried",
+          "otros": "Others"
+        }
+      }
+    }
+  },
+  "ordenCompraHeader": {
+    "title": "PURCHASE ORDER",
+    "aria": {
+      "theme": "Toggle theme",
+      "font": "Font options"
+    },
+    "back": "Back",
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "ordenCompra": {
+    "products_title": "Choose Your Cuts",
+    "search": {
+      "placeholder": "Search products by name...",
+      "clear_label": "Clear Search"
+    },
+    "form_title": "Complete Your Order",
+    "confirmation": {
+      "title": "Order Sent!",
+      "message": "Your request has been successfully submitted. We’ll contact you soon to confirm your order.",
+      "close": "Close"
+    }
+  },
+  "listaProductos": {
+    "filters": {
+      "ver_todo": "View All"
+    },
+    "categories": {
+      "res": "BEEF",
+      "cerdo": "PORK",
+      "pollo": "CHICKEN",
+      "embutidos": "SAUSAGES",
+      "ahumados": "SMOKED",
+      "especiales": "SPECIAL CUTS"
+    },
+    "headers": {
+      "producto": "PRODUCT"
+    },
+    "results_for": "Results for \"{{term}}\"",
+    "all_products": "All Products",
+    "empty": "No products matched your search criteria.",
+    "badges": {
+      "fresco": "Fresh",
+      "con_hueso": "With Bone",
+      "sin_hueso": "Boneless"
+    },
+    "labels": {
+      "corte": "Cut:",
+      "empaque": "Packaging:",
+      "peso_aprox": "Approx. Weight:"
+    },
+    "na": "N/A"
+  },
+  "miniCart": {
+    "title": "Your Order",
+    "close": "Close Cart",
+    "unknown_product": "Unknown Product",
+    "quantity": "Quantity:",
+    "obs_prefix": "Note:",
+    "edit": "Edit",
+    "delete_title": "Remove Product",
+    "continue": "Proceed to Order"
+  },
+  "productosData": {
+    "categories": {
+      "res": "Beef",
+      "cerdo": "Pork",
+      "pollo": "Chicken",
+      "embutidos": "Sausages",
+      "ahumados": "Smoked",
+      "especiales": "Special Cuts"
+    },
+    "items": {
+      "lomo_fino": {
+        "name": "Tenderloin",
+        "description": "Lean and tender cut, perfect for grilling."
+      },
+      "costillar_res": {
+        "name": "Beef Ribs",
+        "description": "Bone-in cut, ideal for BBQ and slow cooking."
+      },
+      "pechuga_pollo": {
+        "name": "Chicken Breast",
+        "description": "Lean and versatile, great for light meals."
+      },
+      "chorizo_artesanal": {
+        "name": "Artisanal Chorizo",
+        "description": "Bold flavor, crafted with selected spices."
+      },
+      "jamon_cocido_artesanal": {
+        "name": "Artisanal Cooked Ham",
+        "description": "Cured and cooked with traditional techniques, soft and flavorful."
+      },
+      "pechuga_pavo_magra": {
+        "name": "Lean Turkey Breast",
+        "description": "High in protein and low in fat, ideal for healthy diets."
+      }
+    }
+  }
+}

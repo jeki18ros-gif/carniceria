@@ -6,9 +6,12 @@ import {
   MapPinIcon,
   PhoneIcon,
 } from "@heroicons/react/24/solid";
-import "../styles/ContactSection.css"; // asegúrate de importar tu CSS externo
+import { useTranslation } from "react-i18next";
+import "../styles/ContactSection.css";
 
 export default function ContactSection() {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -18,12 +21,19 @@ export default function ContactSection() {
     setLoading(true);
     setSuccess(false);
 
+    // Simulación de envío
     setTimeout(() => {
       setLoading(false);
       setSuccess(true);
       setForm({ name: "", email: "", message: "" });
     }, 1500);
   };
+
+  // 🎯 Datos desde i18n
+  const labels = t("contactSection.form.labels", { returnObjects: true });
+  const placeholders = t("contactSection.form.placeholders", { returnObjects: true });
+  const buttons = t("contactSection.form.buttons", { returnObjects: true });
+  const successMsg = t("contactSection.form.success");
 
   return (
     <motion.section
@@ -42,23 +52,21 @@ export default function ContactSection() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h3>Contáctanos</h3>
-          <p>
-            Si tienes dudas, comentarios o necesitas soporte, escríbenos. Nuestro equipo estará encantado de ayudarte.
-          </p>
+          <h3>{t("contactSection.title")}</h3>
+          <p>{t("contactSection.description")}</p>
 
           <div className="contact-info">
             <div>
               <EnvelopeIcon className="w-6 h-6" />
-              <span>info@tusitio.com</span>
+              <span>orders@alimentsbenito.com</span>
             </div>
             <div>
               <PhoneIcon className="w-6 h-6" />
-              <span>+51 999 999 999</span>
+              <span>+1 514-723-2378</span>
             </div>
             <div>
               <MapPinIcon className="w-6 h-6" />
-              <span>Lima, Perú</span>
+              <span>11515 4e Avenue, Montreal, QC, Canada</span>
             </div>
           </div>
         </motion.div>
@@ -72,44 +80,47 @@ export default function ContactSection() {
           viewport={{ once: true }}
           className="contact-form"
         >
-          {/* Campo Nombre */}
+          {/* Nombre */}
           <div>
-            <label htmlFor="name">Tu nombre</label>
+            <label htmlFor="name">{labels.name}</label>
             <input
               id="name"
               name="name"
               type="text"
+              className="w-full mb-5"
               autoComplete="name"
-              placeholder="Juan Pérez"
+              placeholder={placeholders.name}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
           </div>
 
-          {/* Campo Correo */}
+          {/* Correo */}
           <div>
-            <label htmlFor="email">Tu correo</label>
+            <label htmlFor="email">{labels.email}</label>
             <input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="correo@ejemplo.com"
+              className="w-full mb-5"
+              placeholder={placeholders.email}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
             />
           </div>
 
-          {/* Campo Mensaje */}
+          {/* Mensaje */}
           <div>
-            <label htmlFor="message">Tu mensaje</label>
+            <label htmlFor="message">{labels.message}</label>
             <textarea
               id="message"
               name="message"
               rows={5}
-              placeholder="Escribe tu consulta..."
+              className="w-full mb-5"
+              placeholder={placeholders.message}
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               required
@@ -117,13 +128,13 @@ export default function ContactSection() {
           </div>
 
           {/* Botón */}
-          <div style={{ textAlign: "center", paddingTop: "1rem" }}>
+          <div className="text-center pt-4">
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="submit"
               disabled={loading}
             >
-              {loading ? "Enviando..." : "Enviar mensaje"}
+              {loading ? buttons.sending : buttons.submit}
             </motion.button>
           </div>
 
@@ -135,7 +146,7 @@ export default function ContactSection() {
               className="success-message"
             >
               <CheckCircleIcon className="w-5 h-5" />
-              <span>Mensaje enviado correctamente. ¡Gracias por contactarnos!</span>
+              <span>{successMsg}</span>
             </motion.div>
           )}
         </motion.form>

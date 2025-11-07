@@ -1,5 +1,6 @@
 // src/components/ListaProductos.jsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'; 
 import clsx from 'clsx'; 
@@ -9,8 +10,18 @@ import "../styles/ListaProductos.css";
 // --------------------------------------------------------------------------
 // COMPONENTE: CATEGORÍAS PRINCIPALES
 const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
+    const { t } = useTranslation();
     const categoriaVerTodo = categoriasPrincipales.find(c => c.filtro === 'Todos');
     const categoriasVisibles = categoriasPrincipales.filter(c => c.filtro !== 'Todos');
+
+    const filtroToKey = {
+        Res: 'res',
+        Cerdo: 'cerdo',
+        Pollo: 'pollo',
+        Embutido: 'embutidos',
+        Ahumado: 'ahumados',
+        Especial: 'especiales',
+    };
 
     return (
         <div className="medium-block mb-10 p-4 rounded-xl shadow-inner">
@@ -34,7 +45,7 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
                                 className="w-full h-full object-cover" 
                             />
                         </div>
-                        <p className="mt-2 text-sm font-medium">Ver todo</p>
+                        <p className="mt-2 text-sm font-medium">{t('listaProductos.filters.ver_todo')}</p>
                     </motion.div>
                 )}
 
@@ -58,7 +69,7 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
                                 className="w-full h-full object-cover" 
                             />
                         </div>
-                        <p className="mt-2 text-sm font-medium">{categoria.nombre}</p>
+                        <p className="mt-2 text-sm font-medium">{t(`productosData.categories.${filtroToKey[categoria.filtro] || 'res'}`)}</p>
                     </motion.div>
                 ))}
             </div>
@@ -69,21 +80,24 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
 // --------------------------------------------------------------------------
 // COMPONENTE: LISTA DE PRODUCTOS
 export function ListaProductos({ onSelectProduct, selectedProducts = [], searchTerm = '' }) {
+    const { t } = useTranslation();
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
     const [hoveredProduct, setHoveredProduct] = useState(null);
 
     const normalizedSearchTerm = searchTerm.toLowerCase().trim();
 
-const getDisplayCategory = (categoria) => {
-        switch (categoria) {
-            case 'Res': return 'CARNE DE RES';
-            case 'Cerdo': return 'CARNE DE CERDO';
-            case 'Pollo': return 'CARNE DE POLLO';
-            case 'Embutido': return 'EMBUTIDOS';
-            case 'Ahumado': return 'AHUMADOS';
-            case 'Especial': return 'CARNES ESPECIALES';
-            default: return 'PRODUCTO';
-        }
+    const filtroToKey = {
+        Res: 'res',
+        Cerdo: 'cerdo',
+        Pollo: 'pollo',
+        Embutido: 'embutidos',
+        Ahumado: 'ahumados',
+        Especial: 'especiales',
+    };
+
+    const getDisplayCategory = (categoria) => {
+        const key = filtroToKey[categoria];
+        return key ? t(`listaProductos.categories.${key}`) : t('listaProductos.headers.producto');
     };
 
 
@@ -113,17 +127,17 @@ const getDisplayCategory = (categoria) => {
                     activeCategory={categoriaSeleccionada}
                 />
             )}
-<h2 className="text-2xl font-bold text-center mb-6">
+            <h2 className="text-2xl font-bold text-center mb-6">
                 {normalizedSearchTerm !== '' 
-                    ? `Resultados para "${searchTerm}"` 
+                    ? t('listaProductos.results_for', { term: searchTerm })
                     : categoriaSeleccionada === 'Todos' 
-                        ? 'Todos los Productos' 
+                        ? t('listaProductos.all_products')
                         : getDisplayCategory(categoriaSeleccionada)}
             </h2>
 
             {productosFiltrados.length === 0 ? (
                 <p className="text-center text-gray-500">
-                    No se encontraron productos que coincidan con los criterios.
+                    {t('listaProductos.empty')}
                 </p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-10">
@@ -160,9 +174,9 @@ const getDisplayCategory = (categoria) => {
                                     />
                                     {/* BADGES */}
                                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                                        {producto.fresco && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">Fresco</span>}
-                                        {producto.conHueso && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">Con Hueso</span>}
-                                        {producto.sinHueso && <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">Sin Hueso</span>}
+                                        {producto.fresco && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.fresco')}</span>}
+                                        {producto.conHueso && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.con_hueso')}</span>}
+                                        {producto.sinHueso && <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.sin_hueso')}</span>}
                                     </div>
                                 </div>
 
@@ -185,9 +199,9 @@ const getDisplayCategory = (categoria) => {
                                             exit={{ opacity: 0, y: 10 }}
                                             className="absolute inset-0 bg-black/70 text-white p-3 rounded-2xl flex flex-col justify-center items-start z-20"
                                         >
-                                            <p className="text-sm mb-1"><strong>Corte:</strong> {producto.tipoCorte || 'N/A'}</p>
-                                            <p className="text-sm mb-1"><strong>Empaque:</strong> {producto.empaque || 'N/A'}</p>
-                                            <p className="text-sm mb-1"><strong>Peso aprox:</strong> {producto.peso || 'N/A'}</p>
+                                            <p className="text-sm mb-1"><strong>{t('listaProductos.labels.corte')}</strong> {producto.tipoCorte || t('listaProductos.na')}</p>
+                                            <p className="text-sm mb-1"><strong>{t('listaProductos.labels.empaque')}</strong> {producto.empaque || t('listaProductos.na')}</p>
+                                            <p className="text-sm mb-1"><strong>{t('listaProductos.labels.peso_aprox')}</strong> {producto.peso || t('listaProductos.na')}</p>
                                             <p className="text-xs mt-2 italic">{producto.descripcion}</p>
                                         </motion.div>
                                     )}

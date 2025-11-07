@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { OrdenCompraHeader } from './OrdenCompraHeader';
 import { ListaProductos } from './ListaProductos';
@@ -7,6 +8,7 @@ import { MiniCarritoModal } from './MiniCarritoModal';
 import { FormularioCliente } from './FormularioCliente';
 
 export default function OrdenDeCompra() {
+    const { t } = useTranslation();
     const [theme, setTheme] = useState('light');
     const [seleccionados, setSeleccionados] = useState({});
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
@@ -88,12 +90,12 @@ export default function OrdenDeCompra() {
                 <div className="max-w-6xl mx-auto">
                     {view === 'productos' && (
                         <>
-                            <h2 className="text-3xl font-extrabold mb-8">Elige tus Cortes</h2>
+                            <h2 className="text-3xl font-extrabold mb-8">{t('ordenCompra.products_title')}</h2>
                             {/* Componente de Búsqueda (Input) */}
                             <div className="mb-8 relative medium-block rounded-xl shadow-inner p-3">
     <input
         type="text"
-        placeholder="Buscar productos por nombre..."
+        placeholder={t('ordenCompra.search.placeholder')}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:border-[var(--color-dorado)] focus:outline-none py-2 px-1 text-lg transition-colors pr-10" // Añadir pr-10 para dejar espacio al icono
@@ -104,7 +106,7 @@ export default function OrdenDeCompra() {
         <button
             onClick={() => setSearchTerm('')}
             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors"
-            aria-label="Limpiar búsqueda"
+            aria-label={t('ordenCompra.search.clear_label')}
         >
             {/* Icono de cerrar (X) de Heroicons */}
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +125,7 @@ export default function OrdenDeCompra() {
                     )}
                     {view === 'formulario' && (
   <>
-    <h2 className="text-3xl font-extrabold mb-8">Completa tu Orden</h2>
+    <h2 className="text-3xl font-extrabold mb-8">{t('ordenCompra.form_title')}</h2>
     <FormularioCliente
       onSubmit={handleSubmitOrder}
       seleccionados={seleccionados}
@@ -168,15 +170,15 @@ export default function OrdenDeCompra() {
                             exit={{ scale: 0.8, opacity: 0 }}
                             className="light-block rounded-2xl p-6 shadow-xl text-center max-w-sm mx-4"
                         >
-                            <h3 className="text-xl font-bold mb-2">¡Orden Enviada!</h3>
+                            <h3 className="text-xl font-bold mb-2">{t('ordenCompra.confirmation.title')}</h3>
                             <p className="text-gray-600 dark:text-gray-300 mb-4">
-                                Tu solicitud fue enviada con éxito. Nos pondremos en contacto pronto para confirmar tu pedido.
+                                {t('ordenCompra.confirmation.message')}
                             </p>
                             <button
                                 onClick={() => setMostrarConfirmacion(false)}
                                 className="px-4 py-2 rounded-lg font-medium transition-all btn"
                             >
-                                Cerrar
+                                {t('ordenCompra.confirmation.close')}
                             </button>
                         </motion.div>
                     </motion.div>

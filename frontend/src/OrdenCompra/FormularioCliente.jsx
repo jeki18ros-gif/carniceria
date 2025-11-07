@@ -1,5 +1,6 @@
 // src/components/FormularioCliente.jsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { productos } from './productosData';
 import { useTheme } from "../Theme/ThemeContext";
 
@@ -19,6 +20,7 @@ export function FormularioCliente({
 
   const { theme } = useTheme(); // Detecta modo actual: "light" o "dark"
   const isDark = theme === 'dark';
+  const { t } = useTranslation();
 
   return (
     <div
@@ -26,14 +28,14 @@ export function FormularioCliente({
         ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}
       `}
     >
-      <h2 className="text-2xl font-semibold mb-4">Datos del Cliente</h2>
+      <h2 className="text-2xl font-semibold mb-4">{t('formularioCliente.title')}</h2>
 
       <form onSubmit={onSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
         {/* Campos del cliente */}
         <input
           required
-          placeholder="Nombre y Apellido"
+          placeholder={t('formularioCliente.fields.name.placeholder')}
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           className={`border rounded-md px-3 py-2 transition-colors duration-300
@@ -44,7 +46,7 @@ export function FormularioCliente({
         <input
           required
           type="tel"
-          placeholder="Número de Teléfono"
+          placeholder={t('formularioCliente.fields.phone.placeholder')}
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
           className={`border rounded-md px-3 py-2 transition-colors duration-300
@@ -55,7 +57,7 @@ export function FormularioCliente({
         <input
           required
           type="email"
-          placeholder="Correo Electrónico"
+          placeholder={t('formularioCliente.fields.email.placeholder')}
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
           className={`border rounded-md px-3 py-2 transition-colors duration-300
@@ -65,7 +67,7 @@ export function FormularioCliente({
 
         <input
           required
-          placeholder="Dirección"
+          placeholder={t('formularioCliente.fields.address.placeholder')}
           value={direccion}
           onChange={(e) => setDireccion(e.target.value)}
           className={`border rounded-md px-3 py-2 transition-colors duration-300
@@ -81,9 +83,9 @@ export function FormularioCliente({
             ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}
           `}
         >
-          <option value="">Método de entrega</option>
-          <option value="tienda">Recojo en tienda</option>
-          <option value="domicilio">Envío a domicilio</option>
+          <option value="">{t('formularioCliente.fields.delivery_method.label')}</option>
+          <option value="tienda">{t('formularioCliente.fields.delivery_method.options.pickup')}</option>
+          <option value="domicilio">{t('formularioCliente.fields.delivery_method.options.delivery')}</option>
         </select>
 
         <input
@@ -103,7 +105,7 @@ export function FormularioCliente({
           className={`border rounded-md px-3 py-2 col-span-2 transition-colors duration-300
             ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' : 'bg-white border-gray-300 text-gray-900'}
           `}
-          placeholder="Horario preferido de entrega"
+          placeholder={t('formularioCliente.fields.preferred_time.label')}
         />
 
         {/* Mensaje explicativo */}
@@ -114,8 +116,7 @@ export function FormularioCliente({
               : 'bg-yellow-50 text-yellow-800'}
           `}
         >
-          ⚠️ Los precios de los productos no están publicados porque pueden variar según la cantidad, corte, estado y otras especificaciones.  
-          Después de enviar tu pedido, te enviaremos una cotización personalizada.
+          {t('formularioCliente.warnings.pricing')}
         </div>
 
         {/* Resumen del pedido */}
@@ -124,7 +125,7 @@ export function FormularioCliente({
             ${isDark ? 'bg-gray-800' : 'bg-gray-50'}
           `}
         >
-          <h3 className="font-semibold text-lg mb-2">Resumen de tu pedido:</h3>
+          <h3 className="font-semibold text-lg mb-2">{t('formularioCliente.summary_title')}</h3>
           <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-1">
             {Object.entries(seleccionados).map(([idStr, item]) => {
               const id = parseInt(idStr);
@@ -139,21 +140,21 @@ export function FormularioCliente({
                 >
                   <img
                     src={productoInfo?.imagen || 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item'}
-                    alt={productoInfo?.nombre || item.nombre || 'Producto'}
+                    alt={productoInfo?.nombre || item.nombre || t('formularioCliente.unknown_product')}
                     className="w-12 h-12 object-cover rounded-md flex-shrink-0"
                     onError={(e) => { e.target.src = 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item'; }}
                   />
 
                   <div className="flex-grow min-w-0">
                     <p className="font-semibold text-sm truncate">
-                      {productoInfo?.nombre || item.nombre || 'Producto Desconocido'}
+                      {productoInfo?.nombre || item.nombre || t('formularioCliente.unknown_product')}
                     </p>
                   </div>
 
                   <button
                     onClick={() => onRemoveItem(id)}
                     className="text-red-500 hover:text-red-400 transition-colors font-bold text-lg p-1 leading-none"
-                    title="Eliminar producto"
+                    title={t('formularioCliente.actions.delete_item')}
                   >
                     X
                   </button>
@@ -165,7 +166,7 @@ export function FormularioCliente({
 
         {/* Comentarios */}
         <textarea
-          placeholder="Comentarios adicionales (opcional)"
+          placeholder={t('formularioCliente.fields.comments.placeholder')}
           value={comentarios}
           onChange={(e) => setComentarios(e.target.value)}
           className={`border rounded-md px-3 py-2 col-span-2 transition-colors duration-300
@@ -178,7 +179,7 @@ export function FormularioCliente({
           type="submit"
           className="col-span-2 py-2 font-medium mt-4 bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg transition-colors duration-300"
         >
-          Enviar Pedido y Esperar Cotización
+          {t('formularioCliente.actions.submit')}
         </button>
       </form>
     </div>

@@ -1,0 +1,461 @@
+{
+  "header": {
+    "logo_alt": "Logo Benito",
+    "nav": {
+      "productos": "PRODUITS",
+      "nosotros": "À PROPOS",
+      "resenas": "AVIS",
+      "contacto": "CONTACT"
+    },
+    "aria": {
+      "font_size": "Taille de police",
+      "open_menu": "Ouvrir le menu",
+      "theme_toggle": "Changer de thème"
+    },
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "hero": {
+    "image_alt": "Viande de haute qualité servie dans un cadre gastronomique",
+    "title": "VIANDE DE QUALITÉ SUPÉRIEURE",
+    "description": "Nous sélectionnons uniquement les meilleures pièces pour une expérience culinaire unique.",
+    "cta_order": "Passer commande"
+  },
+  "afterHero": {
+    "image_left_alt": "Client satisfait dégustant un repas",
+    "image_right_alt": "Personne heureuse dans un environnement agréable",
+    "title": "NOUS OFFRONS DES PRODUITS DE QUALITÉ CHEZ BENITO, VOUS DÉCOUVRIREZ LA VÉRITABLE SAVEUR DE NOTRE VIANDE.",
+    "banner_delivery": "★ LIVRAISON À DOMICILE DISPONIBLE ★"
+  },
+  "featuresGrid": {
+    "title": "Nos Valeurs",
+    "features": {
+      "calidad": {
+        "title": "QUALITÉ GARANTIE",
+        "description": "Nous sélectionnons et contrôlons soigneusement chaque lot pour assurer la fraîcheur et la traçabilité depuis l’origine."
+      },
+      "procesos": {
+        "title": "PROCÉDÉS PROPRES",
+        "description": "Nous respectons des protocoles stricts d’hygiène et de sécurité alimentaire à chaque étape de production."
+      },
+      "logistica": {
+        "title": "LOGISTIQUE EFFICACE",
+        "description": "Livraisons ponctuelles et flexibles avec une chaîne du froid contrôlée pour préserver la saveur."
+      }
+    },
+    "banner_delivery": "★ LIVRAISON À DOMICILE DISPONIBLE ★"
+  },
+  "menu": {
+    "title": "Notre Sélection Vedette",
+    "categories": {
+      "todos": "TOUS",
+      "res": "BOEUF",
+      "cerdo": "PORC",
+      "pollo": "POULET",
+      "cordero": "AGNEAU",
+      "otros": "AUTRES"
+    },
+    "items": {
+      "res": {
+        "title": "Boeuf",
+        "description": "Coupes sélectionnées, prêtes pour le grill ou le barbecue.",
+        "chips": ["Frais", "Pièce Premium"]
+      },
+      "cerdo": {
+        "title": "Porc",
+        "description": "Juteux et tendre, parfait pour le barbecue.",
+        "chips": ["Juteux", "BBQ"]
+      },
+      "pollo": {
+        "title": "Poulet Frais",
+        "description": "Maigre et polyvalent, idéal pour les recettes légères.",
+        "chips": ["Riche en protéines", "Faible en gras"]
+      },
+      "cordero": {
+        "title": "Agneau",
+        "description": "Saveur riche et texture tendre.",
+        "chips": ["Rôti lentement"]
+      },
+      "otros": {
+        "title": "Saucisses Artisanales",
+        "description": "Une sélection de produits séchés et fumés faits main.",
+        "chips": ["Artisanal", "Fumé"]
+      }
+    }
+  },
+  "promoHero": {
+    "image_alt": "Présentation culinaire professionnelle centrée sur le plat",
+    "title": "UNE ALIMENTATION PARFAITE, UN SERVICE PROFESSIONNEL",
+    "description": "Nous sommes des fournisseurs spécialisés dans la distribution de viandes de haute qualité en gros. Notre mission : garantir fraîcheur, fiabilité et régularité d’approvisionnement pour les restaurants, hôtels et entreprises du pays.",
+    "cta_contact": "Nous contacter"
+  },
+  "exploreMore": {
+    "cta": "Explorer davantage"
+  },
+  "contactSection": {
+    "title": "Contactez-nous",
+    "description": "Si vous avez des questions, des commentaires ou besoin d’assistance, envoyez-nous un message. Notre équipe se fera un plaisir de vous aider.",
+    "form": {
+      "labels": {
+        "name": "Votre Nom",
+        "email": "Votre Email",
+        "message": "Votre Message"
+      },
+      "placeholders": {
+        "name": "Jean Dupont",
+        "email": "email@exemple.com",
+        "message": "Écrivez votre demande..."
+      },
+      "buttons": {
+        "sending": "Envoi...",
+        "submit": "Envoyer le message"
+      },
+      "success": "Message envoyé avec succès. Merci de nous avoir contactés !"
+    }
+  },
+  "footer": {
+    "brand": "LES ALIMENTS BENITO",
+    "blurb": "Nous proposons des produits frais et surgelés de la plus haute qualité avec un service personnalisé.",
+    "schedule": {
+      "title": "Horaires d’ouverture",
+      "week": "Lundi à Vendredi : 8:00 h - 20:00 h",
+      "saturday": "Samedi : 8:00 h - 18:00 h",
+      "sunday": "Dimanche : Fermé"
+    },
+    "contact": {
+      "title": "Contact"
+    },
+    "copyright": "© {{year}} LES ALIMENTS BENITO"
+  },
+  "testimonials": {
+    "title_small": "Clients qui nous font déjà confiance",
+    "title_big": "NOTRE SERVICE",
+    "button_leave_review": "Laisser un avis",
+    "initial_reviews": {
+      "r1": {
+        "title": "ENTIÈREMENT SATISFAITE !",
+        "body": "La qualité et la saveur sont constantes à chaque livraison. Parfait pour mon restaurant.",
+        "name": "— Andrea L."
+      },
+      "r2": {
+        "title": "SERVICE IMPECCABLE",
+        "body": "Un service impeccable et des coupes précises. On sent qu’ils soignent chaque étape.",
+        "name": "— Carlos M."
+      },
+      "r3": {
+        "title": "TOUJOURS FRAIS",
+        "body": "Toujours frais, bien emballé et livré à la bonne température.",
+        "name": "— Fernanda R."
+      },
+      "r4": {
+        "title": "SAVEURS INTENSES",
+        "body": "Des saveurs puissantes et des coupes parfaites. Mes clients adorent.",
+        "name": "— Jorge R."
+      }
+    }
+  },
+  "formComent": {
+    "login": {
+      "title": "Se connecter pour commenter",
+      "simulation": "Simulation :",
+      "intro": "Entrez votre vrai nom pour l’afficher comme auteur de l’avis.",
+      "labels": {
+        "email": "Email (simulé)",
+        "password": "Mot de passe (min. 6 caractères)",
+        "displayName": "Votre Nom (ex. : Jean Martin)"
+      },
+      "errors": {
+        "fill_all": "Veuillez remplir tous les champs correctement."
+      },
+      "actions": {
+        "simulate_login": "Simuler la connexion"
+      }
+    },
+    "rating": {
+      "labels": {
+        "very_bad": "Mauvaise expérience",
+        "bad": "Passable",
+        "ok": "Acceptable",
+        "good": "Bonne expérience",
+        "excellent": "Excellente",
+        "none": "Sans note"
+      }
+    },
+    "form": {
+      "title": "Nouvel Avis",
+      "session_as": "Connecté en tant que",
+      "fields": {
+        "title": {
+          "label": "Titre * (max. 40 caractères)",
+          "placeholder": "ex. : Excellent service"
+        },
+        "body": {
+          "label": "Avis * (max. 100 mots)",
+          "placeholder": "Décrivez votre expérience...",
+          "counter_suffix": "mots (minimum 5 requis)"
+        },
+        "rating": {
+          "label": "Comment évaluez-vous ?"
+        }
+      },
+      "actions": {
+        "submit": "Envoyer l’avis"
+      },
+      "helper": {
+        "note": "Votre avis aide les autres utilisateurs."
+      },
+      "messages": {
+        "invalid_form": "Assurez-vous d’être connecté, d’avoir entré un titre et écrit au moins 5 mots.",
+        "success": "Merci pour votre avis, {{userName}} ! Il sera publié prochainement."
+      }
+    }
+  },
+  "miniCarritoModal": {
+    "floating_button": "Votre commande",
+    "title": "Votre commande",
+    "close_title": "Fermer le panier",
+    "labels": {
+      "cantidad": "Quantité :",
+      "obs_prefix": "Note :"
+    },
+    "actions": {
+      "edit": "Modifier",
+      "delete_title": "Supprimer le produit",
+      "continue": "Continuer la commande"
+    },
+    "unknown_product": "Produit inconnu"
+  },
+  "formularioCliente": {
+    "title": "Informations du client",
+    "fields": {
+      "name": {
+        "label": "Nom complet",
+        "placeholder": "Nom complet"
+      },
+      "phone": {
+        "label": "Numéro de téléphone",
+        "placeholder": "Numéro de téléphone"
+      },
+      "email": {
+        "label": "Adresse e-mail",
+        "placeholder": "Adresse e-mail"
+      },
+      "address": {
+        "label": "Adresse",
+        "placeholder": "Adresse"
+      },
+      "delivery_method": {
+        "label": "Mode de livraison",
+        "options": {
+          "pickup": "Retrait en magasin",
+          "delivery": "Livraison à domicile"
+        }
+      },
+      "preferred_time": {
+        "label": "Heure de livraison souhaitée"
+      },
+      "comments": {
+        "placeholder": "Commentaires supplémentaires (facultatif)"
+      }
+    },
+    "warnings": {
+      "pricing": "Les prix des produits ne sont pas indiqués. Une fois votre commande envoyée, notre équipe vous contactera avec un devis personnalisé selon vos sélections et quantités."
+    },
+    "summary_title": "Résumé de votre commande :",
+    "actions": {
+      "submit": "Envoyer la commande et attendre le devis",
+      "delete_item": "Supprimer le produit"
+    },
+    "unknown_product": "Produit inconnu"
+  },
+  "detalleProductoModal": {
+    "image_note": "Image à titre indicatif.",
+    "quantity": {
+      "label": "Quantité souhaitée",
+      "placeholder": "ex. : 2 ou 0,5",
+      "units": {
+        "kg": "Kilogrammes (kg)",
+        "lb": "Livres (lb)",
+        "units": "Unités",
+        "boxes": "Boîtes"
+      },
+      "invalid": "⚠️ Veuillez entrer une quantité valide."
+    },
+    "sections": {
+      "presentacion": {
+        "title": "Présentation",
+        "tipo_corte": {
+          "label": "Type de coupe",
+          "options": {
+            "select": "Sélectionner...",
+            "fileteado": "En filets",
+            "trozos": "En morceaux",
+            "molido": "Haché",
+            "tiras": "En lanières",
+            "entero": "Entier"
+          }
+        },
+        "parte_especifica": {
+          "label": "Partie spécifique",
+          "options": {
+            "lomo_fino": "Filet mignon",
+            "costilla": "Côte",
+            "pierna": "Cuisse",
+            "pecho": "Poitrine"
+          }
+        }
+      },
+      "estado_producto": {
+        "title": "État du produit",
+        "estado": {
+          "label": "État",
+          "options": {
+            "fresca": "Frais",
+            "congelada": "Surgelé",
+            "curada": "Sali"
+          }
+        },
+        "hueso": {
+          "label": "Avec ou sans os",
+          "options": {
+            "con_hueso": "Avec os",
+            "sin_hueso": "Sans os"
+          }
+        }
+      },
+      "empaque_grasa": {
+        "title": "Emballage et Gras",
+        "empaque": {
+          "label": "Emballage",
+          "options": {
+            "vacuum": "Sous vide",
+            "tray": "Barquette",
+            "bag": "Sachet"
+          }
+        },
+        "grasa": {
+          "label": "Gras",
+          "options": {
+            "con_grasa": "Avec gras",
+            "sin_grasa": "Maigre"
+          }
+        }
+      },
+      "tipo_coccion": {
+        "title": "Type de cuisson",
+        "options": {
+          "parrilla": "Grillé",
+          "horno": "Au four",
+          "guisado": "Mijoté",
+          "frito": "Frit",
+          "otros": "Autres"
+        }
+      }
+    }
+  },
+  "ordenCompraHeader": {
+    "title": "BON DE COMMANDE",
+    "aria": {
+      "theme": "Changer de thème",
+      "font": "Options de police"
+    },
+    "back": "Retour",
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "ordenCompra": {
+    "products_title": "Choisissez vos coupes",
+    "search": {
+      "placeholder": "Rechercher un produit par nom...",
+      "clear_label": "Effacer la recherche"
+    },
+    "form_title": "Finaliser votre commande",
+    "confirmation": {
+      "title": "Commande envoyée !",
+      "message": "Votre demande a été transmise avec succès. Nous vous contacterons prochainement pour confirmer votre commande.",
+      "close": "Fermer"
+    }
+  },
+  "listaProductos": {
+    "filters": {
+      "ver_todo": "Voir tout"
+    },
+    "categories": {
+      "res": "BOEUF",
+      "cerdo": "PORC",
+      "pollo": "POULET",
+      "embutidos": "SAUCISSES",
+      "ahumados": "FUMÉS",
+      "especiales": "COUPES SPÉCIALES"
+    },
+    "headers": {
+      "producto": "PRODUIT"
+    },
+    "results_for": "Résultats pour \"{{term}}\"",
+    "all_products": "Tous les produits",
+    "empty": "Aucun produit ne correspond à vos critères de recherche.",
+    "badges": {
+      "fresco": "Frais",
+      "con_hueso": "Avec os",
+      "sin_hueso": "Sans os"
+    },
+    "labels": {
+      "corte": "Coupe :",
+      "empaque": "Emballage :",
+      "peso_aprox": "Poids approx. :"
+    },
+    "na": "N/D"
+  },
+  "miniCart": {
+    "title": "Votre commande",
+    "close": "Fermer le panier",
+    "unknown_product": "Produit inconnu",
+    "quantity": "Quantité :",
+    "obs_prefix": "Note :",
+    "edit": "Modifier",
+    "delete_title": "Supprimer le produit",
+    "continue": "Continuer la commande"
+  },
+  "productosData": {
+    "categories": {
+      "res": "Boeuf",
+      "cerdo": "Porc",
+      "pollo": "Poulet",
+      "embutidos": "Saucisses",
+      "ahumados": "Fumés",
+      "especiales": "Coupes spéciales"
+    },
+    "items": {
+      "lomo_fino": {
+        "name": "Filet mignon",
+        "description": "Pièce maigre et tendre, parfaite pour le grill."
+      },
+      "costillar_res": {
+        "name": "Côtes de boeuf",
+        "description": "Coupe avec os, idéale pour le BBQ ou la cuisson lente."
+      },
+      "pechuga_pollo": {
+        "name": "Blanc de poulet",
+        "description": "Maigre et polyvalent, idéal pour les plats légers."
+      },
+      "chorizo_artesanal": {
+        "name": "Chorizo artisanal",
+        "description": "Saveur intense, élaboré avec des épices sélectionnées."
+      },
+      "jamon_cocido_artesanal": {
+        "name": "Jambon cuit artisanal",
+        "description": "Affiné et cuit selon des techniques traditionnelles, tendre et savoureux."
+      },
+      "pechuga_pavo_magra": {
+        "name": "Blanc de dinde maigre",
+        "description": "Riche en protéines et pauvre en gras, idéal pour les régimes équilibrés."
+      }
+    }
+  }
+}

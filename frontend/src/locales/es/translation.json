@@ -1,0 +1,461 @@
+{
+  "header": {
+    "logo_alt": "Benito Logo",
+    "nav": {
+      "productos": "PRODUCTOS",
+      "nosotros": "NOSOTROS",
+      "resenas": "RESEÑAS",
+      "contacto": "CONTACTO"
+    },
+    "aria": {
+      "font_size": "Tamaño de letra",
+      "open_menu": "Abrir menú",
+      "theme_toggle": "Cambiar tema"
+    },
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "hero": {
+    "image_alt": "Carne de alta calidad servida en cena gourmet",
+    "title": "CARNE DE CALIDAD SUPERIOR",
+    "description": "Seleccionamos solo los mejores cortes para una experiencia gastronómica única.",
+    "cta_order": "Orden de compra"
+  },
+  "afterHero": {
+    "image_left_alt": "Cliente satisfecho disfrutando de comida",
+    "image_right_alt": "Persona feliz en ambiente agradable",
+    "title": "OFRECEMOS PRODUCTOS DE CALIDAD, EN BENITO CONOCERÁS EL SABOR DE NUESTRA CARNE.",
+    "banner_delivery": "★ ENTREGA A DOMICILIO DISPONIBLE ★"
+  },
+  "featuresGrid": {
+    "title": "Nuestros Valores",
+    "features": {
+      "calidad": {
+        "title": "CALIDAD GARANTIZADA",
+        "description": "Seleccionamos y supervisamos cada lote para garantizar frescura y trazabilidad desde origen."
+      },
+      "procesos": {
+        "title": "PROCESOS LIMPIOS",
+        "description": "Cumplimos protocolos sanitarios y de seguridad alimentaria en cada etapa de producción."
+      },
+      "logistica": {
+        "title": "LOGÍSTICA EFICIENTE",
+        "description": "Entregas puntuales y flexibles, con cadena de frío controlada para mantener el sabor."
+      }
+    },
+    "banner_delivery": "★ ENTREGA A DOMICILIO DISPONIBLE ★"
+  },
+  "menu": {
+    "title": "Nuestra Selección Destacada",
+    "categories": {
+      "todos": "TODOS",
+      "res": "RES",
+      "cerdo": "CERDO",
+      "pollo": "POLLO",
+      "cordero": "CORDERO",
+      "otros": "OTROS"
+    },
+    "items": {
+      "res": {
+        "title": "Carne de Res",
+        "description": "Cortes seleccionados, listos para parrilla o brasa.",
+        "chips": ["Fresco", "Corte premium"]
+      },
+      "cerdo": {
+        "title": "Carne de Cerdo",
+        "description": "Jugosas y tiernas, perfectas para barbecue.",
+        "chips": ["Jugoso", "BBQ"]
+      },
+      "pollo": {
+        "title": "Pollo Fresco",
+        "description": "Magras y versátiles, ideal para recetas ligeras.",
+        "chips": ["Alto en proteína", "Magro"]
+      },
+      "cordero": {
+        "title": "Carne de Cordero",
+        "description": "Sabor intenso con textura suave.",
+        "chips": ["Hornéalo lento"]
+      },
+      "otros": {
+        "title": "Embutidos Artesanales",
+        "description": "Selección curada de embutidos y ahumados.",
+        "chips": ["Artesanal", "Ahumado"]
+      }
+    }
+  },
+  "promoHero": {
+    "image_alt": "Presentación de comida profesional con enfoque al centro",
+    "title": "COMIDA PERFECTA, SERVICIO PROFESIONAL",
+    "description": "Somos proveedores especializados en la distribución de carnes de alta calidad al por mayor. Nuestra misión es garantizar frescura, confianza y abastecimiento constante para restaurantes, hoteles y negocios en todo el país.",
+    "cta_contact": "Contáctanos"
+  },
+  "exploreMore": {
+    "cta": "Explorar más"
+  },
+  "contactSection": {
+    "title": "Contáctanos",
+    "description": "Si tienes dudas, comentarios o necesitas soporte, escríbenos. Nuestro equipo estará encantado de ayudarte.",
+    "form": {
+      "labels": {
+        "name": "Tu nombre",
+        "email": "Tu correo",
+        "message": "Tu mensaje"
+      },
+      "placeholders": {
+        "name": "Juan Pérez",
+        "email": "correo@ejemplo.com",
+        "message": "Escribe tu consulta..."
+      },
+      "buttons": {
+        "sending": "Enviando...",
+        "submit": "Enviar mensaje"
+      },
+      "success": "Mensaje enviado correctamente. ¡Gracias por contactarnos!"
+    }
+  },
+    "footer": {
+      "brand": "LES ALIMENTS BENITO",
+      "blurb": "Ofrecemos productos frescos y congelados de la más alta calidad con un servicio personalizado.",
+      "schedule": {
+        "title": "Horarios",
+        "week": "Lunes a Viernes: 8:00 AM - 20:00 PM",
+        "saturday": "Sábado: 8:00 AM - 18:00 PM",
+        "sunday": "Domingo: Cerrado"
+      },
+      "contact": {
+        "title": "Contacto"
+      },
+      "copyright": "© {{year}} LES ALIMENTS BENITO"
+    },
+  "testimonials": {
+    "title_small": "Clientes que ya confían en",
+    "title_big": "NUESTRO SERVICIO",
+    "button_leave_review": "Dejar una reseña",
+    "initial_reviews": {
+      "r1": {
+        "title": "ABSOLUTELY DELIGHTED!",
+        "body": "La calidad y el sabor son consistentes en cada entrega. Perfecto para mi restaurante.",
+        "name": "— Andrea L."
+      },
+      "r2": {
+        "title": "IMPECCABLE SERVICE",
+        "body": "Atención impecable y cortes precisos. Se nota el cuidado en el proceso.",
+        "name": "— Carlos M."
+      },
+      "r3": {
+        "title": "ALWAYS FRESH",
+        "body": "Siempre frescura y buen empaque, llegan en la temperatura correcta.",
+        "name": "— Fernanda R."
+      },
+      "r4": {
+        "title": "INTENSE FLAVORS",
+        "body": "Sabores intensos y cortes bien logrados. Mis clientes lo agradecen.",
+        "name": "— Jorge R."
+      }
+    }
+  },
+  "formComent": {
+    "login": {
+      "title": "Inicia Sesión para Comentar",
+      "simulation": "Simulación:",
+      "intro": "Introduce tu nombre real para usarlo como firmante de la reseña.",
+      "labels": {
+        "email": "Email (simulado)",
+        "password": "Contraseña (mín. 6 caracteres)",
+        "displayName": "Tu nombre (Ej: Pedro Martínez)"
+      },
+      "errors": {
+        "fill_all": "Completa todos los campos correctamente."
+      },
+      "actions": {
+        "simulate_login": "Simular Inicio de Sesión"
+      }
+    },
+    "rating": {
+      "labels": {
+        "very_bad": "Mala experiencia",
+        "bad": "Regular",
+        "ok": "Aceptable",
+        "good": "Buena experiencia",
+        "excellent": "Excelente",
+        "none": "Sin calificación"
+      }
+    },
+    "form": {
+      "title": "Nueva Reseña",
+      "session_as": "Sesión iniciada como",
+      "fields": {
+        "title": {
+          "label": "Título * (Máx. 40 caracteres)",
+          "placeholder": "Ej: Muy buena atención"
+        },
+        "body": {
+          "label": "Reseña * (Máx. 100 palabras)",
+          "placeholder": "Describe tu experiencia...",
+          "counter_suffix": "palabras (Mínimo 5 requeridas)"
+        },
+        "rating": {
+          "label": "¿Cómo calificarías?"
+        }
+      },
+      "actions": {
+        "submit": "Enviar Reseña"
+      },
+      "helper": {
+        "note": "Tu reseña ayuda a otros usuarios."
+      },
+      "messages": {
+        "invalid_form": "Asegúrate de iniciar sesión, escribir un título, y que tu reseña tenga al menos 5 palabras.",
+        "success": "¡Gracias por tu reseña, {{userName}}! Se enviará en breve."
+      }
+    }
+  },
+  "miniCarritoModal": {
+    "floating_button": "Tu Orden",
+    "title": "Tu Orden",
+    "close_title": "Cerrar carrito",
+    "labels": {
+      "cantidad": "Cantidad:",
+      "obs_prefix": "Obs:"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete_title": "Eliminar producto",
+      "continue": "Continuar con la Orden"
+    },
+    "unknown_product": "Producto Desconocido"
+  },
+  "formularioCliente": {
+    "title": "Datos del Cliente",
+    "fields": {
+      "name": {
+        "label": "Nombre y Apellido",
+        "placeholder": "Nombre y Apellido"
+      },
+      "phone": {
+        "label": "Número de Teléfono",
+        "placeholder": "Número de Teléfono"
+      },
+      "email": {
+        "label": "Correo Electrónico",
+        "placeholder": "Correo Electrónico"
+      },
+      "address": {
+        "label": "Dirección",
+        "placeholder": "Dirección"
+      },
+      "delivery_method": {
+        "label": "Método de entrega",
+        "options": {
+          "pickup": "Recojo en tienda",
+          "delivery": "Envío a domicilio"
+        }
+      },
+      "preferred_time": {
+        "label": "Horario preferido de entrega"
+      },
+      "comments": {
+        "placeholder": "Comentarios adicionales (opcional)"
+      }
+    },
+    "warnings": {
+      "pricing": "Los precios de los productos no están publicados. Al enviar tu pedido, nuestro equipo te contactará con una cotización personalizada basada en tus selecciones y cantidades."
+    },
+    "summary_title": "Resumen de tu pedido:",
+    "actions": {
+      "submit": "Enviar Pedido y Esperar Cotización",
+      "delete_item": "Eliminar producto"
+    },
+    "unknown_product": "Producto Desconocido"
+  },
+  "detalleProductoModal": {
+    "image_note": "La imagen es referencial.",
+    "quantity": {
+      "label": "Cantidad requerida",
+      "placeholder": "Ej: 2 o 0.5",
+      "units": {
+        "kg": "Kilos (kg)",
+        "lb": "Libras (lb)",
+        "units": "Unidades",
+        "boxes": "Cajas"
+      },
+      "invalid": "⚠️ Por favor, indica una cantidad válida."
+    },
+    "sections": {
+      "presentacion": {
+        "title": "Presentación",
+        "tipo_corte": {
+          "label": "Tipo de corte",
+          "options": {
+            "select": "Seleccionar...",
+            "fileteado": "Fileteado",
+            "trozos": "En trozos",
+            "molido": "Molido",
+            "tiras": "En tiras",
+            "entero": "Entero"
+          }
+        },
+        "parte_especifica": {
+          "label": "Parte específica",
+          "options": {
+            "lomo_fino": "Lomo fino",
+            "costilla": "Costilla",
+            "pierna": "Pierna",
+            "pecho": "Pecho"
+          }
+        }
+      },
+      "estado_producto": {
+        "title": "Estado del producto",
+        "estado": {
+          "label": "Estado",
+          "options": {
+            "fresca": "Fresca",
+            "congelada": "Congelada",
+            "curada": "Curada"
+          }
+        },
+        "hueso": {
+          "label": "Con hueso o sin hueso",
+          "options": {
+            "con_hueso": "Con hueso",
+            "sin_hueso": "Sin hueso"
+          }
+        }
+      },
+      "empaque_grasa": {
+        "title": "Empaque y grasa",
+        "empaque": {
+          "label": "Empaque",
+          "options": {
+            "vacuum": "Al vacío",
+            "tray": "Bandeja",
+            "bag": "Bolsa"
+          }
+        },
+        "grasa": {
+          "label": "Grasa",
+          "options": {
+            "con_grasa": "Con grasa",
+            "sin_grasa": "Sin grasa"
+          }
+        }
+      },
+      "tipo_coccion": {
+        "title": "Tipo de cocción",
+        "options": {
+          "parrilla": "A la parrilla",
+          "horno": "Al horno",
+          "guisado": "Guisado",
+          "frito": "Frito",
+          "otros": "Otros"
+        }
+      }
+    }
+  },
+  "ordenCompraHeader": {
+    "title": "ORDEN DE COMPRA",
+    "aria": {
+      "theme": "Cambiar tema",
+      "font": "Opciones de fuente"
+    },
+    "back": "Volver",
+    "font_size": {
+      "small": "A-",
+      "normal": "A",
+      "large": "A+"
+    }
+  },
+  "ordenCompra": {
+    "products_title": "Elige tus Cortes",
+    "search": {
+      "placeholder": "Buscar productos por nombre...",
+      "clear_label": "Limpiar búsqueda"
+    },
+    "form_title": "Completa tu Orden",
+    "confirmation": {
+      "title": "¡Orden Enviada!",
+      "message": "Tu solicitud fue enviada con éxito. Nos pondremos en contacto pronto para confirmar tu pedido.",
+      "close": "Cerrar"
+    }
+  },
+  "listaProductos": {
+    "filters": {
+      "ver_todo": "Ver todo"
+    },
+    "categories": {
+      "res": "CARNE DE RES",
+      "cerdo": "CARNE DE CERDO",
+      "pollo": "CARNE DE POLLO",
+      "embutidos": "EMBUTIDOS",
+      "ahumados": "AHUMADOS",
+      "especiales": "CARNES ESPECIALES"
+    },
+    "headers": {
+      "producto": "PRODUCTO"
+    },
+    "results_for": "Resultados para \"{{term}}\"",
+    "all_products": "Todos los Productos",
+    "empty": "No se encontraron productos que coincidan con los criterios.",
+    "badges": {
+      "fresco": "Fresco",
+      "con_hueso": "Con Hueso",
+      "sin_hueso": "Sin Hueso"
+    },
+    "labels": {
+      "corte": "Corte:",
+      "empaque": "Empaque:",
+      "peso_aprox": "Peso aprox:"
+    },
+    "na": "N/A"
+  },
+  "miniCart": {
+    "title": "Tu Orden",
+    "close": "Cerrar carrito",
+    "unknown_product": "Producto Desconocido",
+    "quantity": "Cantidad:",
+    "obs_prefix": "Obs:",
+    "edit": "Editar",
+    "delete_title": "Eliminar producto",
+    "continue": "Continuar con la Orden"
+  },
+  "productosData": {
+    "categories": {
+      "res": "Res",
+      "cerdo": "Cerdo",
+      "pollo": "Pollo",
+      "embutidos": "Embutidos",
+      "ahumados": "Ahumados",
+      "especiales": "Especiales"
+    },
+    "items": {
+      "lomo_fino": {
+        "name": "Lomo Fino",
+        "description": "Corte magro y tierno, ideal para parrilla."
+      },
+      "costillar_res": {
+        "name": "Costillar de Res",
+        "description": "Corte con hueso, perfecto para BBQ y cocciones largas."
+      },
+      "pechuga_pollo": {
+        "name": "Pechuga de Pollo",
+        "description": "Magro y versátil, excelente para recetas ligeras."
+      },
+      "chorizo_artesanal": {
+        "name": "Chorizo Artesanal",
+        "description": "Sabor intenso, elaborado con especias seleccionadas."
+      },
+      "jamon_cocido_artesanal": {
+        "name": "Jamón Cocido Artesanal",
+        "description": "Curado y cocido con técnica tradicional, suave y sabroso."
+      },
+      "pechuga_pavo_magra": {
+        "name": "Pechuga de Pavo Magra",
+        "description": "Alta en proteína y baja en grasa, ideal para dietas."
+      }
+    }
+  }
+}

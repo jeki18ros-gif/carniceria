@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import "../styles/ExploreMore.css"; // 👈 Importa los estilos
+import { useTranslation } from "react-i18next";
 
 export default function ExploreMore() {
   const orderPath = "/orden-de-compra";
+  const { t } = useTranslation();
 
   return (
     <motion.section
@@ -22,7 +24,7 @@ export default function ExploreMore() {
                        shadow-2xl hover:scale-110 hover:shadow-xl active:scale-95 
                        transition-transform duration-300 ease-out"
           >
-            Explorar más
+            {t("exploreMore.cta")}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/outline";
 import logo from "../assets/Logo-BENITO.jpg";
@@ -6,7 +7,9 @@ import clsx from "clsx";
 import { useTheme } from "../Theme/ThemeContext";
 import "../styles/OrdenCompraHeader.css";
 
+
 export function OrdenCompraHeader() {
+  const { t } = useTranslation();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [showFontOptions, setShowFontOptions] = useState(false);
@@ -26,7 +29,8 @@ export function OrdenCompraHeader() {
     };
   }, []);
 
-  const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
   const scrolledHeaderClass = clsx(
     "transition-all duration-500 rounded-3xl shadow-lg",
@@ -46,62 +50,74 @@ export function OrdenCompraHeader() {
         <div className="max-w-6xl w-[92%] sm:w-[90%] md:w-[80%]">
           <div className={clsx("overflow-hidden", scrolledHeaderClass)}>
             <nav className="orden-nav">
-  {/* (1) LOGO */}
-  <div className="header-logo flex items-center justify-start">
-    <img
-      src={logo}
-      alt="Benito Logo"
-      className="h-14 w-14 sm:h-16 sm:w-16 rounded-full object-cover ring-2 ring-white/70 dark:ring-gray-700 shadow-md hover:scale-105 transition-transform"
-    />
-  </div>
+              {/* (1) LOGO */}
+            <div className="flex items-center justify-start">
+              <div
+                className="h-[3.8rem] w-[3.8rem] sm:h-18 sm:w-18 
+               rounded-[1.6rem] sm:rounded-[1.8rem]
+               overflow-hidden ring-2 ring-white/70 dark:ring-gray-700 
+               shadow-md hover:scale-105 transition-transform 
+               flex items-center justify-center bg-black/80"
+              >
+                <img
+                  src={logo}
+                  alt={t("header.logo_alt")}
+                  className="h-full w-full object-cover scale-[1.5]" // ⬅️ Zoom interno
+                  loading="lazy"
+                />
+              </div>
+            </div>
 
-  {/* (2) TÍTULO */}
-  <h1
-    className={`header-title text-center font-extrabold ${titleTextColor} 
+              {/* (2) TÍTULO */}
+              <h1
+                className={`header-title text-center font-extrabold ${titleTextColor} 
       text-lg sm:text-2xl break-words leading-tight`}
-  >
-    ORDEN DE COMPRA
-  </h1>
+              >
+                {t("ordenCompraHeader.title")}
+              </h1>
 
-  {/* (3) BOTONES AGRUPADOS */}
-  <div className="header-actions">
-    {/* Tema */}
-    <button
-      onClick={toggleTheme}
-      className="header-button"
-      aria-label="Cambiar tema"
-    >
-      {theme === "dark" ? (
-        <SunIcon className="h-5 w-5" />
-      ) : (
-        <MoonIcon className="h-5 w-5" />
-      )}
-    </button>
+              {/* (3) BOTONES AGRUPADOS */}
+              <div className="header-actions">
+                {/* Tema */}
+                <button
+                  onClick={toggleTheme}
+                  className="header-button"
+                  aria-label={t("ordenCompraHeader.aria.theme")}
+                >
+                  {theme === "dark" ? (
+                    <SunIcon className="h-5 w-5" />
+                  ) : (
+                    <MoonIcon className="h-5 w-5" />
+                  )}
+                </button>
 
-    {/* Fuente o lupa */}
-    {!isMobile && (
-      <FontSizeSelector fontSize={fontSize} setFontSize={setFontSize} />
-    )}
-    {isMobile && (
-      <button
-        onClick={() => setShowFontOptions(!showFontOptions)}
-        className="header-button search-btn"
-        aria-label="Opciones de fuente"
-      >
-        <MagnifyingGlassIcon className="h-5 w-5" />
-      </button>
-    )}
+                {/* Fuente o lupa */}
+                {!isMobile && (
+                  <FontSizeSelector
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
+                  />
+                )}
+                {isMobile && (
+                  <button
+                    onClick={() => setShowFontOptions(!showFontOptions)}
+                    className="header-button search-btn"
+                    aria-label={t("ordenCompraHeader.aria.font")}
+                  >
+                    <MagnifyingGlassIcon className="h-5 w-5" />
+                  </button>
+                )}
 
-    {/* Volver */}
-    <button
-      onClick={() => window.history.back()}
-      className="header-button back-btn flex items-center gap-2"
-    >
-      <ArrowLeftIcon className="h-5 w-5" />
-      <span className="hidden sm:inline">Volver</span>
-    </button>
-  </div>
-</nav>
+                {/* Volver */}
+                <button
+                  onClick={() => window.history.back()}
+                  className="header-button back-btn flex items-center gap-2"
+                >
+                  <ArrowLeftIcon className="h-5 w-5" />
+                  <span className="hidden sm:inline">{t("ordenCompraHeader.back")}</span>
+                </button>
+              </div>
+            </nav>
           </div>
         </div>
       </header>
@@ -121,10 +137,11 @@ export function OrdenCompraHeader() {
 
 // 🔠 Selector de tamaño de fuente
 function FontSizeSelector({ fontSize, setFontSize }) {
+  const { t } = useTranslation();
   const sizes = [
-    { label: "A-", value: "small" },
-    { label: "A", value: "normal" },
-    { label: "A+", value: "large" },
+    { label: t("ordenCompraHeader.font_size.small"), value: "small" },
+    { label: t("ordenCompraHeader.font_size.normal"), value: "normal" },
+    { label: t("ordenCompraHeader.font_size.large"), value: "large" },
   ];
 
   return (
@@ -135,7 +152,8 @@ function FontSizeSelector({ fontSize, setFontSize }) {
           onClick={() => setFontSize(value)}
           className="header-button text-xs px-2 py-1"
           style={{
-            background: fontSize === value ? "var(--gold-color)" : "transparent",
+            background:
+              fontSize === value ? "var(--gold-color)" : "transparent",
             color: fontSize === value ? "var(--dark-bg)" : "var(--gold-color)",
           }}
         >

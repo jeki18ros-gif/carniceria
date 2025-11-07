@@ -1,10 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import leftImg from "../assets/otros2.jpg";
 import rightImg from "../assets/relleno8.jpg";
-import "../styles/AfterHero.css"; // Importa los keyframes
+import "../styles/AfterHero.css";
 
 export default function AfterHero() {
+  const { t } = useTranslation();
+
   return (
     <motion.section
       className="afterhero relative min-h-[70vh] transition-colors duration-700"
@@ -15,27 +18,21 @@ export default function AfterHero() {
     >
       <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="relative isolate mx-auto flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 text-center sm:text-left">
+          
           {/* Imagen izquierda */}
           <div className="relative block shrink-0 mr-2 sm:mr-6 lg:mr-10">
             <FlowerPortrait
               src={leftImg}
-              alt="Cliente satisfecho disfrutando de comida"
+              alt={t("afterHero.image_left_alt")}
               accentColor="#F0B100"
             />
           </div>
 
-          {/* Texto central */}
+          {/* Texto central (título completo desde el JSON) */}
           <div className="relative mx-auto text-center">
             <h2 className="titulo-seccion mx-auto max-w-4xl text-pretty text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight transition-colors duration-700">
-              <span>OFRECEMOS PRODUCTOS DE CALIDAD, EN </span>
-              <span className="text-gold drop-shadow-[0_0_8px_rgba(240,177,0,0.6)]">
-                BENITO
-              </span>{" "}
-              <span>CONOCERÁS </span>
-              <span className="text-gold drop-shadow-[0_0_8px_rgba(240,177,0,0.6)]">
-                EL SABOR
-              </span>{" "}
-              <span>DE NUESTRA CARNE.</span>
+              {/* El texto completo se traduce dinámicamente */}
+              {t("afterHero.title")}
             </h2>
           </div>
 
@@ -43,27 +40,25 @@ export default function AfterHero() {
           <div className="relative block shrink-0 ml-2 sm:ml-6 lg:ml-10">
             <FlowerPortrait
               src={rightImg}
-              alt="Persona feliz en ambiente agradable"
+              alt={t("afterHero.image_right_alt")}
               accentColor="#F0B100"
             />
           </div>
         </div>
       </div>
 
-     
       {/* Cinta inferior dorada animada */}
-<div className="relative mt-20">
-  <div className="absolute inset-x-0 z-10 promo-banner py-8">
-    <div className="scrolling-text-wrapper">
-      {/* Primera tanda */}
-      <div className="scrolling-text">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={`a-${i}`}>★ ENTREGA A DOMICILIO DISPONIBLE ★</span>
-        ))}
+      <div className="relative mt-20">
+        <div className="absolute inset-x-0 z-10 promo-banner py-8">
+          <div className="scrolling-text-wrapper">
+            <div className="scrolling-text">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <span key={`a-${i}`}>{t("afterHero.banner_delivery")}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
     </motion.section>
   );
 }
@@ -81,7 +76,7 @@ function FlowerPortrait({ src, alt, accentColor }) {
         />
       </div>
 
-      {/* Pétalos dorados */}
+      {/* Detalle decorativo */}
       {[
         "-top-2 left-1/2 -translate-x-1/2",
         "top-4 -left-2",
