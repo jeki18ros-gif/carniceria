@@ -1,7 +1,7 @@
 // src/components/FormularioCliente.jsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { productos } from './productosData';
+import { useProductosData } from './productosData'; // ✅ Importación correcta
 import { useTheme } from "../Theme/ThemeContext";
 
 export function FormularioCliente({
@@ -17,7 +17,7 @@ export function FormularioCliente({
   const [entrega, setEntrega] = useState('');
   const [fechaEntrega, setFechaEntrega] = useState('');
   const [horario, setHorario] = useState('');
-
+  const { productos } = useProductosData();
   const { theme } = useTheme(); // Detecta modo actual: "light" o "dark"
   const isDark = theme === 'dark';
   const { t } = useTranslation();

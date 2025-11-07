@@ -8,6 +8,8 @@ import '../styles/DetalleProductoModal.css';
 
 export function DetalleProductoModal({ producto, productoEditar, onClose, onAddToCart }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+
   const [cantidadValor, setCantidadValor] = useState('');
   const [cantidadUnidad, setCantidadUnidad] = useState('kg');
   const [tipoCorte, setTipoCorte] = useState('');
@@ -20,13 +22,12 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
   const [fechaDeseada, setFechaDeseada] = useState('');
   const [observacion, setObservacion] = useState('');
   const [error, setError] = useState(false);
-  const inputRef = useRef(null);
-  const { theme } = useTheme();
 
-  // useEffect para bloquear/desbloquear scroll del body
+  const inputRef = useRef(null);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; }
+    return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
   useEffect(() => {
@@ -76,7 +77,8 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
     onAddToCart(producto.id, cantidadCompleta, especificaciones);
     onClose();
   };
-    return (
+
+  return (
     <AnimatePresence>
       <motion.div
         role="dialog"
@@ -100,6 +102,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
             <XMarkIcon className="w-6 h-6" />
           </button>
 
+          {/* 🖼️ Imagen y descripción */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
             <img src={producto.imagen} alt={producto.nombre} className="w-full max-w-sm h-auto max-h-96 object-contain rounded-2xl shadow-md"/>
             <div>
@@ -109,8 +112,10 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
             </div>
           </div>
 
+          {/* 🧾 Formulario */}
           <div className="flex flex-col space-y-5">
             <div className="flex-grow max-h-[80vh] md:max-h-[60vh] overflow-y-auto pr-2"> 
+              
               {/* 🔢 Cantidad */}
               <label className="block text-sm font-medium mb-1">{t('detalleProductoModal.quantity.label')}</label>
               <div className="flex space-x-3 mb-4">
@@ -138,12 +143,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-sm mb-1">{t('detalleProductoModal.sections.presentacion.tipo_corte.label')}</label>
-                  <select
-                    value={tipoCorte}
-                    onChange={(e) => setTipoCorte(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <select value={tipoCorte} onChange={(e) => setTipoCorte(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="fileteado">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.fileteado')}</option>
                     <option value="en trozos">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.trozos')}</option>
@@ -153,13 +153,8 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
                   </select>
                 </div>
                 <div>
-                  <label className="block text.sm mb-1">{t('detalleProductoModal.sections.presentacion.parte_especifica.label')}</label>
-                  <select
-                    value={parte}
-                    onChange={(e) => setParte(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <label className="block text-sm mb-1">{t('detalleProductoModal.sections.presentacion.parte_especifica.label')}</label>
+                  <select value={parte} onChange={(e) => setParte(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="lomo fino">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.lomo_fino')}</option>
                     <option value="costilla">{t('detalleProductoModal.sections.presentacion.parte_especifica.options.costilla')}</option>
@@ -174,12 +169,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-sm mb-1">{t('detalleProductoModal.sections.estado_producto.estado.label')}</label>
-                  <select
-                    value={estado}
-                    onChange={(e) => setEstado(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <select value={estado} onChange={(e) => setEstado(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="fresca">{t('detalleProductoModal.sections.estado_producto.estado.options.fresca')}</option>
                     <option value="congelada">{t('detalleProductoModal.sections.estado_producto.estado.options.congelada')}</option>
@@ -188,12 +178,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
                 </div>
                 <div>
                   <label className="block text-sm mb-1">{t('detalleProductoModal.sections.estado_producto.hueso.label')}</label>
-                  <select
-                    value={hueso}
-                    onChange={(e) => setHueso(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <select value={hueso} onChange={(e) => setHueso(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="con hueso">{t('detalleProductoModal.sections.estado_producto.hueso.options.con_hueso')}</option>
                     <option value="sin hueso">{t('detalleProductoModal.sections.estado_producto.hueso.options.sin_hueso')}</option>
@@ -206,12 +191,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label className="block text-sm mb-1">{t('detalleProductoModal.sections.empaque_grasa.empaque.label')}</label>
-                  <select
-                    value={empaque}
-                    onChange={(e) => setEmpaque(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <select value={empaque} onChange={(e) => setEmpaque(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="al vacio">{t('detalleProductoModal.sections.empaque_grasa.empaque.options.vacuum')}</option>
                     <option value="bandeja">{t('detalleProductoModal.sections.empaque_grasa.empaque.options.tray')}</option>
@@ -220,12 +200,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
                 </div>
                 <div>
                   <label className="block text-sm mb-1">{t('detalleProductoModal.sections.empaque_grasa.grasa.label')}</label>
-                  <select
-                    value={grasa}
-                    onChange={(e) => setGrasa(e.target.value)}
-                    // ✨ Clase para adaptar el select al tema
-                    className="w-full select-ah-theme"
-                  >
+                  <select value={grasa} onChange={(e) => setGrasa(e.target.value)} className="w-full select-ah-theme">
                     <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                     <option value="con grasa">{t('detalleProductoModal.sections.empaque_grasa.grasa.options.con_grasa')}</option>
                     <option value="sin grasa">{t('detalleProductoModal.sections.empaque_grasa.grasa.options.sin_grasa')}</option>
@@ -235,12 +210,7 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
 
               {/* 🔥 Tipo de cocción */}
               <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('detalleProductoModal.sections.tipo_coccion.title')}</h4>
-              <select
-                value={coccion}
-                onChange={(e) => setCoccion(e.target.value)}
-                // ✨ Clase para adaptar el select al tema
-                className="w-full select-ah-theme mb-4"
-              >
+              <select value={coccion} onChange={(e) => setCoccion(e.target.value)} className="w-full select-ah-theme mb-4">
                 <option value="">{t('detalleProductoModal.sections.presentacion.tipo_corte.options.select')}</option>
                 <option value="a la parrilla">{t('detalleProductoModal.sections.tipo_coccion.options.parrilla')}</option>
                 <option value="al horno">{t('detalleProductoModal.sections.tipo_coccion.options.horno')}</option>
@@ -250,35 +220,34 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
               </select>
 
               {/* 📅 Entrega */}
-              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">Entrega y observaciones</h4>
-              <label className="block text-sm mb-1">Fecha deseada</label>
+              <h4 className="text-md font-semibold mt-5 mb-2 text-dorado">{t('PreferenciasCliente.fields.delivery.title', 'Entrega y observaciones')}</h4>
+              <label className="block text-sm mb-1">{t('PreferenciasCliente.fields.delivery.date', 'Fecha deseada')}</label>
               <input
                 type="date"
                 value={fechaDeseada}
                 onChange={(e) => setFechaDeseada(e.target.value)}
-                // ✨ Clase para adaptar el input al tema
                 className="w-full input-ah-theme mb-4"
               />
 
-              <label className="block text-sm mt-4 mb-1">Comentarios adicionales</label>
+              <label className="block text-sm mt-4 mb-1">{t('PreferenciasCliente.fields.comments.label', 'Comentarios adicionales')}</label>
               <textarea
-                placeholder={t('formularioCliente.fields.comments.placeholder')}
+                placeholder={t('PreferenciasCliente.fields.comments.placeholder')}
                 value={observacion}
                 onChange={(e) => setObservacion(e.target.value)}
-                // ✨ Clase para adaptar el textarea al tema
                 className="w-full min-h-24 resize-none input-ah-theme"
               />
             </div>
-            {/* Fin de contenedor con scroll */}
 
-            {/* Botón de Añadir (fuera del scroll) */}
-           <motion.button
+            {/* Botón */}
+            <motion.button
               onClick={handleAdd}
               whileTap={{ scale: 0.95 }}
               className="w-full py-3 text-lg boton-dorado disabled:opacity-60 disabled:cursor-not-allowed mt-4"
               disabled={error || !cantidadValor.trim()}
             >
-              {productoEditar ? 'Actualizar Orden' : 'Añadir a la Orden'}
+              {productoEditar
+                ? t('detalleProductoModal.update_button', 'Actualizar Orden')
+                : t('detalleProductoModal.add_button', 'Añadir a la Orden')}
             </motion.button>
           </div>
         </motion.div>

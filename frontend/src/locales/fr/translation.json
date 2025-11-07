@@ -271,91 +271,106 @@
     },
     "unknown_product": "Produit inconnu"
   },
-  "detalleProductoModal": {
-    "image_note": "Image à titre indicatif.",
-    "quantity": {
-      "label": "Quantité souhaitée",
-      "placeholder": "ex. : 2 ou 0,5",
-      "units": {
-        "kg": "Kilogrammes (kg)",
-        "lb": "Livres (lb)",
-        "units": "Unités",
-        "boxes": "Boîtes"
-      },
-      "invalid": "⚠️ Veuillez entrer une quantité valide."
+"detalleProductoModal": {
+  "image_note": "L'image est à titre de référence uniquement.",
+  "quantity": {
+    "label": "Quantité requise",
+    "placeholder": "Ex : 2 ou 0.5",
+    "units": {
+      "kg": "Kilos (kg)",
+      "lb": "Livres (lb)",
+      "units": "Unités",
+      "boxes": "Boîtes"
     },
-    "sections": {
-      "presentacion": {
-        "title": "Présentation",
-        "tipo_corte": {
-          "label": "Type de coupe",
-          "options": {
-            "select": "Sélectionner...",
-            "fileteado": "En filets",
-            "trozos": "En morceaux",
-            "molido": "Haché",
-            "tiras": "En lanières",
-            "entero": "Entier"
-          }
-        },
-        "parte_especifica": {
-          "label": "Partie spécifique",
-          "options": {
-            "lomo_fino": "Filet mignon",
-            "costilla": "Côte",
-            "pierna": "Cuisse",
-            "pecho": "Poitrine"
-          }
-        }
-      },
-      "estado_producto": {
-        "title": "État du produit",
-        "estado": {
-          "label": "État",
-          "options": {
-            "fresca": "Frais",
-            "congelada": "Surgelé",
-            "curada": "Sali"
-          }
-        },
-        "hueso": {
-          "label": "Avec ou sans os",
-          "options": {
-            "con_hueso": "Avec os",
-            "sin_hueso": "Sans os"
-          }
-        }
-      },
-      "empaque_grasa": {
-        "title": "Emballage et Gras",
-        "empaque": {
-          "label": "Emballage",
-          "options": {
-            "vacuum": "Sous vide",
-            "tray": "Barquette",
-            "bag": "Sachet"
-          }
-        },
-        "grasa": {
-          "label": "Gras",
-          "options": {
-            "con_grasa": "Avec gras",
-            "sin_grasa": "Maigre"
-          }
-        }
-      },
-      "tipo_coccion": {
-        "title": "Type de cuisson",
+    "invalid": "⚠️ Veuillez indiquer une quantité valide."
+  },
+  "sections": {
+    "presentacion": {
+      "title": "Présentation",
+      "tipo_corte": {
+        "label": "Type de coupe",
         "options": {
-          "parrilla": "Grillé",
-          "horno": "Au four",
-          "guisado": "Mijoté",
-          "frito": "Frit",
-          "otros": "Autres"
+          "select": "Sélectionner...",
+          "fileteado": "Fileté",
+          "trozos": "En morceaux",
+          "molido": "Haché",
+          "tiras": "En lanières",
+          "entero": "Entier"
         }
+      },
+      "parte_especifica": {
+        "label": "Partie spécifique",
+        "options": {
+          "lomo_fino": "Filet mignon",
+          "costilla": "Côte",
+          "pierna": "Jambe",
+          "pecho": "Poitrine"
+        }
+      }
+    },
+    "estado_producto": {
+      "title": "État du produit",
+      "estado": {
+        "label": "État",
+        "options": {
+          "fresca": "Frais",
+          "congelada": "Congelé",
+          "curada": "Salé"
+        }
+      },
+      "hueso": {
+        "label": "Avec ou sans os",
+        "options": {
+          "con_hueso": "Avec os",
+          "sin_hueso": "Désossé"
+        }
+      }
+    },
+    "empaque_grasa": {
+      "title": "Emballage et gras",
+      "empaque": {
+        "label": "Emballage",
+        "options": {
+          "vacuum": "Sous vide",
+          "tray": "Barquette",
+          "bag": "Sachet"
+        }
+      },
+      "grasa": {
+        "label": "Gras",
+        "options": {
+          "con_grasa": "Avec gras",
+          "sin_grasa": "Sans gras"
+        }
+      }
+    },
+    "tipo_coccion": {
+      "title": "Type de cuisson",
+      "options": {
+        "parrilla": "Grillé",
+        "horno": "Au four",
+        "guisado": "Mijoté",
+        "frito": "Frit",
+        "otros": "Autres"
       }
     }
   },
+  "update_button": "Mettre à jour la commande",
+  "add_button": "Ajouter à la commande"
+},
+
+"PreferenciasCliente": {
+  "fields": {
+    "delivery": {
+      "title": "Livraison et remarques",
+      "date": "Date souhaitée"
+    },
+    "comments": {
+      "label": "Commentaires supplémentaires",
+      "placeholder": "Écrivez ici vos remarques ou les détails de votre commande..."
+    }
+  }
+},
   "ordenCompraHeader": {
     "title": "BON DE COMMANDE",
     "aria": {
@@ -412,49 +427,212 @@
     },
     "na": "N/D"
   },
-  "miniCart": {
-    "title": "Votre commande",
-    "close": "Fermer le panier",
-    "unknown_product": "Produit inconnu",
-    "quantity": "Quantité :",
-    "obs_prefix": "Note :",
-    "edit": "Modifier",
-    "delete_title": "Supprimer le produit",
-    "continue": "Continuer la commande"
-  },
+"miniCart": {
+  "title": "Votre commande",
+  "close": "Fermer le panier",
+  "unknown_product": "Produit inconnu",
+  "quantity": "Quantité :",
+  "obs_prefix": "Note :",
+  "edit": "Modifier",
+  "delete_title": "Supprimer le produit",
+  "continue": "Continuer la commande",
+  "fields": {
+    "tipoCorte": "Type de coupe",
+    "parte": "Partie spécifique",
+    "estado": "État",
+    "hueso": "Os",
+    "grasa": "Gras",
+    "empaque": "Emballage",
+    "coccion": "Cuisson",
+    "fechaDeseada": "Date souhaitée",
+    "observacion": "Remarque"
+  }
+},
   "productosData": {
     "categories": {
-      "res": "Boeuf",
+      "res": "Bœuf",
       "cerdo": "Porc",
       "pollo": "Poulet",
-      "embutidos": "Saucisses",
+      "embutidos": "Charcuteries",
       "ahumados": "Fumés",
-      "especiales": "Coupes spéciales"
+      "especiales": "Coupes Spéciales"
     },
     "items": {
       "lomo_fino": {
-        "name": "Filet mignon",
-        "description": "Pièce maigre et tendre, parfaite pour le grill."
+        "name": "Filet de bœuf",
+        "description": "Morceau tendre et maigre, idéal pour le gril ou la poêle."
       },
       "costillar_res": {
-        "name": "Côtes de boeuf",
-        "description": "Coupe avec os, idéale pour le BBQ ou la cuisson lente."
+        "name": "Côtes de bœuf",
+        "description": "Parfaites pour le barbecue ou les plats mijotés."
+      },
+      "hamburguesa_res": {
+        "name": "Burger de bœuf",
+        "description": "Idéal pour le gril ou les sandwichs gourmets."
+      },
+      "carne_molida_res": {
+        "name": "Viande hachée de bœuf",
+        "description": "Polyvalente pour les sauces, tacos ou boulettes."
+      },
+      "picanha_res": {
+        "name": "Picanha",
+        "description": "Pièce brésilienne juteuse et riche en saveur, parfaite pour le gril."
+      },
+      "filete_res": {
+        "name": "Filet de bœuf tendre",
+        "description": "Coupé fin, idéal pour les sautés ou les rôtis."
+      },
+      "ribeye": {
+        "name": "Entrecôte",
+        "description": "Pièce noble, persillée pour une saveur intense."
+      },
+      "chuleton": {
+        "name": "Côte de bœuf Tomahawk",
+        "description": "Grande pièce juteuse — parfaite pour les repas en famille."
+      },
+      "tbone": {
+        "name": "T-Bone",
+        "description": "Double coupe combinant filet et contre-filet pour le gril."
+      },
+      "entrana_fina": {
+        "name": "Bavette de bœuf",
+        "description": "Saveur intense, idéale pour une cuisson rapide au gril."
+      },
+      "costillas_cerdo_bbq": {
+        "name": "Côtes de porc BBQ",
+        "description": "Tendres et savoureuses, parfaites pour le barbecue."
+      },
+      "chuletas_cerdo": {
+        "name": "Côtelettes de porc",
+        "description": "Excellentes à la poêle ou au gril, pleines de goût."
+      },
+      "lomo_cerdo": {
+        "name": "Rôti de porc",
+        "description": "Viande maigre et polyvalente, idéale à farcir ou rôtir."
+      },
+      "panceta_curada": {
+        "name": "Poitrine de porc séchée",
+        "description": "Apporte goût et croustillant à tous les plats."
+      },
+      "secreto_iberico": {
+        "name": "Secreto ibérique",
+        "description": "Coupe premium très juteuse et pleine de saveur."
+      },
+      "paleta_cerdo": {
+        "name": "Épaule de porc",
+        "description": "Idéale pour les ragoûts ou le pulled pork."
+      },
+      "solomillo_cerdo": {
+        "name": "Filet mignon de porc",
+        "description": "La coupe la plus tendre et maigre du porc."
+      },
+      "carrillera_cerdo": {
+        "name": "Joues de porc",
+        "description": "Parfaites pour les cuissons longues et tendres."
       },
       "pechuga_pollo": {
         "name": "Blanc de poulet",
-        "description": "Maigre et polyvalent, idéal pour les plats légers."
+        "description": "Viande blanche maigre, très polyvalente."
+      },
+      "alitas_pollo": {
+        "name": "Ailes de poulet",
+        "description": "Croustillantes et juteuses, parfaites en apéritif."
+      },
+      "milanesa_pollo": {
+        "name": "Escalope panée de poulet",
+        "description": "Classique et croustillante, pour tous les repas."
+      },
+      "muslo_pollo": {
+        "name": "Cuisse de poulet",
+        "description": "Juteuse et pleine de goût, parfaite pour les ragoûts."
+      },
+      "brochetas_pollo": {
+        "name": "Brochettes de poulet",
+        "description": "Prêtes à griller, assaisonnées d’herbes et de légumes."
+      },
+      "pollo_entero_deshuesado": {
+        "name": "Poulet entier désossé",
+        "description": "Prêt à farcir et à rôtir."
+      },
+      "contramuslos_pollo": {
+        "name": "Hauts de cuisse de poulet",
+        "description": "Plus juteux que le blanc, parfaits pour les plats mijotés."
+      },
+      "pechuga_pollo_rellena": {
+        "name": "Blanc de poulet farci",
+        "description": "Fourré au fromage et au jambon, prêt à cuire."
       },
       "chorizo_artesanal": {
         "name": "Chorizo artisanal",
-        "description": "Saveur intense, élaboré avec des épices sélectionnées."
+        "description": "Préparé avec des épices naturelles et de la viande sélectionnée."
+      },
+      "salchicha_artesanal": {
+        "name": "Saucisse artisanale",
+        "description": "Élaborée avec des ingrédients frais, sans conservateurs."
+      },
+      "salchicha_alemana": {
+        "name": "Saucisse allemande",
+        "description": "Épices traditionnelles, parfaite pour le gril ou les plats chauds."
+      },
+      "morcilla_asturiana": {
+        "name": "Boudin noir asturien",
+        "description": "Idéal pour les plats rustiques et mijotés."
+      },
+      "salchicha_ranchera": {
+        "name": "Saucisse ranchera",
+        "description": "Légèrement épicée, parfaite pour le barbecue."
+      },
+      "longaniza_fresca": {
+        "name": "Longaniza fraîche",
+        "description": "Délicieuse sautée ou ajoutée aux pâtes et riz."
+      },
+      "salami_cular": {
+        "name": "Salami cular",
+        "description": "Séché et assaisonné, parfait pour les apéritifs."
+      },
+      "fuet_extra": {
+        "name": "Fuet extra",
+        "description": "Saucisse catalane séchée, fine et au goût délicat."
       },
       "jamon_cocido_artesanal": {
         "name": "Jambon cuit artisanal",
-        "description": "Affiné et cuit selon des techniques traditionnelles, tendre et savoureux."
+        "description": "Fumé traditionnellement, idéal pour les sandwichs."
+      },
+      "bacon_ahumado": {
+        "name": "Bacon fumé",
+        "description": "Fines tranches croustillantes, pleines de saveur."
+      },
+      "pechuga_pavo_ahumada": {
+        "name": "Blanc de dinde fumé",
+        "description": "Viande maigre, lentement fumée pour un goût raffiné."
+      },
+      "costilla_ahumada": {
+        "name": "Côtes fumées",
+        "description": "Séché, fumé et prêt à être réchauffé."
+      },
+      "salmon_ahumado_tiras": {
+        "name": "Saumon fumé (lanières)",
+        "description": "Parfait pour le petit-déjeuner ou les salades (non carnée)."
+      },
+      "chorizo_ahumado_espanol": {
+        "name": "Chorizo espagnol fumé",
+        "description": "Affiné au paprika et fumé naturellement."
       },
       "pechuga_pavo_magra": {
         "name": "Blanc de dinde maigre",
-        "description": "Riche en protéines et pauvre en gras, idéal pour les régimes équilibrés."
+        "description": "Riche en protéines, idéal pour une alimentation saine."
+      },
+      "conejo_troceado": {
+        "name": "Lapin découpé",
+        "description": "Parfait pour les paellas, ragoûts et plats rustiques."
+      },
+      "cordero_lechal": {
+        "name": "Agneau de lait",
+        "description": "Arrière-train tendre, idéal pour la cuisson lente."
+      },
+      "carne_venado": {
+        "name": "Viande de cerf",
+        "description": "Gibier raffiné pour plats mijotés et recettes gastronomiques."
       }
     }
   }

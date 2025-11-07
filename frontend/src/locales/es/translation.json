@@ -271,91 +271,106 @@
     },
     "unknown_product": "Producto Desconocido"
   },
-  "detalleProductoModal": {
-    "image_note": "La imagen es referencial.",
-    "quantity": {
-      "label": "Cantidad requerida",
-      "placeholder": "Ej: 2 o 0.5",
-      "units": {
-        "kg": "Kilos (kg)",
-        "lb": "Libras (lb)",
-        "units": "Unidades",
-        "boxes": "Cajas"
-      },
-      "invalid": "⚠️ Por favor, indica una cantidad válida."
+"detalleProductoModal": {
+  "image_note": "La imagen es referencial.",
+  "quantity": {
+    "label": "Cantidad requerida",
+    "placeholder": "Ej: 2 o 0.5",
+    "units": {
+      "kg": "Kilos (kg)",
+      "lb": "Libras (lb)",
+      "units": "Unidades",
+      "boxes": "Cajas"
     },
-    "sections": {
-      "presentacion": {
-        "title": "Presentación",
-        "tipo_corte": {
-          "label": "Tipo de corte",
-          "options": {
-            "select": "Seleccionar...",
-            "fileteado": "Fileteado",
-            "trozos": "En trozos",
-            "molido": "Molido",
-            "tiras": "En tiras",
-            "entero": "Entero"
-          }
-        },
-        "parte_especifica": {
-          "label": "Parte específica",
-          "options": {
-            "lomo_fino": "Lomo fino",
-            "costilla": "Costilla",
-            "pierna": "Pierna",
-            "pecho": "Pecho"
-          }
-        }
-      },
-      "estado_producto": {
-        "title": "Estado del producto",
-        "estado": {
-          "label": "Estado",
-          "options": {
-            "fresca": "Fresca",
-            "congelada": "Congelada",
-            "curada": "Curada"
-          }
-        },
-        "hueso": {
-          "label": "Con hueso o sin hueso",
-          "options": {
-            "con_hueso": "Con hueso",
-            "sin_hueso": "Sin hueso"
-          }
-        }
-      },
-      "empaque_grasa": {
-        "title": "Empaque y grasa",
-        "empaque": {
-          "label": "Empaque",
-          "options": {
-            "vacuum": "Al vacío",
-            "tray": "Bandeja",
-            "bag": "Bolsa"
-          }
-        },
-        "grasa": {
-          "label": "Grasa",
-          "options": {
-            "con_grasa": "Con grasa",
-            "sin_grasa": "Sin grasa"
-          }
-        }
-      },
-      "tipo_coccion": {
-        "title": "Tipo de cocción",
+    "invalid": "⚠️ Por favor, indica una cantidad válida."
+  },
+  "sections": {
+    "presentacion": {
+      "title": "Presentación",
+      "tipo_corte": {
+        "label": "Tipo de corte",
         "options": {
-          "parrilla": "A la parrilla",
-          "horno": "Al horno",
-          "guisado": "Guisado",
-          "frito": "Frito",
-          "otros": "Otros"
+          "select": "Seleccionar...",
+          "fileteado": "Fileteado",
+          "trozos": "En trozos",
+          "molido": "Molido",
+          "tiras": "En tiras",
+          "entero": "Entero"
         }
+      },
+      "parte_especifica": {
+        "label": "Parte específica",
+        "options": {
+          "lomo_fino": "Lomo fino",
+          "costilla": "Costilla",
+          "pierna": "Pierna",
+          "pecho": "Pecho"
+        }
+      }
+    },
+    "estado_producto": {
+      "title": "Estado del producto",
+      "estado": {
+        "label": "Estado",
+        "options": {
+          "fresca": "Fresca",
+          "congelada": "Congelada",
+          "curada": "Curada"
+        }
+      },
+      "hueso": {
+        "label": "Con hueso o sin hueso",
+        "options": {
+          "con_hueso": "Con hueso",
+          "sin_hueso": "Sin hueso"
+        }
+      }
+    },
+    "empaque_grasa": {
+      "title": "Empaque y grasa",
+      "empaque": {
+        "label": "Empaque",
+        "options": {    
+          "vacuum": "Al vacío",
+          "tray": "Bandeja",
+          "bag": "Bolsa"
+        }
+      },
+      "grasa": {
+        "label": "Grasa",
+        "options": {
+          "con_grasa": "Con grasa",
+          "sin_grasa": "Sin grasa"
+        }
+      }
+    },
+    "tipo_coccion": {
+      "title": "Tipo de cocción",
+      "options": {
+        "parrilla": "A la parrilla",
+        "horno": "Al horno",
+        "guisado": "Guisado",
+        "frito": "Frito",
+        "otros": "Otros"
       }
     }
   },
+  "update_button": "Actualizar Orden",
+  "add_button": "Añadir a la Orden"
+},
+
+"PreferenciasCliente": {
+  "fields": {
+    "delivery": {
+      "title": "Entrega y observaciones",
+      "date": "Fecha deseada"
+    },
+    "comments": {
+      "label": "Comentarios adicionales",
+      "placeholder": "Escribe aquí tus observaciones o detalles del pedido..."
+    }
+  }
+},
   "ordenCompraHeader": {
     "title": "ORDEN DE COMPRA",
     "aria": {
@@ -412,16 +427,27 @@
     },
     "na": "N/A"
   },
-  "miniCart": {
-    "title": "Tu Orden",
-    "close": "Cerrar carrito",
-    "unknown_product": "Producto Desconocido",
-    "quantity": "Cantidad:",
-    "obs_prefix": "Obs:",
-    "edit": "Editar",
-    "delete_title": "Eliminar producto",
-    "continue": "Continuar con la Orden"
-  },
+"miniCart": {
+  "title": "Tu pedido",
+  "close": "Cerrar carrito",
+  "unknown_product": "Producto desconocido",
+  "quantity": "Cantidad:",
+  "obs_prefix": "Nota:",
+  "edit": "Editar",
+  "delete_title": "Eliminar producto",
+  "continue": "Continuar con el pedido",
+  "fields": {
+    "tipoCorte": "Tipo de corte",
+    "parte": "Parte específica",
+    "estado": "Estado",
+    "hueso": "Hueso",
+    "grasa": "Grasa",
+    "empaque": "Empaque",
+    "coccion": "Cocción",
+    "fechaDeseada": "Fecha deseada",
+    "observacion": "Observación"
+  }
+},
   "productosData": {
     "categories": {
       "res": "Res",
@@ -434,27 +460,179 @@
     "items": {
       "lomo_fino": {
         "name": "Lomo Fino",
-        "description": "Corte magro y tierno, ideal para parrilla."
+        "description": "Corte suave ideal para parrillas o sartén."
       },
       "costillar_res": {
         "name": "Costillar de Res",
-        "description": "Corte con hueso, perfecto para BBQ y cocciones largas."
+        "description": "Perfecto para asados y guisos."
+      },
+      "hamburguesa_res": {
+        "name": "Hamburguesa de Res",
+        "description": "Ideal para parrillas y sandwiches gourmet."
+      },
+      "carne_molida_res": {
+        "name": "Carne Molida de Res",
+        "description": "Versátil para salsas, tacos y albóndigas."
+      },
+      "picanha_res": {
+        "name": "Picanha de Res",
+        "description": "Corte brasileño jugoso y sabroso para parrilla."
+      },
+      "filete_res": {
+        "name": "Filete de Res",
+        "description": "Corte fino y suave, ideal para saltear o asar."
+      },
+      "ribeye": {
+        "name": "Ribeye",
+        "description": "Corte premium con vetas de grasa que aportan sabor."
+      },
+      "chuleton": {
+        "name": "Chuletón",
+        "description": "Corte grande y jugoso, perfecto para asados familiares."
+      },
+      "tbone": {
+        "name": "T-Bone",
+        "description": "Corte que combina solomillo y lomo, para la parrilla."
+      },
+      "entrana_fina": {
+        "name": "Entraña Fina",
+        "description": "Sabor intenso, ideal para cocción rápida a la brasa."
+      },
+      "costillas_cerdo_bbq": {
+        "name": "Costillas de Cerdo BBQ",
+        "description": "Tiernas y con sabor ahumado, para barbacoa."
+      },
+      "chuletas_cerdo": {
+        "name": "Chuletas de Cerdo",
+        "description": "Perfectas para sartén o parrilla, con mucho sabor."
+      },
+      "lomo_cerdo": {
+        "name": "Lomo de Cerdo",
+        "description": "Carne magra y versátil para hornear o rellenar."
+      },
+      "panceta_curada": {
+        "name": "Panceta Curada",
+        "description": "Ideal para dar sabor y textura crujiente a tus platos."
+      },
+      "secreto_iberico": {
+        "name": "Secreto Ibérico",
+        "description": "Corte premium de cerdo, muy jugoso y sabroso."
+      },
+      "paleta_cerdo": {
+        "name": "Paleta de Cerdo",
+        "description": "Perfecta para estofados o para preparar pulled pork."
+      },
+      "solomillo_cerdo": {
+        "name": "Solomillo de Cerdo",
+        "description": "El corte más tierno y magro del cerdo."
+      },
+      "carrillera_cerdo": {
+        "name": "Carrillera de Cerdo",
+        "description": "Ideal para cocción lenta, muy melosa."
       },
       "pechuga_pollo": {
         "name": "Pechuga de Pollo",
-        "description": "Magro y versátil, excelente para recetas ligeras."
+        "description": "Carne blanca y magra, muy versátil."
+      },
+      "alitas_pollo": {
+        "name": "Alitas de Pollo",
+        "description": "Crujientes y jugosas, perfectas para aperitivos."
+      },
+      "milanesa_pollo": {
+        "name": "Milanesa de Pollo",
+        "description": "Clásico rebozado crujiente para todo tipo de platos."
+      },
+      "muslo_pollo": {
+        "name": "Muslo de Pollo",
+        "description": "Jugoso y con sabor intenso, para guisos y asados."
+      },
+      "brochetas_pollo": {
+        "name": "Brochetas de Pollo",
+        "description": "Listas para parrilla, con especias y vegetales."
+      },
+      "pollo_entero_deshuesado": {
+        "name": "Pollo Entero Deshuesado",
+        "description": "Listo para rellenar y hornear."
+      },
+      "contramuslos_pollo": {
+        "name": "Contramuslos de Pollo",
+        "description": "Más jugosos que la pechuga, ideales para guisar."
+      },
+      "pechuga_pollo_rellena": {
+        "name": "Pechuga de Pollo Rellena",
+        "description": "Con queso y jamón, lista para cocinar."
       },
       "chorizo_artesanal": {
         "name": "Chorizo Artesanal",
-        "description": "Sabor intenso, elaborado con especias seleccionadas."
+        "description": "Hecho con especias naturales y carne seleccionada."
+      },
+      "salchicha_artesanal": {
+        "name": "Salchicha Artesanal",
+        "description": "Elaborada con ingredientes frescos y sin conservantes."
+      },
+      "salchicha_alemana": {
+        "name": "Salchicha Alemana",
+        "description": "Con especias tradicionales para parrillas y guisos."
+      },
+      "morcilla_asturiana": {
+        "name": "Morcilla Asturiana",
+        "description": "Ideal para cocidos y platos tradicionales."
+      },
+      "salchicha_ranchera": {
+        "name": "Salchicha Ranchera",
+        "description": "Sabor ligeramente picante, perfecta para asar."
+      },
+      "longaniza_fresca": {
+        "name": "Longaniza Fresca",
+        "description": "Para freír o añadir a pastas y arroces."
+      },
+      "salami_cular": {
+        "name": "Salami Cular",
+        "description": "Curado y especiado, ideal para aperitivos."
+      },
+      "fuet_extra": {
+        "name": "Fuet Extra",
+        "description": "Embutido catalán, delgado y de sabor suave."
       },
       "jamon_cocido_artesanal": {
         "name": "Jamón Cocido Artesanal",
-        "description": "Curado y cocido con técnica tradicional, suave y sabroso."
+        "description": "Sabor tradicional ahumado, ideal para sándwiches."
+      },
+      "bacon_ahumado": {
+        "name": "Bacon Ahumado",
+        "description": "Tiras de panceta curada y ahumada, crujiente."
+      },
+      "pechuga_pavo_ahumada": {
+        "name": "Pechuga de Pavo Ahumada",
+        "description": "Carne magra, ahumada lentamente."
+      },
+      "costilla_ahumada": {
+        "name": "Costilla Ahumada",
+        "description": "Curada y ahumada, lista para calentar."
+      },
+      "salmon_ahumado_tiras": {
+        "name": "Salmón Ahumado (Tiras)",
+        "description": "Para desayunos o ensaladas (aunque no es carne roja)."
+      },
+      "chorizo_ahumado_espanol": {
+        "name": "Chorizo Ahumado Español",
+        "description": "Curado con pimentón y ahumado."
       },
       "pechuga_pavo_magra": {
         "name": "Pechuga de Pavo Magra",
-        "description": "Alta en proteína y baja en grasa, ideal para dietas."
+        "description": "Carne magra, ideal para dietas saludables."
+      },
+      "conejo_troceado": {
+        "name": "Conejo Troceado",
+        "description": "Corte especial para arroces o guisos."
+      },
+      "cordero_lechal": {
+        "name": "Cordero Lechal",
+        "description": "Cuarto trasero, ideal para hornear lentamente."
+      },
+      "carne_venado": {
+        "name": "Carne de Venado",
+        "description": "Corte de caza para estofados o platos gourmet."
       }
     }
   }

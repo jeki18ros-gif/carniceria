@@ -2,15 +2,16 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'; 
-import clsx from 'clsx'; 
-import { productos, categoriasPrincipales } from './productosData'; 
-import "../styles/ListaProductos.css"; 
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import clsx from 'clsx';
+import { useProductosData } from './productosData'; // ✅ Importación correcta
+import "../styles/ListaProductos.css";
 
 // --------------------------------------------------------------------------
 // COMPONENTE: CATEGORÍAS PRINCIPALES
-const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
+const CategoriasPrincipales = ({ categoriasPrincipales, onSelectCategory, activeCategory }) => {
     const { t } = useTranslation();
+
     const categoriaVerTodo = categoriasPrincipales.find(c => c.filtro === 'Todos');
     const categoriasVisibles = categoriasPrincipales.filter(c => c.filtro !== 'Todos');
 
@@ -26,6 +27,7 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
     return (
         <div className="medium-block mb-10 p-4 rounded-xl shadow-inner">
             <div className="flex justify-start sm:justify-center overflow-x-auto pb-4 space-x-4 sm:space-x-8">
+                {/* 🔸 Botón "Ver Todo" */}
                 {categoriaVerTodo && (
                     <motion.div
                         whileHover={{ scale: 1.05 }}
@@ -49,6 +51,7 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
                     </motion.div>
                 )}
 
+                {/* 🔸 Categorías individuales */}
                 {categoriasVisibles.map((categoria) => (
                     <motion.div
                         key={categoria.id}
@@ -69,7 +72,9 @@ const CategoriasPrincipales = ({ onSelectCategory, activeCategory }) => {
                                 className="w-full h-full object-cover" 
                             />
                         </div>
-                        <p className="mt-2 text-sm font-medium">{t(`productosData.categories.${filtroToKey[categoria.filtro] || 'res'}`)}</p>
+                        <p className="mt-2 text-sm font-medium">
+                            {t(`productosData.categories.${filtroToKey[categoria.filtro] || 'res'}`)}
+                        </p>
                     </motion.div>
                 ))}
             </div>
@@ -83,6 +88,9 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
     const { t } = useTranslation();
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
     const [hoveredProduct, setHoveredProduct] = useState(null);
+
+    // ✅ Obtener los datos del hook
+    const { categoriasPrincipales, productos } = useProductosData();
 
     const normalizedSearchTerm = searchTerm.toLowerCase().trim();
 
@@ -100,33 +108,32 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
         return key ? t(`listaProductos.categories.${key}`) : t('listaProductos.headers.producto');
     };
 
-
+    // 🔍 Filtrar productos
     const productosFiltrados = productos.filter(producto => {
-        // 1. Filtrar por categoría
         const categoriaMatch = categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada;
-        
-        // 2. Filtrar por término de búsqueda (si existe)
         const searchMatch = normalizedSearchTerm === '' || 
-                    producto.nombre.toLowerCase().includes(normalizedSearchTerm) ||
-                    producto.descripcion.toLowerCase().includes(normalizedSearchTerm) ||
-                    // APLICAR CAMBIO AQUÍ: Usar operador OR (||) para un fallback a cadena vacía
-                    (producto.tipoCorte || '').toLowerCase().includes(normalizedSearchTerm) || 
-                    getDisplayCategory(producto.categoria).toLowerCase().includes(normalizedSearchTerm);
-
+            producto.nombre.toLowerCase().includes(normalizedSearchTerm) ||
+            producto.descripcion.toLowerCase().includes(normalizedSearchTerm) ||
+            (producto.tipoCorte || '').toLowerCase().includes(normalizedSearchTerm) || 
+            getDisplayCategory(producto.categoria).toLowerCase().includes(normalizedSearchTerm);
         return categoriaMatch && searchMatch;
     });
 
-    const isProductSelected = (producto) => 
-        selectedProducts.some(p => p.id === producto.id);
+    const isProductSelected = (producto) => selectedProducts.some(p => p.id === producto.id);
     const showCategories = normalizedSearchTerm === '';
+
     return (
         <div>
+            {/* CATEGORÍAS */}
             {showCategories && (
                 <CategoriasPrincipales 
+                    categoriasPrincipales={categoriasPrincipales}
                     onSelectCategory={setCategoriaSeleccionada}
                     activeCategory={categoriaSeleccionada}
                 />
             )}
+
+            {/* TÍTULO */}
             <h2 className="text-2xl font-bold text-center mb-6">
                 {normalizedSearchTerm !== '' 
                     ? t('listaProductos.results_for', { term: searchTerm })
@@ -135,10 +142,9 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                         : getDisplayCategory(categoriaSeleccionada)}
             </h2>
 
+            {/* SIN RESULTADOS */}
             {productosFiltrados.length === 0 ? (
-                <p className="text-center text-gray-500">
-                    {t('listaProductos.empty')}
-                </p>
+                <p className="text-center text-gray-500">{t('listaProductos.empty')}</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-10">
                     {productosFiltrados.map((producto) => {
@@ -149,7 +155,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                             <motion.div
                                 key={producto.id}
                                 whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(212,175,55,0.4)' }}
-                                whileTap={{ scale: 0.98 }} 
+                                whileTap={{ scale: 0.98 }}
                                 onClick={() => onSelectProduct(producto)}
                                 onMouseEnter={() => setHoveredProduct(producto)}
                                 onMouseLeave={() => setHoveredProduct(null)}
@@ -160,19 +166,18 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                                         : "hover:border-[var(--color-dorado)] hover:shadow-xl"
                                 )}
                             >
-                                {/* INDICADOR DE SELECCIÓN */}
+                                {/* 🔘 INDICADOR DE SELECCIÓN */}
                                 {isSelected && (
                                     <CheckCircleIcon className="absolute top-2 right-2 h-6 w-6 text-[var(--color-dorado)] bg-white/70 dark:bg-gray-900/70 rounded-full p-0.5 z-10" />
                                 )}
 
-                                {/* IMAGEN */}
+                                {/* 🖼️ IMAGEN */}
                                 <div className="relative">
                                     <img 
                                         src={producto.imagen} 
                                         alt={producto.nombre} 
                                         className="w-full h-40 object-cover" 
                                     />
-                                    {/* BADGES */}
                                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                                         {producto.fresco && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.fresco')}</span>}
                                         {producto.conHueso && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.con_hueso')}</span>}
@@ -180,7 +185,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                                     </div>
                                 </div>
 
-                                {/* INFO PRINCIPAL */}
+                                {/* 📦 INFO PRINCIPAL */}
                                 <div className="p-4 text-center">
                                     <p className="text-xs text-gray-500 uppercase">
                                         {getDisplayCategory(producto.categoria)}
@@ -190,7 +195,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                                     </h3>
                                 </div>
 
-                                {/* MINI RESUMEN (hover) */}
+                                {/* 🧾 MINI RESUMEN (hover) */}
                                 <AnimatePresence>
                                     {isHovered && (
                                         <motion.div
