@@ -5,48 +5,52 @@ import LanguageDetector from "i18next-browser-languagedetector";
 // Idiomas soportados
 const supportedLngs = ["es", "en", "fr"];
 
-// Carga dinámica de recursos por idioma
+// Función para cargar recursos dinámicamente desde /public/locales
 async function loadLanguageResources(lng) {
   const lang = supportedLngs.includes(lng) ? lng : "es";
-  // Evitar re-importar si el bundle ya existe
+
+  // Evitar recargar si ya existe
   if (i18n.hasResourceBundle(lang, "translation")) return;
 
-  // Nota: Vite soporta import dinámico de JSON dentro de src
-  const mod = await import(/* @vite-ignore */ `./locales/${lang}/translation.json`);
-  i18n.addResourceBundle(lang, "translation", mod.default, true, true);
+  try {
+    const response = await fetch(`/locales/${lang}/translation.json`);
+    if (!response.ok) throw new Error("Archivo no encontrado");
+    const data = await response.json();
+
+    i18n.addResourceBundle(lang, "translation", data, true, true);
+  } catch (err) {
+    console.error(`❌ Error cargando idioma ${lang}:`, err);
+  }
 }
 
+// Inicializar i18next
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    // Recursos cargados dinámicamente, arrancamos vacío
-    resources: {},
+    resources: {}, // los cargaremos dinámicamente
     supportedLngs,
     fallbackLng: "es",
-    load: "currentOnly", // evita variantes regionales (es-ES vs es)
+    load: "currentOnly",
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator", "htmlTag"],
       caches: ["localStorage"],
     },
-    react: { useSuspense: false }, // evita Suspense para cambios de idioma
-    returnEmptyString: false,
+    react: { useSuspense: false },
   });
 
-// Pre-carga español como fallback y el idioma inicial detectado
+// Precargar el idioma por defecto y el detectado
 void loadLanguageResources("es");
 void loadLanguageResources(i18n.language || "es");
 
-// Mantener sincronizado <html lang> y asegurar persistencia
+// Actualizar <html lang> y guardar idioma actual
 i18n.on("languageChanged", (lng) => {
-  try {
-    document.documentElement.setAttribute("lang", lng);
-    localStorage.setItem("i18nextLng", lng);
-  } catch {}
+  document.documentElement.setAttribute("lang", lng);
+  localStorage.setItem("i18nextLng", lng);
 });
 
-// API global: cambiar idioma con carga dinámica previa
+// API para cambiar idioma
 export async function setLanguage(lng) {
   await loadLanguageResources(lng);
   await i18n.changeLanguage(lng);
