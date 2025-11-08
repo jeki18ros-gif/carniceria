@@ -12,8 +12,8 @@ import "../styles/ListaProductos.css";
 const CategoriasPrincipales = ({ categoriasPrincipales, onSelectCategory, activeCategory }) => {
     const { t } = useTranslation();
 
-    const categoriaVerTodo = categoriasPrincipales.find(c => c.filtro === 'Todos');
-    const categoriasVisibles = categoriasPrincipales.filter(c => c.filtro !== 'Todos');
+const categoriaVerTodo = categoriasPrincipales?.find?.(c => c.filtro === 'Todos');
+const categoriasVisibles = categoriasPrincipales?.filter?.(c => c.filtro !== 'Todos') || [];
 
     const filtroToKey = {
         Res: 'res',
@@ -52,7 +52,7 @@ const CategoriasPrincipales = ({ categoriasPrincipales, onSelectCategory, active
                 )}
 
                 {/* 🔸 Categorías individuales */}
-                {categoriasVisibles.map((categoria) => (
+                {categoriasVisibles?.map((categoria) => (
                     <motion.div
                         key={categoria.id}
                         whileHover={{ scale: 1.05 }}
@@ -125,13 +125,14 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
     return (
         <div>
             {/* CATEGORÍAS */}
-            {showCategories && (
-                <CategoriasPrincipales 
-                    categoriasPrincipales={categoriasPrincipales}
-                    onSelectCategory={setCategoriaSeleccionada}
-                    activeCategory={categoriaSeleccionada}
-                />
-            )}
+           {showCategories && Array.isArray(categoriasPrincipales) && (
+  <CategoriasPrincipales 
+      categoriasPrincipales={categoriasPrincipales}
+      onSelectCategory={setCategoriaSeleccionada}
+      activeCategory={categoriaSeleccionada}
+  />
+)}
+
 
             {/* TÍTULO */}
             <h2 className="text-2xl font-bold text-center mb-6">
