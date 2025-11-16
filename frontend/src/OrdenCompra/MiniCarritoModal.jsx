@@ -20,11 +20,14 @@ export function MiniCarritoModal({
   const isDark = theme === "dark";
   const { productos } = useProductosData();
 
+  // Corrección 1: Asegura que 'seleccionados' sea un objeto, incluso si es undefined.
   // Convertimos seleccionados en array con datos del producto
-  const itemsEnCarrito = Object.entries(seleccionados)
+  const itemsEnCarrito = Object.entries(seleccionados || {})
     .map(([idStr, data]) => {
       const id = parseInt(idStr);
-      const productoInfo = productos.find((p) => p.id === id);
+      // Asume que 'productos' es un array o undefined. Si es undefined, .find() fallará.
+      // (Se asume que useProductosData garantiza que 'productos' es un array o es tratado como tal).
+      const productoInfo = productos.find((p) => p.id === id); 
       return {
         id,
         nombre: productoInfo?.nombre || t("miniCart.unknown_product"),
@@ -60,85 +63,86 @@ export function MiniCarritoModal({
     );
   }
 
- // 🔁 Función para traducir valores según la clave JSON
-const traducirValor = (key, value) => {
-  if (!value) return "";
+  // 🔁 Función para traducir valores según la clave JSON
+  const traducirValor = (key, value) => {
+    if (!value) return "";
 
-  // Normaliza: minúsculas, sin tildes, con guiones bajos
-  const normalize = (str) =>
-    str
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim()
-      .replace(/\s+/g, "_");
+    // Normaliza: minúsculas, sin tildes, con guiones bajos
+    const normalize = (str) =>
+      str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .replace(/\s+/g, "_");
 
-  let normalizedValue = normalize(value);
+    let normalizedValue = normalize(value);
 
-  // 🧩 Correcciones de excepciones más comunes
-  const reemplazos = {
-    "a_la_parrilla": "parrilla",
-    "al_vacio": "vacuum",
-    "al_horno": "horno",
-    "bandeja": "tray",
-    "bolsa": "bag",
-    "con_grasa": "con_grasa",
-    "sin_grasa": "sin_grasa",
-    "con_hueso": "con_hueso",
-    "sin_hueso": "sin_hueso",
-    "fileteado": "fileteado",
-    "en_trozos": "trozos",
-    "en_tiras": "tiras",
-    "entero": "entero",
-    "molido": "molido",
-    "fresco": "fresca",
-    "curado": "curada",
+    // 🧩 Correcciones de excepciones más comunes
+    const reemplazos = {
+      "a_la_parrilla": "parrilla",
+      "al_vacio": "vacuum",
+      "al_horno": "horno",
+      "bandeja": "tray",
+      "concentrado": "concentrado", // Agregado para consistencia, aunque no estaba en la lista de reemplazos.
+      "bolsa": "bag",
+      "con_grasa": "con_grasa",
+      "sin_grasa": "sin_grasa",
+      "con_hueso": "con_hueso",
+      "sin_hueso": "sin_hueso",
+      "fileteado": "fileteado",
+      "en_trozos": "trozos",
+      "en_tiras": "tiras",
+      "entero": "entero",
+      "molido": "molido",
+      "fresco": "fresca",
+      "curado": "curada",
+    };
+
+    if (reemplazos[normalizedValue]) {
+      normalizedValue = reemplazos[normalizedValue];
+    }
+
+    switch (key) {
+      case "tipoCorte":
+        return t(
+          `detalleProductoModal.sections.presentacion.tipo_corte.options.${normalizedValue}`,
+          value
+        );
+      case "parte":
+        return t(
+          `detalleProductoModal.sections.presentacion.parte_especifica.options.${normalizedValue}`,
+          value
+        );
+      case "estado":
+        return t(
+          `detalleProductoModal.sections.estado_producto.estado.options.${normalizedValue}`,
+          value
+        );
+      case "hueso":
+        return t(
+          `detalleProductoModal.sections.estado_producto.hueso.options.${normalizedValue}`,
+          value
+        );
+      case "grasa":
+        return t(
+          `detalleProductoModal.sections.empaque_grasa.grasa.options.${normalizedValue}`,
+          value
+        );
+      case "empaque":
+        return t(
+          `detalleProductoModal.sections.empaque_grasa.empaque.options.${normalizedValue}`,
+          value
+        );
+      case "coccion":
+        return t(
+          `detalleProductoModal.sections.tipo_coccion.options.${normalizedValue}`,
+          value
+        );
+      default:
+        return value;
+    }
   };
-
-  if (reemplazos[normalizedValue]) {
-    normalizedValue = reemplazos[normalizedValue];
-  }
-
-  switch (key) {
-    case "tipoCorte":
-      return t(
-        `detalleProductoModal.sections.presentacion.tipo_corte.options.${normalizedValue}`,
-        value
-      );
-    case "parte":
-      return t(
-        `detalleProductoModal.sections.presentacion.parte_especifica.options.${normalizedValue}`,
-        value
-      );
-    case "estado":
-      return t(
-        `detalleProductoModal.sections.estado_producto.estado.options.${normalizedValue}`,
-        value
-      );
-    case "hueso":
-      return t(
-        `detalleProductoModal.sections.estado_producto.hueso.options.${normalizedValue}`,
-        value
-      );
-    case "grasa":
-      return t(
-        `detalleProductoModal.sections.empaque_grasa.grasa.options.${normalizedValue}`,
-        value
-      );
-    case "empaque":
-      return t(
-        `detalleProductoModal.sections.empaque_grasa.empaque.options.${normalizedValue}`,
-        value
-      );
-    case "coccion":
-      return t(
-        `detalleProductoModal.sections.tipo_coccion.options.${normalizedValue}`,
-        value
-      );
-    default:
-      return value;
-  }
-};
 
   // 🧾 Modal del carrito
   return (
@@ -219,24 +223,24 @@ const traducirValor = (key, value) => {
                     <span className="font-bold">{item.cantidad}</span>
                   </p>
 
-                  {item.especificaciones &&
-                    Object.entries(item.especificaciones).map(
-                      ([key, value]) =>
-                        value &&
-                        key !== "observacion" && (
-                          <p
-                            key={key}
-                            className={`text-xs mt-0.5 truncate ${
-                              isDark ? "text-gray-400" : "text-gray-500"
-                            }`}
-                          >
-                            {t(`miniCart.fields.${key}`, key)}:{" "}
-                            <span className="font-medium">
-                              {traducirValor(key, value)}
-                            </span>
-                          </p>
-                        )
-                    )}
+                  {/* Corrección 2: Asegura que item.especificaciones sea un objeto (o vacío) antes de llamar a Object.entries() */}
+                  {Object.entries(item.especificaciones || {}).map(
+                    ([key, value]) =>
+                      value &&
+                      key !== "observacion" && (
+                        <p
+                          key={key}
+                          className={`text-xs mt-0.5 truncate ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          {t(`miniCart.fields.${key}`, key)}:{" "}
+                          <span className="font-medium">
+                            {traducirValor(key, value)}
+                          </span>
+                        </p>
+                      )
+                  )}
 
                   {item.especificaciones?.observacion && (
                     <p

@@ -21,26 +21,31 @@ export default function MenuGrid() {
     otros: imgOtros,
   };
 
-  // Generamos la lista de categorías desde el JSON
-  const CATEGORIES = Object.keys(t("menu.categories", { returnObjects: true }));
+  // 1. CORRECCIÓN: Usamos || {} para asegurar que Object.keys() reciba un objeto
+  const CATEGORIES = Object.keys(t("menu.categories", { returnObjects: true }) || {});
 
   // Generamos los productos según el idioma
   const PRODUCTS = useMemo(() => {
-    const items = t("menu.items", { returnObjects: true });
+    // 2. CORRECCIÓN: Usamos || {} para asegurar que items sea un objeto (o vacío)
+    const items = t("menu.items", { returnObjects: true }) || {};
+    
     return Object.entries(items).map(([key, value], i) => ({
       id: i + 1,
       category: key,
-      title: value.title,
-      desc: value.description,
-      chips: value.chips,
+      title: value?.title, // Usamos ? para protección extra
+      desc: value?.description, // Usamos ? para protección extra
+      chips: value?.chips || [], // Si chips es undefined, aseguramos un [] para el map en ProductCard
       img: IMAGES[key],
     }));
   }, [t]);
 
   // Filtro por categoría activa
   const list = useMemo(() => {
-    if (active === "todos") return PRODUCTS;
-    return PRODUCTS.filter((p) => p.category === active);
+    // Si PRODUCTS es undefined (aunque es muy poco probable ahora), usamos un array vacío
+    const safeProducts = PRODUCTS || []; 
+    
+    if (active === "todos") return safeProducts;
+    return safeProducts.filter((p) => p.category === active);
   }, [active, PRODUCTS]);
 
   return (
@@ -68,9 +73,10 @@ export default function MenuGrid() {
                 key={catKey}
                 onClick={() => setActive(catKey)}
                 className={`min-w-[6rem] sm:min-w-[7rem] px-4 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide rounded-full transition-all duration-300 focus:outline-none
-                  ${isActive
-                    ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black scale-105 shadow-md"
-                    : "bg-[#0a0a0a] text-white hover:bg-[#d4af37] hover:text-black"
+                  ${
+                    isActive
+                      ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black scale-105 shadow-md"
+                      : "bg-[#0a0a0a] text-white hover:bg-[#d4af37] hover:text-black"
                   }`}
               >
                 {catLabel}
@@ -118,7 +124,9 @@ function ProductCard({ p }) {
 
           {/* Chips */}
           <div className="flex flex-wrap gap-2 pt-3 mt-auto">
-            {p.chips.map((c, i) => (
+            {/* Si `p.chips` es undefined (aunque lo prevenimos arriba), esto fallaría. 
+            Aseguramos que siempre sea un array. */}
+            {(p.chips || []).map((c, i) => (
               <span
                 key={i}
                 className="chip inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-sm transition-transform duration-300 hover:scale-105"
