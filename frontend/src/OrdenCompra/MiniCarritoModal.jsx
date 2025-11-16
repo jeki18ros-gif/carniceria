@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+// src/components/MiniCarritoModal.jsx
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProductosData } from "./productosData";
@@ -8,52 +9,37 @@ import { useTheme } from "../Theme/ThemeContext";
 
 export function MiniCarritoModal({
   seleccionados,
-  onToggleVisibility = () => {},
-  onContinue = () => {},
-  onRemoveItem = () => {},
-  onEditItem = () => {},
+  onToggleVisibility,
+  onContinue,
+  onRemoveItem,
+  onEditItem,
   isVisible,
 }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { productos } = useProductosData();
 
-  // Productos pueden venir undefined mientras cargan -> fallback a []
-  const { productos } = useProductosData() || {};
-  const productosSafe = Array.isArray(productos) ? productos : [];
+  // Convertimos seleccionados en array con datos del producto
+  const itemsEnCarrito = Object.entries(seleccionados)
+    .map(([idStr, data]) => {
+      const id = parseInt(idStr);
+      const productoInfo = productos.find((p) => p.id === id);
+      return {
+        id,
+        nombre: productoInfo?.nombre || t("miniCart.unknown_product"),
+        imagen:
+          productoInfo?.imagen ||
+          "https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item",
+        ...data,
+      };
+    })
+    .filter((item) => item.cantidad);
 
-  // Creamos itemsEnCarrito con useMemo para no recalcular en cada render
-  const itemsEnCarrito = useMemo(() => {
-    const sel = seleccionados || {};
-    // Object.entries sobre {} es seguro
-    return Object.entries(sel)
-      .map(([idStr, data]) => {
-        const id = Number.parseInt(idStr, 10);
-        if (Number.isNaN(id)) return null;
-
-        const productoInfo = productosSafe.find((p) => p?.id === id);
-
-        return {
-          id,
-          nombre: productoInfo?.nombre || t("miniCart.unknown_product"),
-          imagen:
-            productoInfo?.imagen ||
-            "https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item",
-          cantidad: data?.cantidad ?? 0,
-          especificaciones:
-            data && typeof data === "object" ? data.especificaciones : undefined,
-          // mantén el resto de campos que necesites del "data" original
-          _raw: data,
-        };
-      })
-      .filter(Boolean) // quita nulls por ids inválidos
-      .filter((item) => item.cantidad && item.cantidad > 0);
-  }, [seleccionados, productosSafe, t]);
-
-  // Si no hay nada seleccionado y no está visible, no renderizamos nada.
+  // Si no hay nada seleccionado ni visible, no mostrar nada
   if (!isVisible && itemsEnCarrito.length === 0) return null;
 
-  // Botón flotante cuando hay items pero el modal no está visible
+  // 🛒 Botón flotante
   if (!isVisible && itemsEnCarrito.length > 0) {
     return (
       <motion.button
@@ -74,83 +60,87 @@ export function MiniCarritoModal({
     );
   }
 
-  const traducirValor = (key, value) => {
-    if (!value) return "";
+ // 🔁 Función para traducir valores según la clave JSON
+const traducirValor = (key, value) => {
+  if (!value) return "";
 
-    const normalize = (str) =>
-      String(str)
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/\s+/g, "_");
+  // Normaliza: minúsculas, sin tildes, con guiones bajos
+  const normalize = (str) =>
+    str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .replace(/\s+/g, "_");
 
-    let normalizedValue = normalize(value);
+  let normalizedValue = normalize(value);
 
-    const reemplazos = {
-      a_la_parrilla: "parrilla",
-      al_vacio: "vacuum",
-      al_horno: "horno",
-      bandeja: "tray",
-      bolsa: "bag",
-      con_grasa: "con_grasa",
-      sin_grasa: "sin_grasa",
-      con_hueso: "con_hueso",
-      sin_hueso: "sin_hueso",
-      fileteado: "fileteado",
-      en_trozos: "trozos",
-      en_tiras: "tiras",
-      entero: "entero",
-      molido: "molido",
-      fresco: "fresca",
-      curado: "curada",
-    };
-
-    if (reemplazos[normalizedValue]) {
-      normalizedValue = reemplazos[normalizedValue];
-    }
-
-    switch (key) {
-      case "tipoCorte":
-        return t(
-          `detalleProductoModal.sections.presentacion.tipo_corte.options.${normalizedValue}`,
-          value
-        );
-      case "parte":
-        return t(
-          `detalleProductoModal.sections.presentacion.parte_especifica.options.${normalizedValue}`,
-          value
-        );
-      case "estado":
-        return t(
-          `detalleProductoModal.sections.estado_producto.estado.options.${normalizedValue}`,
-          value
-        );
-      case "hueso":
-        return t(
-          `detalleProductoModal.sections.estado_producto.hueso.options.${normalizedValue}`,
-          value
-        );
-      case "grasa":
-        return t(
-          `detalleProductoModal.sections.empaque_grasa.grasa.options.${normalizedValue}`,
-          value
-        );
-      case "empaque":
-        return t(
-          `detalleProductoModal.sections.empaque_grasa.empaque.options.${normalizedValue}`,
-          value
-        );
-      case "coccion":
-        return t(
-          `detalleProductoModal.sections.tipo_coccion.options.${normalizedValue}`,
-          value
-        );
-      default:
-        return value;
-    }
+  // 🧩 Correcciones de excepciones más comunes
+  const reemplazos = {
+    "a_la_parrilla": "parrilla",
+    "al_vacio": "vacuum",
+    "al_horno": "horno",
+    "bandeja": "tray",
+    "bolsa": "bag",
+    "con_grasa": "con_grasa",
+    "sin_grasa": "sin_grasa",
+    "con_hueso": "con_hueso",
+    "sin_hueso": "sin_hueso",
+    "fileteado": "fileteado",
+    "en_trozos": "trozos",
+    "en_tiras": "tiras",
+    "entero": "entero",
+    "molido": "molido",
+    "fresco": "fresca",
+    "curado": "curada",
   };
 
+  if (reemplazos[normalizedValue]) {
+    normalizedValue = reemplazos[normalizedValue];
+  }
+
+  switch (key) {
+    case "tipoCorte":
+      return t(
+        `detalleProductoModal.sections.presentacion.tipo_corte.options.${normalizedValue}`,
+        value
+      );
+    case "parte":
+      return t(
+        `detalleProductoModal.sections.presentacion.parte_especifica.options.${normalizedValue}`,
+        value
+      );
+    case "estado":
+      return t(
+        `detalleProductoModal.sections.estado_producto.estado.options.${normalizedValue}`,
+        value
+      );
+    case "hueso":
+      return t(
+        `detalleProductoModal.sections.estado_producto.hueso.options.${normalizedValue}`,
+        value
+      );
+    case "grasa":
+      return t(
+        `detalleProductoModal.sections.empaque_grasa.grasa.options.${normalizedValue}`,
+        value
+      );
+    case "empaque":
+      return t(
+        `detalleProductoModal.sections.empaque_grasa.empaque.options.${normalizedValue}`,
+        value
+      );
+    case "coccion":
+      return t(
+        `detalleProductoModal.sections.tipo_coccion.options.${normalizedValue}`,
+        value
+      );
+    default:
+      return value;
+  }
+};
+
+  // 🧾 Modal del carrito
   return (
     <AnimatePresence>
       {isVisible && itemsEnCarrito.length > 0 && (
@@ -176,6 +166,7 @@ export function MiniCarritoModal({
             flexDirection: "column",
           }}
         >
+          {/* Botón de cerrar */}
           <button
             onClick={onToggleVisibility}
             className={`absolute top-3 right-3 p-1 rounded-full transition-colors duration-200 ${
@@ -186,6 +177,7 @@ export function MiniCarritoModal({
             <XMarkIcon className="w-5 h-5 text-gray-500" />
           </button>
 
+          {/* Título */}
           <h3
             className={clsx(
               "text-xl font-bold p-4 border-b transition-colors duration-300",
@@ -195,6 +187,7 @@ export function MiniCarritoModal({
             {t("miniCart.title")} ({itemsEnCarrito.length})
           </h3>
 
+          {/* Lista de items */}
           <div
             className="flex flex-col gap-4 px-4 py-4 overflow-y-auto"
             style={{ flexGrow: 1 }}
@@ -212,16 +205,9 @@ export function MiniCarritoModal({
                   alt={item.nombre}
                   className="w-14 h-14 object-cover rounded-lg flex-shrink-0 shadow-md"
                   onError={(e) => {
-                    // Handler típico: si falla la carga, ponemos placeholder
-                    // e.target puede ser HTMLImageElement
-                    // Protegemos con try/catch por seguridad
-                    try {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item";
-                    } catch (err) {
-                      /* noop */
-                    }
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item";
                   }}
                 />
                 <div className="flex-grow min-w-0">
@@ -233,9 +219,7 @@ export function MiniCarritoModal({
                     <span className="font-bold">{item.cantidad}</span>
                   </p>
 
-                  {/* Protegemos especificaciones: solo si es objeto y no null */}
                   {item.especificaciones &&
-                    typeof item.especificaciones === "object" &&
                     Object.entries(item.especificaciones).map(
                       ([key, value]) =>
                         value &&
@@ -266,6 +250,7 @@ export function MiniCarritoModal({
                   )}
                 </div>
 
+                {/* Botones de acción */}
                 <div className="flex flex-col gap-1 items-center flex-shrink-0 ml-2">
                   <button
                     onClick={() => onEditItem(item)}
@@ -285,6 +270,7 @@ export function MiniCarritoModal({
             ))}
           </div>
 
+          {/* Botón Continuar */}
           <div
             className={clsx(
               "px-4 py-3 border-t flex flex-col gap-2 transition-colors duration-300",
