@@ -5,19 +5,24 @@ import "../styles/FeaturesGrid.css";
 
 export default function FeaturesGrid() {
   const { t } = useTranslation();
-  const data = t("featuresGrid", { returnObjects: true });
+  const data = t("featuresGrid", { returnObjects: true }) || {}; 
 
   // Convertimos el objeto de features a un array para mapear fácilmente
   const FEATURES = useMemo(() => {
-    return Object.entries(data.features).map(([key, value]) => ({
+    // ✅ CORRECCIÓN 2: Aseguramos que 'data.features' sea un objeto, si es undefined.
+    // Usamos el encadenamiento opcional (?) y luego un fallback || {}
+    const featuresObject = data.features || {}; 
+
+    // Object.entries() ahora recibe un objeto seguro (vacío o lleno)
+    return Object.entries(featuresObject).map(([key, value]) => ({
       id: key,
-      title: value.title,
-      description: value.description,
+      // Usamos el encadenamiento opcional para proteger las propiedades anidadas
+      title: value?.title, 
+      description: value?.description,
       icon: getIcon(key),
     }));
   }, [data]);
-
-  return (
+return (
     <motion.section
       id="nosotros"
       className="features-section py-20 transition-colors duration-700"
@@ -27,14 +32,15 @@ export default function FeaturesGrid() {
       viewport={{ once: true, amount: 0.2 }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center mt-15">
-        {/* Título principal */}
+        {/* Título principal: Usamos encadenamiento opcional para proteger 'data' aquí también */}
         <h3 className="text-3xl sm:text-6xl font-extrabold mb-12 uppercase tracking-wide">
           {data.title}
         </h3>
 
         {/* Cuadrícula de valores */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => (
+          {/* ✅ Aseguramos que FEATURES sea un array (aunque useMemo ya lo hace, es extra seguro) */}
+          {(FEATURES || []).map((f) => ( 
             <Feature key={f.id} icon={f.icon} title={f.title} desc={f.description} />
           ))}
         </div>
@@ -46,7 +52,8 @@ export default function FeaturesGrid() {
           <div className="scrolling-text-wrapper">
             <div className="scrolling-text">
               {Array.from({ length: 12 }).map((_, i) => (
-                <span key={i}>{data.banner_delivery}</span>
+                // Usamos encadenamiento opcional para proteger 'data' aquí también
+                <span key={i}>{data.banner_delivery}</span> 
               ))}
             </div>
           </div>

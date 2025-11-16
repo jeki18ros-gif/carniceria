@@ -1,48 +1,37 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import HttpBackend from "i18next-http-backend"; // 👈 Nuevo import
 
 // Idiomas soportados
 const supportedLngs = ["es", "en", "fr"];
 
-// Función para cargar recursos dinámicamente desde /public/locales
-async function loadLanguageResources(lng) {
-  const lang = supportedLngs.includes(lng) ? lng : "es";
-
-  // Evitar recargar si ya existe
-  if (i18n.hasResourceBundle(lang, "translation")) return;
-
-  try {
-    const response = await fetch(`/locales/${lang}/translation.json`);
-    if (!response.ok) throw new Error("Archivo no encontrado");
-    const data = await response.json();
-
-    i18n.addResourceBundle(lang, "translation", data, true, true);
-  } catch (err) {
-    console.error(`❌ Error cargando idioma ${lang}:`, err);
-  }
-}
+// ❌ Se ELIMINA la función loadLanguageResources manual
 
 // Inicializar i18next
 i18n
+  .use(HttpBackend) // 👈 Usa el backend para cargar los archivos JSON
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {}, // los cargaremos dinámicamente
+    // Configuración del backend para apuntar a la carpeta /public/locales
+    backend: {
+      loadPath: '/locales/{{lng}}/translation.json', 
+    },
+    
+    // Ya no necesitamos definir 'resources' manualmente, el backend los trae
     supportedLngs,
-    fallbackLng: "es",
+    fallbackLng: "es", 
     load: "currentOnly",
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator", "htmlTag"],
       caches: ["localStorage"],
     },
-    react: { useSuspense: false },
+    react: { useSuspense: true }, // ✅ Habilitado para usar <Suspense>
   });
 
-// Precargar el idioma por defecto y el detectado
-void loadLanguageResources("es");
-void loadLanguageResources(i18n.language || "es");
+// ❌ Se ELIMINAN las llamadas precarga no controladas (void loadLanguageResources(...))
 
 // Actualizar <html lang> y guardar idioma actual
 i18n.on("languageChanged", (lng) => {
@@ -50,9 +39,9 @@ i18n.on("languageChanged", (lng) => {
   localStorage.setItem("i18nextLng", lng);
 });
 
-// API para cambiar idioma
+// API para cambiar idioma (simplificada)
 export async function setLanguage(lng) {
-  await loadLanguageResources(lng);
+  // changeLanguage automáticamente usará el HttpBackend para cargar el recurso
   await i18n.changeLanguage(lng);
 }
 

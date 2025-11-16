@@ -21,27 +21,29 @@ export default function MenuGrid() {
     otros: imgOtros,
   };
 
-  // 1. CORRECCIÓN: Usamos || {} para asegurar que Object.keys() reciba un objeto
+  // ✅ CORRECCIÓN 1: Usamos || {} para asegurar que Object.keys() reciba un objeto
+  // Esto previene el error 'Cannot convert undefined or null to object' si la traducción falla.
   const CATEGORIES = Object.keys(t("menu.categories", { returnObjects: true }) || {});
 
   // Generamos los productos según el idioma
   const PRODUCTS = useMemo(() => {
-    // 2. CORRECCIÓN: Usamos || {} para asegurar que items sea un objeto (o vacío)
-    const items = t("menu.items", { returnObjects: true }) || {};
-    
+    // ✅ CORRECCIÓN 2: Usamos || {} para asegurar que items sea un objeto (o vacío)
+    const items = t("menu.items", { returnObjects: true }) || {}; 
+
+    // Object.entries() ahora recibe un objeto seguro
     return Object.entries(items).map(([key, value], i) => ({
       id: i + 1,
       category: key,
-      title: value?.title, // Usamos ? para protección extra
-      desc: value?.description, // Usamos ? para protección extra
-      chips: value?.chips || [], // Si chips es undefined, aseguramos un [] para el map en ProductCard
+      title: value?.title,
+      desc: value?.description,
+      // Aseguramos que 'chips' sea un array (o vacío) para el map en ProductCard
+      chips: value?.chips || [], 
       img: IMAGES[key],
     }));
   }, [t]);
 
   // Filtro por categoría activa
   const list = useMemo(() => {
-    // Si PRODUCTS es undefined (aunque es muy poco probable ahora), usamos un array vacío
     const safeProducts = PRODUCTS || []; 
     
     if (active === "todos") return safeProducts;
@@ -124,8 +126,7 @@ function ProductCard({ p }) {
 
           {/* Chips */}
           <div className="flex flex-wrap gap-2 pt-3 mt-auto">
-            {/* Si `p.chips` es undefined (aunque lo prevenimos arriba), esto fallaría. 
-            Aseguramos que siempre sea un array. */}
+            {/* Protección local en caso de que PRODUCTS fallara: */}
             {(p.chips || []).map((c, i) => (
               <span
                 key={i}
