@@ -9,22 +9,49 @@ export default function Testimonials() {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
 
-  // 🗂️ Cargar reseñas iniciales desde el JSON de i18n
+  // Cargamos las reviews iniciales de i18n de forma segura.
+  // Si la clave existe pero está vacía, devolvemos [].
   const INITIAL_REVIEWS = useMemo(() => {
-    const reviews = t("testimonials.initial_reviews", { returnObjects: true });
-    return Object.entries(reviews).map(([key, value], i) => ({
-      id: i + 1,
-      title: value.title,
-      body: value.body,
-      name: value.name,
-      stars: 5, // ⭐ Por defecto todas con 5 estrellas (puedes hacerlo dinámico si luego lo agregas)
+    const raw = t("testimonials.initial_reviews", { returnObjects: true });
+
+    // Si viene null/undefined/""/string -> fallback a []
+    if (!raw || (typeof raw !== "object" && !Array.isArray(raw))) return [];
+
+    // Si viene como array, lo usamos tal cual (mapeando campos esperados).
+    if (Array.isArray(raw)) {
+      return raw.map((value, i) => ({
+        id: value?.id ?? i + 1,
+        title: value?.title ?? "",
+        body: value?.body ?? "",
+        name: value?.name ?? "",
+        stars: value?.stars ?? 5,
+      }));
+    }
+
+    // Si viene como objeto (ej. { review1: {...}, review2: {...} })
+    return Object.entries(raw).map(([key, value], i) => ({
+      id: value?.id ?? i + 1,
+      title: value?.title ?? "",
+      body: value?.body ?? "",
+      name: value?.name ?? "",
+      stars: value?.stars ?? 5,
     }));
   }, [t]);
 
-  const [reviews, setReviews] = useState(INITIAL_REVIEWS);
+  // Estado iniciado con seguridad: si INITIAL_REVIEWS es falsy, []
+  const [reviews, setReviews] = useState(() => INITIAL_REVIEWS || []);
 
   const handleAddReview = (newReview) => {
-    setReviews([newReview, ...reviews]);
+    if (!newReview) return;
+    // Aseguramos id único simple — podrías mejorar con uuid si quieres.
+    const next = {
+      id: newReview.id ?? Date.now(),
+      title: newReview.title ?? "",
+      body: newReview.body ?? "",
+      name: newReview.name ?? t("testimonials.anonymous", "Anónimo"),
+      stars: newReview.stars ?? 5,
+    };
+    setReviews((prev) => [next, ...(prev || [])]);
     setShowForm(false);
   };
 
@@ -38,13 +65,11 @@ export default function Testimonials() {
       viewport={{ once: true, amount: 0.2 }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-15 text-center">
-        {/* 🏷️ Títulos */}
         <h3 className="testimonials-title">
           <span className="title-small">{t("testimonials.title_small")}</span>
           <span className="title-big">{t("testimonials.title_big")}</span>
         </h3>
 
-        {/* 🧾 Botón */}
         <div className="text-center mb-8">
           <button
             onClick={() => setShowForm(true)}
@@ -54,7 +79,6 @@ export default function Testimonials() {
           </button>
         </div>
 
-        {/* 💬 Modal */}
         {showForm && (
           <FormComent
             isOpen={showForm}
@@ -63,11 +87,11 @@ export default function Testimonials() {
           />
         )}
 
-        {/* 🎞️ Carrusel */}
         <div className="carousel-container">
           <div className="carousel-track">
-            {[...reviews, ...reviews].map((r, i) => (
-              <ReviewCard key={`${r.id}-${i}`} data={r} />
+            {/* Protegemos reviews: si es undefined usamos [] */}
+            {[...(reviews || []), ...(reviews || [])].map((r, i) => (
+              <ReviewCard key={`${r?.id ?? "r"}-${i}`} data={r} />
             ))}
           </div>
         </div>

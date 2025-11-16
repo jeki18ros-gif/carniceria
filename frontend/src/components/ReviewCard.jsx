@@ -1,16 +1,11 @@
 import React from 'react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid'
 import { Smile, Frown, Meh, Laugh, Angry, User as UserIcon } from "lucide-react"
-import '../styles/ReviewCard.css' // ⬅️ Importa los estilos de aislamiento
-
-// 🎨 Iconos Lucide
+import '../styles/ReviewCard.css' 
 const LucideIconMap = { Angry, Frown, Meh, Smile, Laugh, Default: UserIcon }
-
-// ⭐ Estrellas adaptativas
 function Stars({ count = 5 }) {
   return (
     <div className="mt-2 flex items-center gap-1">
-      {/* Genera un array con la longitud del conteo para mapear */}
       {Array.from({ length: count }).map((_, i) => (
         <svg
           key={i}
@@ -25,10 +20,7 @@ function Stars({ count = 5 }) {
     </div>
   )
 }
-
-// 😄 Avatar según puntuación (Se mantiene, usa clases Lucide)
 function AvatarEmoji({ stars }) {
-  // ... (el código de AvatarEmoji se mantiene igual)
   const base = 'w-10 h-10 transition-transform duration-300 hover:scale-110'
   let IconComponent
   let colorClass
@@ -63,10 +55,6 @@ function AvatarEmoji({ stars }) {
     ? <IconComponent className={`${base} ${colorClass}`} />
     : <ExclamationTriangleIcon className={`${base} text-gray-400`} />
 }
-
-
-// 🧾 Tarjeta individual de reseña
-// 🧾 Tarjeta individual de reseña
 export default function ReviewCard({ data }) {
   return (
     <article className="review-card">
