@@ -1,209 +1,145 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+
 import {
   XMarkIcon,
-  ExclamationTriangleIcon,
-  UserIcon,
   PencilSquareIcon,
-  StarIcon,
-} from "@heroicons/react/24/solid";
-import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
-import { Smile, Frown, Meh, Laugh, Angry } from "lucide-react";
-
+  StarIcon as SolidStar,
+} from '@heroicons/react/24/solid';
+import { StarIcon as OutlineStar } from '@heroicons/react/24/outline';
+import { Smile, Frown, Meh, Laugh, Angry, User as UserIcon } from 'lucide-react';
+const DORADO = '#d4af37';
 const LucideIconMap = { Angry, Frown, Meh, Smile, Laugh, Default: UserIcon };
-const DORADO = "#d4af37";
+function useThemeWatcher() {
+  const [theme, setTheme] = useState(
+    document.documentElement.classList.contains("dark") ? "dark" : "light"
+  );
 
-/* ===================== CONFIGURACIÓN DE CALIFICACIÓN ===================== */
+  useEffect(() => {
+    const root = document.documentElement;
+    const observer = new MutationObserver(() => {
+      setTheme(root.classList.contains("dark") ? "dark" : "light");
+    });
+
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}
 function useRatingConfig(stars, t) {
+  const labels = useMemo(
+    () => t("formComent.rating.labels", { returnObjects: true }),
+    [t]
+  );
+
   return useMemo(() => {
-    const labels = t("formComent.rating.labels", { returnObjects: true });
     switch (stars) {
-      case 1:
-        return { color: "#dc2626", text: labels.very_bad, iconName: "Angry" };
-      case 2:
-        return { color: "#f97316", text: labels.bad, iconName: "Frown" };
-      case 3:
-        return { color: "#facc15", text: labels.ok, iconName: "Meh" };
-      case 4:
-        return { color: "#22c55e", text: labels.good, iconName: "Smile" };
-      case 5:
-        return { color: "#16a34a", text: labels.excellent, iconName: "Laugh" };
-      default:
-        return { color: "#9ca3af", text: labels.none, iconName: "Default" };
+      case 1: return { color: "#dc2626", text: labels.very_bad, iconName: "Angry" };
+      case 2: return { color: "#f97316", text: labels.bad, iconName: "Frown" };
+      case 3: return { color: "#facc15", text: labels.ok, iconName: "Meh" };
+      case 4: return { color: "#22c55e", text: labels.good, iconName: "Smile" };
+      case 5: return { color: "#16a34a", text: labels.excellent, iconName: "Laugh" };
+      default: return { color: "#9ca3af", text: labels.none, iconName: "Default" };
     }
-  }, [stars, t]);
+  }, [stars, labels]);
 }
-
-/* ===================== AVATAR ===================== */
-function ProfileAvatar({ stars, t }) {
-  const config = useRatingConfig(stars, t);
-  const IconComponent = LucideIconMap[config.iconName] || LucideIconMap.Default;
-
+function InputField({ label, helper, children }) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-2 mt-4">
-      <div className="relative w-16 h-16">
-        <svg className="w-full h-full" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="45" fill={config.color + "20"} />
-        </svg>
-        <div
-          className="absolute inset-0 flex items-center justify-center text-white"
-          style={{ color: config.color }}
-        >
-          <IconComponent className="w-8 h-8" />
-        </div>
-      </div>
-      <span
-        className="text-sm font-semibold flex items-center space-x-1 mt-2"
-        style={{ color: config.color }}
-      >
-        {config.text}
-      </span>
-    </div>
-  );
-}
-
-/* ===================== LOGIN SIMULADO ===================== */
-function LoginSimulator({ onLoginSuccess, t }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [error, setError] = useState(null);
-
-  const inputClasses =
-    "w-full rounded-xl p-3 outline-none border transition-colors bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-yellow-600 dark:focus:border-yellow-500 shadow-sm";
-  const errorClasses =
-    "flex items-center text-sm p-3 bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 rounded-xl";
-  const loginContainerClasses =
-    "space-y-4 p-5 bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-inner border border-gray-200 dark:border-gray-700";
-
-  const handleLogin = () => {
-    if (!email.includes("@") || password.length < 6 || !displayName.trim()) {
-      return setError(t("formComent.login.errors.fill_all"));
-    }
-    onLoginSuccess(displayName);
-  };
-
-  return (
-    <div className={loginContainerClasses}>
-      <h3 className="text-xl font-bold text-gray-800 dark:text-white border-b border-yellow-600/50 pb-2">
-        {t("formComent.login.title")}
-      </h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
-        <b className="font-semibold">{t("formComent.login.simulation")}</b>{" "}
-        {t("formComent.login.intro")}
-      </p>
-
-      <input
-        type="email"
-        placeholder={t("formComent.login.labels.email")}
-        value={email}
-        className={inputClasses}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setError(null);
-        }}
-      />
-      <input
-        type="password"
-        placeholder={t("formComent.login.labels.password")}
-        value={password}
-        className={inputClasses}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setError(null);
-        }}
-      />
-      <input
-        type="text"
-        placeholder={t("formComent.login.labels.displayName")}
-        value={displayName}
-        className={inputClasses}
-        onChange={(e) => {
-          setDisplayName(e.target.value);
-          setError(null);
-        }}
-      />
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={errorClasses}
-        >
-          <ExclamationTriangleIcon className="h-5 w-5 mr-2" /> {error}
-        </motion.div>
+    <label className="block space-y-2">
+      <span className="block font-semibold">{label}</span>
+      {children}
+      {helper && (
+        <small className="block text-right text-xs text-gray-500">
+          {helper}
+        </small>
       )}
-      <button
-        onClick={handleLogin}
-        type="button"
-        className="w-full py-3 rounded-xl font-bold text-gray-900 bg-yellow-400 hover:bg-yellow-500 transition-all shadow-md mt-4"
-      >
-        {t("formComent.login.actions.simulate_login")}
-      </button>
-    </div>
+    </label>
   );
 }
-
-/* ===================== SELECTOR DE ESTRELLAS ===================== */
-function StarSelector({ value, onChange, disabled }) {
-  const baseClasses = "text-4xl transition-transform duration-150";
-
+const StarSelector = React.memo(({ value, onChange }) => {
   return (
-    <div
-      className={`flex space-x-2 cursor-pointer ${
-        disabled ? "opacity-50 pointer-events-none" : ""
-      }`}
-    >
+    <div className="flex space-x-3 cursor-pointer">
       {Array.from({ length: 5 }).map((_, i) => {
         const filled = i < value;
+
         return (
-          <motion.div
+          <motion.button
             key={i}
-            whileHover={!disabled ? { scale: 1.15 } : {}}
-            whileTap={!disabled ? { scale: 0.9 } : {}}
-            onClick={() => !disabled && onChange(i + 1)}
-            className={baseClasses}
+            type="button"
+            whileHover={{ scale: 1.15, rotate: -3 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => onChange(i + 1)}
+            className="transition-transform"
           >
             {filled ? (
-              <StarIcon className="w-8 h-8" style={{ color: DORADO }} />
+              <SolidStar
+                className="w-4 h-8 drop-shadow"
+                style={{ color: DORADO }}
+              />
             ) : (
-              <StarIconOutline className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              <OutlineStar
+                className="w-9 h-12"
+                style={{ color: DORADO }}
+              />
             )}
-          </motion.div>
+          </motion.button>
         );
       })}
     </div>
   );
-}
+});
+function ProfileAvatar({ stars, t }) {
+  const cfg = useRatingConfig(stars, t);
+  const IconComponent = LucideIconMap[cfg.iconName] || LucideIconMap.Default;
 
-/* ===================== PANEL DE RESEÑA ===================== */
+  return (
+    <div className="flex flex-col items-center space-y-2 mt-2">
+      <div className="relative w-16 h-16">
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 100 100"
+          role="img"
+          aria-hidden
+        >
+          <circle cx="50" cy="50" r="45" fill={cfg.color + "22"} />
+        </svg>
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ color: cfg.color }}
+        >
+          <IconComponent className="w-8 h-8" />
+        </div>
+      </div>
+
+      <span className="text-sm font-semibold" style={{ color: cfg.color }}>
+        {cfg.text}
+      </span>
+    </div>
+  );
+}
 export default function FormComent({ onSubmit, onClose, isOpen }) {
   const { t } = useTranslation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [formData, setFormData] = useState({ title: "", body: "", stars: 5 });
+  const theme = useThemeWatcher();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    body: "",
+    stars: 5,
+    name: "",
+  });
+
   const [formError, setFormError] = useState(null);
-  const [theme, setTheme] = useState("light");
 
+  /* Evitar scroll en modal */
   useEffect(() => {
-    const root = document.documentElement;
-    const observer = new MutationObserver(() =>
-      setTheme(root.classList.contains("dark") ? "dark" : "light")
-    );
-    setTheme(root.classList.contains("dark") ? "dark" : "light");
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
+    if (isOpen) document.body.classList.add("overflow-hidden");
+    else document.body.classList.remove("overflow-hidden");
 
-  useEffect(() => {
-    document.body.classList.toggle("overflow-hidden", isOpen);
+    return () => document.body.classList.remove("overflow-hidden");
   }, [isOpen]);
-
-  const handleLoginSuccess = (name) => {
-    setIsAuthenticated(true);
-    setUserName(name);
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormError(null);
@@ -214,61 +150,69 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
       if (words.length > 100) return;
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData((p) => ({ ...p, [name]: value }));
   };
-
-  const isFormValid = useMemo(() => {
-    const wordCount = formData.body.trim().split(/\s+/).filter(Boolean).length;
-    return (
-      isAuthenticated &&
-      formData.title.trim().length > 0 &&
-      formData.body.trim().length > 0 &&
-      wordCount >= 5 &&
-      formData.stars > 0
-    );
-  }, [isAuthenticated, formData]);
 
   const bodyWordCount = formData.body.trim().split(/\s+/).filter(Boolean).length;
 
+  /* Validación final */
+  const isFormValid = useMemo(() => {
+    return (
+      formData.title.trim().length > 0 &&
+      bodyWordCount >= 5 &&
+      formData.stars > 0 &&
+      /^[a-zA-ZÀ-ÿ\u00f1\u00d1 ]{2,40}$/.test(formData.name.trim())
+    );
+  }, [formData, bodyWordCount]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isFormValid)
+
+    if (!isFormValid) {
       return setFormError(t("formComent.form.messages.invalid_form"));
+    }
 
     onSubmit({
       ...formData,
-      name: userName,
       id: Date.now(),
       timestamp: new Date().toISOString(),
     });
 
-    setFormError(
-      t("formComent.form.messages.success", { userName: userName })
-    );
-    setTimeout(onClose, 1500);
+    setFormError(t("formComent.form.messages.success", { userName: formData.name }));
+
+    setTimeout(onClose, 1200);
   };
 
+  /* -------------------------------------
+        INPUT STYLES
+  ------------------------------------- */
   const inputClasses =
-    "w-full rounded-xl p-3 outline-none border transition-colors text-base";
+    "w-full rounded-xl p-3 outline-none border transition-colors text-base shadow-sm";
   const baseInputStyles =
     theme === "dark"
       ? "bg-gray-800 border-gray-600 text-white focus:border-yellow-500"
       : "bg-white border-gray-300 text-gray-900 focus:border-yellow-600";
+
   const submitButtonClasses = `w-full py-3 rounded-xl font-bold text-gray-900 text-lg mt-6 ${
     isFormValid
       ? "bg-yellow-400 hover:bg-yellow-500"
       : "bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
   }`;
+
   const formErrorClasses = `p-3 rounded-xl text-sm text-center font-medium ${
     formError?.includes("Gracias")
       ? "bg-green-100 dark:bg-green-800 text-green-700"
       : "bg-red-100 dark:bg-red-800 text-red-700"
   }`;
 
+  /* -------------------------------------
+        RENDER
+  ------------------------------------- */
   return (
     <AnimatePresence>
       {isOpen && (
         <div className="formcoment fixed inset-0 z-[100] font-sans">
+          {/* Fondo */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
@@ -277,7 +221,8 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
             onClick={onClose}
           />
 
-          <motion.div
+          {/* Panel */}
+          <motion.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -286,13 +231,15 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
               theme === "dark"
                 ? "bg-gray-900 text-white border-gray-700"
                 : "bg-white text-gray-900 border-gray-200"
-            } flex flex-col overflow-y-auto`}
+            } flex flex-col overflow-y-auto rounded-l-3xl`}
           >
+            {/* Header */}
             <div className="sticky top-0 p-6 flex justify-between items-center border-b bg-inherit">
               <h2 className="text-2xl font-extrabold flex items-center space-x-2">
                 <PencilSquareIcon className="h-6 w-6 text-yellow-500" />
                 <span>{t("formComent.form.title")}</span>
               </h2>
+
               <button
                 onClick={onClose}
                 className="hover:scale-110 transition p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -301,25 +248,16 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
               </button>
             </div>
 
+            {/* Body */}
             <form
               onSubmit={handleSubmit}
               className="p-6 space-y-6 flex-grow overflow-y-auto"
             >
-              {!isAuthenticated ? (
-                <LoginSimulator onLoginSuccess={handleLoginSuccess} t={t} />
-              ) : (
-                <div className="p-4 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded-xl flex items-center space-x-3 font-medium">
-                  <UserIcon className="h-5 w-5" />
-                  <span>
-                    {t("formComent.form.session_as")} <b>{userName}</b>
-                  </span>
-                </div>
-              )}
-
-              <label className="block space-y-2">
-                <span className="block font-semibold">
-                  {t("formComent.form.fields.title.label")}
-                </span>
+              {/* Título */}
+              <InputField
+                label={t("formComent.form.fields.title.label")}
+                helper={`${formData.title.length}/40`}
+              >
                 <input
                   name="title"
                   value={formData.title}
@@ -328,27 +266,18 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
                     "formComent.form.fields.title.placeholder"
                   )}
                   className={`${inputClasses} ${baseInputStyles}`}
-                  disabled={!isAuthenticated}
                 />
-                <small className="block text-right text-xs text-gray-500">
-                  {formData.title.length}/40
-                </small>
-              </label>
+              </InputField>
 
-              <label className="block space-y-2">
-                <span className="block font-semibold">
-                  {t("formComent.form.fields.body.label")}
-                </span>
+              {/* Cuerpo */}
+              <InputField label={t("formComent.form.fields.body.label")}>
                 <textarea
                   name="body"
                   rows="5"
                   value={formData.body}
                   onChange={handleChange}
-                  placeholder={t(
-                    "formComent.form.fields.body.placeholder"
-                  )}
+                  placeholder={t("formComent.form.fields.body.placeholder")}
                   className={`${inputClasses} ${baseInputStyles} resize-y`}
-                  disabled={!isAuthenticated}
                 />
                 <small
                   className={`block text-right text-xs font-medium ${
@@ -358,8 +287,9 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
                   {bodyWordCount} / 100{" "}
                   {t("formComent.form.fields.body.counter_suffix")}
                 </small>
-              </label>
+              </InputField>
 
+              {/* Rating */}
               <div className="space-y-4 pt-4">
                 <span className="block font-semibold">
                   {t("formComent.form.fields.rating.label")}
@@ -367,13 +297,26 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <StarSelector
                     value={formData.stars}
-                    onChange={(v) => setFormData({ ...formData, stars: v })}
-                    disabled={!isAuthenticated}
+                    onChange={(v) =>
+                      setFormData((p) => ({ ...p, stars: v }))
+                    }
                   />
                   <ProfileAvatar stars={formData.stars} t={t} />
                 </div>
               </div>
 
+              {/* Nombre (al final – opción 3) */}
+              <InputField label={t("formComent.login.labels.displayName")}>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder={t("formComent.login.labels.displayName")}
+                  className={`${inputClasses} ${baseInputStyles}`}
+                />
+              </InputField>
+
+              {/* Mensaje error o éxito */}
               {formError && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -384,6 +327,7 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
                 </motion.div>
               )}
 
+              {/* Botón enviar */}
               <button
                 type="submit"
                 className={submitButtonClasses}
@@ -391,13 +335,8 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
               >
                 {t("formComent.form.actions.submit")}
               </button>
-
-              <div className="pt-4 text-center text-xs text-gray-500">
-                <PencilSquareIcon className="h-4 w-4 inline-block mr-1" />
-                {t("formComent.form.helper.note")}
-              </div>
             </form>
-          </motion.div>
+          </motion.aside>
         </div>
       )}
     </AnimatePresence>

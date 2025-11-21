@@ -25,10 +25,10 @@ export default function LanguageSelector() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 bg-white/80 px-3 py-2 rounded-xl shadow-md hover:shadow-lg transition"
+        className="flex items-center gap-1 bg-white/80 px-2 py-1 sm:px-3 sm:py-2 rounded-xl shadow-md hover:shadow-lg transition"
       >
-        <Globe2 className="w-5 h-5 text-gray-700 " />
-        <span>{current.flag}</span>
+        <Globe2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 " />
+        <span className="text-sm">{current.flag}</span>
       </button>
 
       <AnimatePresence>
