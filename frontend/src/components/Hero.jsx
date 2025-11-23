@@ -16,20 +16,30 @@ export default function Hero() {
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Imagen de fondo */}
-      <img
-        src={bg}
-        alt={t("hero.image_alt")}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03]"
-        loading="eager"
-      />
+      {/* Imagen de fondo (solo visible en pantallas medianas hacia arriba) */}
+<img
+  src={bg}
+  alt={t("hero.image_alt")}
+  className="hidden md:block absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03]"
+  loading="eager"
+/>
 
-      {/* Capa de degradado */}
-      <div
-        className="absolute inset-0 
-        bg-gradient-to-b from-gray-50/10 via-gray-50/5 to-gray-50/20 
-        dark:from-black/80 dark:via-black/60 dark:to-black/90 
-        transition-colors duration-700"
-      />
+{/* Capa de degradado */}
+<div
+  className="
+    absolute inset-0
+    /* Desktop - degradado original */
+    md:bg-gradient-to-b md:from-white-100/10 md:via-white-50/5 md:to-white-50/20
+    md:dark:from-black/80 md:dark:via-black/60 md:dark:to-black/90
+
+    /* Mobile - fondo rojizo tipo carne */
+    bg-gradient-to-b from-[#8b1e1e]/80 via-[#b83232]/60 to-[#330000]/90
+    dark:from-[#400000]/80 dark:via-[#7a0f0f]/60 dark:to-[#000000]/70
+
+    transition-colors duration-700
+  "
+/>
+
 
       {/* Contenido centrado */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 sm:px-12 text-center">

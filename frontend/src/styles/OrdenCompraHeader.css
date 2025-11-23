@@ -106,6 +106,20 @@
   }  
     .back-btn span {     display: none;   }   
     .header-logo img {     height: 3rem;     width: 3rem;   } } 
+
+.header-button {
+border: none; /* 1. Elimina el borde dorado */
+background: transparent; /* 2. Asegura un fondo transparente */
+padding: 0.2rem; /* 3. Reduce el relleno (padding) al mínimo */
+color: inherit; /* 4. Hereda el color del texto/icono del contenedor padre si es necesario */
+transform: none; /* 5. Quita cualquier transformación por defecto */
+transition: all 0.2s ease;
+}
+.header-button:hover {
+background: transparent; /* 6. Quita el fondo del hover */
+transform: scale(1.1); /* 7. Opcional: añade un pequeño efecto de escala al icono */
+}
+
 @media (max-width: 480px) {   
     .orden-header {     width: 96%;     
         border-radius: 1.4rem;   }   
