@@ -42,11 +42,7 @@
   background-color: var(--menu-bg-dark);
   color: var(--menu-text-dark);
 }
-
-/* Botones de categorías — mantienen fondo amarillo */
 .menu-section button {
-  background: linear-gradient(to right, #facc15, #eab308);
-  color: #111 !important;
   border: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

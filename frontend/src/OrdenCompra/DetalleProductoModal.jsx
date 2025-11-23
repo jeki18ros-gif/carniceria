@@ -81,19 +81,19 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
   return (
     <AnimatePresence>
       <motion.div
-        role="dialog"
-        aria-modal="true"
-        className={`detalle-modal-overlay fixed inset-0 flex items-center justify-center z-50 p-4 ah-theme ${theme === 'dark' ? 'dark-mode' : 'light-mode'}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+  role="dialog"
+  aria-modal="true"
+  className={`detalle-modal-overlay fixed inset-0 flex items-start justify-center z-50 p-4 ah-theme overflow-y-auto ${theme === 'dark' ? 'dark-mode' : 'light-mode'}`}
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+>
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 50, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="detalle-modal relative max-w-5xl w-full overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-8"
+         className="detalle-modal relative max-w-5xl w-full max-h-[95vh] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-8"
         >
           <button
             onClick={onClose}

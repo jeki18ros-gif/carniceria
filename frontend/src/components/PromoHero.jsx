@@ -19,13 +19,24 @@ export default function PromoHero() {
       <img
         src={bg}
         alt={data.image_alt}
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="lazy"
+        className="hidden md:block absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03]"
+        loading="eager"
       />
 
       {/* Capa de mezcla oscura */}
       <div
-        className="absolute inset-0 bg-black/60 mix-blend-multiply transition-colors duration-500"
+        className="
+    absolute inset-0
+    /* Desktop - degradado original */
+    md:bg-gradient-to-b md:from-white-100/10 md:via-white-50/5 md:to-white-50/20
+    md:dark:from-black/80 md:dark:via-black/60 md:dark:to-black/90
+
+    /* Mobile - fondo rojizo tipo carne */
+    bg-gradient-to-b from-[#8b1e1e]/80 via-[#b83232]/60 to-[#330000]/90
+    dark:from-[#400000]/80 dark:via-[#7a0f0f]/60 dark:to-[#330000]/70
+
+    transition-colors duration-700
+  "
         aria-hidden="true"
       />
 
@@ -55,7 +66,7 @@ export default function PromoHero() {
             className="mt-8 accent-block inline-flex items-center justify-center 
                        rounded-2xl px-6 py-3 text-base font-bold uppercase tracking-widest 
                        shadow-xl hover:scale-105 hover:shadow-2xl active:scale-95 
-                       transition-all duration-300"
+                       transition-all duration-300 background-color:#facc15 "
           >
             {data.cta_contact}
             <svg

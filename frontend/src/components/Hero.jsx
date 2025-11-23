@@ -34,7 +34,7 @@ export default function Hero() {
 
     /* Mobile - fondo rojizo tipo carne */
     bg-gradient-to-b from-[#8b1e1e]/80 via-[#b83232]/60 to-[#330000]/90
-    dark:from-[#400000]/80 dark:via-[#7a0f0f]/60 dark:to-[#000000]/70
+    dark:from-[#400000]/80 dark:via-[#7a0f0f]/60 dark:to-[#330000]/70
 
     transition-colors duration-700
   "
