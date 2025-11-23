@@ -48,7 +48,7 @@ body {
 .btn,
 button,
 .link-btn {
-  background: rgba(8, 8, 8, 0.35) !important;
+  background: rgba(255,255,255,0.35) !important;
   color: #111; /* texto negro */
   border: 2px solid #facc15; /* borde dorado */
  @apply inline-flex items-center justify-center gap-2
