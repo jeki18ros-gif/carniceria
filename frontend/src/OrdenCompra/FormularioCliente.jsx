@@ -20,16 +20,23 @@ export function FormularioCliente({
   const [entrega, setEntrega] = useState('');
   const [fechaEntrega, setFechaEntrega] = useState('');
   const [horario, setHorario] = useState('');
-  
+
   const { productos } = useProductosData();
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
-  
   const { t } = useTranslation();
+
+  const isDark = theme === 'dark';
+
+  const inputStyle = `
+    border rounded-xl px-4 py-3 text-lg min-w-full
+    ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
+             : 'bg-white border-gray-300 text-gray-900'}
+  `;
 
   return (
     <div
-      className={`shadow-xl rounded-2xl p-4 sm:p-6 max-w-3xl mx-auto transition-colors duration-300
+      className={`
+        shadow-xl rounded-2xl p-6 sm:p-8 max-w-3xl mx-auto transition-colors duration-300
         ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}
       `}
     >
@@ -38,7 +45,7 @@ export function FormularioCliente({
       <motion.button
         onClick={onGoBack}
         className={`
-          flex items-center gap-2 text-base mb-5 font-medium transition-colors
+          flex items-center gap-2 text-lg mb-6 font-medium transition-colors
           p-2 sm:p-3 rounded-full
           ${isDark 
             ? 'text-yellow-400 hover:text-yellow-300' 
@@ -46,32 +53,28 @@ export function FormularioCliente({
         `}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        aria-label={t('formularioCliente.actions.go_back')}
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ArrowLeft className="w-6 h-6" />
         {t('formularioCliente.actions.go_back')}
       </motion.button>
 
-      <h2 className="text-2xl font-semibold mb-4">
+      <h2 className="text-3xl font-bold mb-6">
         {t('formularioCliente.title')}
       </h2>
 
       {/* FORMULARIO */}
       <form 
         onSubmit={onSubmit} 
-        className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
 
-        {/* Inputs generales (más cómodos) */}
+        {/* Inputs */}
         <input
           required
           placeholder={t('formularioCliente.fields.name.placeholder')}
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base w-full 
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={inputStyle}
         />
 
         <input
@@ -80,10 +83,7 @@ export function FormularioCliente({
           placeholder={t('formularioCliente.fields.phone.placeholder')}
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base w-full
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={inputStyle}
         />
 
         <input
@@ -92,10 +92,7 @@ export function FormularioCliente({
           placeholder={t('formularioCliente.fields.email.placeholder')}
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base w-full
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={inputStyle}
         />
 
         <input
@@ -103,24 +100,24 @@ export function FormularioCliente({
           placeholder={t('formularioCliente.fields.address.placeholder')}
           value={direccion}
           onChange={(e) => setDireccion(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base w-full
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={inputStyle}
         />
 
         <select
           required
           value={entrega}
           onChange={(e) => setEntrega(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base col-span-1 sm:col-span-2
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={`${inputStyle} md:col-span-2`}
         >
-          <option value="">{t('formularioCliente.fields.delivery_method.label')}</option>
-          <option value="tienda">{t('formularioCliente.fields.delivery_method.options.pickup')}</option>
-          <option value="domicilio">{t('formularioCliente.fields.delivery_method.options.delivery')}</option>
+          <option value="">
+            {t('formularioCliente.fields.delivery_method.label')}
+          </option>
+          <option value="tienda">
+            {t('formularioCliente.fields.delivery_method.options.pickup')}
+          </option>
+          <option value="domicilio">
+            {t('formularioCliente.fields.delivery_method.options.delivery')}
+          </option>
         </select>
 
         <input
@@ -128,25 +125,20 @@ export function FormularioCliente({
           type="date"
           value={fechaEntrega}
           onChange={(e) => setFechaEntrega(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base col-span-2
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={`${inputStyle} md:col-span-2`}
         />
 
         <input
           type="time"
           value={horario}
           onChange={(e) => setHorario(e.target.value)}
-          className={`border rounded-md px-3 py-3 text-base col-span-2
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
-          `}
+          className={`${inputStyle} md:col-span-2`}
         />
 
         {/* Advertencia */}
         <div
-          className={`col-span-2 rounded-lg p-4 text-sm transition-colors
+          className={`
+            md:col-span-2 rounded-xl p-4 text-base transition-colors
             ${isDark 
               ? 'bg-yellow-900 text-yellow-200' 
               : 'bg-yellow-50 text-yellow-800'}
@@ -155,17 +147,18 @@ export function FormularioCliente({
           {t('formularioCliente.warnings.pricing')}
         </div>
 
-        {/* Resumen del pedido */}
+        {/* Resumen */}
         <div
-          className={`col-span-2 rounded-lg p-4 text-sm
+          className={`
+            md:col-span-2 rounded-xl p-4
             ${isDark ? 'bg-gray-800' : 'bg-gray-50'}
           `}
         >
-          <h3 className="font-semibold text-lg mb-2">
+          <h3 className="font-semibold text-xl mb-4">
             {t('formularioCliente.summary_title')}
           </h3>
 
-          <div className="flex flex-col gap-3 max-h-64 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-4 max-h-64 overflow-y-auto pr-1">
             {Object.entries(seleccionados).map(([idStr, item]) => {
               const id = parseInt(idStr);
               const productoInfo = productos.find(p => p.id === id);
@@ -173,29 +166,30 @@ export function FormularioCliente({
               return (
                 <div
                   key={id}
-                  className={`flex items-center gap-3 border-b border-dashed pb-2
+                  className={`
+                    flex items-center gap-4 border-b border-dashed pb-3
                     ${isDark ? 'border-gray-700' : 'border-gray-300'}
                   `}
                 >
                   <img
                     src={productoInfo?.imagen || 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item'}
                     alt={productoInfo?.nombre || item.nombre}
-                    className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                    className="w-14 h-14 object-cover rounded-lg flex-shrink-0"
                     onError={(e) => { e.target.src = 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item'; }}
                   />
 
                   <div className="flex-grow min-w-0">
-                    <p className="font-semibold text-sm truncate">
+                    <p className="font-semibold text-lg truncate">
                       {productoInfo?.nombre || item.nombre}
                     </p>
                   </div>
 
                   <button
                     onClick={() => onRemoveItem(id)}
-                    className="text-red-500 hover:text-red-400 transition-colors font-bold text-lg p-1 leading-none"
+                    className="text-red-500 hover:text-red-400 transition-colors font-bold text-xl p-1 leading-none"
                     title={t('formularioCliente.actions.delete_item')}
                   >
-                    X
+                    ×
                   </button>
                 </div>
               );
@@ -208,16 +202,15 @@ export function FormularioCliente({
           placeholder={t('formularioCliente.fields.comments.placeholder')}
           value={comentarios}
           onChange={(e) => setComentarios(e.target.value)}
-          className={`border rounded-md px-3 py-3 col-span-2 text-base
-            ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                     : 'bg-white border-gray-300 text-gray-900'}
+          className={`
+            ${inputStyle} md:col-span-2 h-28 resize-none
           `}
         />
 
-        {/* Botón enviar */}
+        {/* Enviar */}
         <button
           type="submit"
-          className="col-span-2 py-3 font-semibold mt-4 bg-yellow-500 hover:bg-yellow-600 text-black rounded-lg transition-colors"
+          className="md:col-span-2 py-4 mt-2 text-xl font-semibold bg-yellow-500 hover:bg-yellow-600 text-black rounded-xl transition-colors"
         >
           {t('formularioCliente.actions.submit')}
         </button>
