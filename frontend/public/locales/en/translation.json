@@ -267,7 +267,8 @@
     "summary_title": "Your Order Summary:",
     "actions": {
       "submit": "Submit Order and Await Quote",
-      "delete_item": "Remove Product"
+      "delete_item": "Remove Product",
+      "go_back": "Back to Products"
     },
     "unknown_product": "Unknown Product"
   },

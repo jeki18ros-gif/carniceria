@@ -267,7 +267,8 @@
     "summary_title": "Resumen de tu pedido:",
     "actions": {
       "submit": "Enviar Pedido y Esperar Cotización",
-      "delete_item": "Eliminar producto"
+      "delete_item": "Eliminar producto",
+      "go_back": "Volver a Productos"
     },
     "unknown_product": "Producto Desconocido"
   },

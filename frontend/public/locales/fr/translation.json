@@ -267,7 +267,8 @@
     "summary_title": "Résumé de votre commande :",
     "actions": {
       "submit": "Envoyer la commande et attendre le devis",
-      "delete_item": "Supprimer le produit"
+      "delete_item": "Supprimer le produit",     
+      "go_back": "Retour aux produits"
     },
     "unknown_product": "Produit inconnu"
   },

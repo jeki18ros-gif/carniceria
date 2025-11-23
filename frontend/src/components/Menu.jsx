@@ -82,7 +82,7 @@ return (
             ${
               isActive
                 ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-yellow-888 scale-105 shadow-md"
-                : "bg-white/50 text-gray-800 border-transparent hover:bg-yellow-400/80 hover:text-black dark:bg-transparent dark:text-gray-200 dark:border-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-black"
+                : "bg-white/50 text-gray-800 border-yellow hover:bg-yellow-400/80 hover:text-black dark:bg-transparent dark:text-gray-200 dark:border-yellow-500 dark:hover:bg-yellow-500 dark:hover:text-black"
             }`}
         >
           {catLabel}

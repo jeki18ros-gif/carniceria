@@ -35,9 +35,17 @@ export default function LanguageSelector({ isMobileMenu = false, closeMenu = () 
           <li
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
-            className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-200 rounded-lg text-gray-800 ${
-              i18n.language === lang.code ? "font-bold bg-gray-100" : "font-normal"
-            }`}
+            // APLICAMOS CLASES DARK A LAS OPCIONES DEL MENÚ MÓVIL
+            className={`
+              flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg transition-colors
+              text-gray-800 hover:bg-gray-200
+              dark:text-white dark:hover:bg-gray-700 
+              ${
+                i18n.language === lang.code 
+                  ? "font-bold bg-gray-100 dark:bg-gray-800" // Opción seleccionada
+                  : "font-normal"
+              }
+            `}
           >
             <span>{lang.flag}</span>
             <span>{lang.name}</span>
@@ -66,16 +74,28 @@ export default function LanguageSelector({ isMobileMenu = false, closeMenu = () 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            // Posición absoluta en la derecha para escritorio
-            className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg overflow-hidden z-50"
+            // ESTILO PRINCIPAL DEL CONTENEDOR (ESCRITORIO)
+            // CLARO: Fondo blanco, sombra estándar
+            // OSCURO: Fondo muy oscuro, sombra oscura, borde más claro
+            className="
+              absolute right-0 mt-2 w-36 rounded-lg shadow-lg overflow-hidden z-50
+              bg-white text-gray-800 dark:bg-gray-800 dark:text-white dark:shadow-2xl dark:border dark:border-gray-700
+            "
           >
             {languages.map((lang) => (
               <li
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
-                className={`flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                  i18n.language === lang.code ? "font-semibold" : ""
-                }`}
+                // APLICAMOS CLASES DARK A LAS OPCIONES DEL MENÚ ESCRITORIO
+                className={`
+                  flex items-center gap-2 px-4 py-2 cursor-pointer transition-colors
+                  hover:bg-gray-100 dark:hover:bg-gray-700
+                  ${
+                    i18n.language === lang.code 
+                      ? "font-semibold bg-gray-50 dark:bg-gray-700" // Opción seleccionada
+                      : ""
+                  }
+                `}
               >
                 <span>{lang.flag}</span>
                 <span>{lang.name}</span>

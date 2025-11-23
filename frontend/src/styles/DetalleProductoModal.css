@@ -62,7 +62,7 @@
 /* ✨ Botones Dorados */
 .detalle-modal .boton-dorado {
   background-color: var(--color-dorado);
-  color: var(--ah-text-light); /* Aseguramos que el texto del botón sea oscuro */
+  color: var(--ah-text);
   font-weight: 700;
   border: none;
   border-radius: 0.75rem;

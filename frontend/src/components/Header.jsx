@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/Logo-BENITO.jpg";
-// Importamos LanguageSelector sin renombrar (LanguageSwitcher no está en el código)
 import LanguageSelector from "../components/LanguageSwitcher"; 
 import { useTranslation } from "react-i18next";
-import { Globe2 } from "lucide-react"; // Importamos Globe2 para el botón móvil de idioma
+import { Globe2 } from "lucide-react";
 
 import {
   SunIcon,
@@ -200,8 +199,11 @@ export default function Header() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              // Posicionamiento para que aparezca debajo del botón de idioma
-              className="absolute top-full right-4 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50"
+              className="
+                absolute top-full right-4 mt-1 rounded-xl shadow-xl z-50
+                bg-white border border-gray-100
+                dark:bg-gray-800 dark:border-gray-700
+              "
             >
               {/* Usamos el LanguageSelector adaptado con la prop 'isMobileMenu' */}
               <LanguageSelector isMobileMenu={true} closeMenu={closeAllMenus} /> 

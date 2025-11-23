@@ -14,7 +14,10 @@ export default function OrdenDeCompra() {
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [productoEditar, setProductoEditar] = useState(null);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
-  const [view, setView] = useState("productos");
+ const [view, setView] = useState(() => {
+  return localStorage.getItem("view") || "productos";
+});
+
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -37,6 +40,9 @@ export default function OrdenDeCompra() {
     });
     return () => observer.disconnect();
   }, []);
+useEffect(() => {
+  localStorage.setItem("view", view);
+}, [view]);
 
   const toggleMiniCarrito = () => setMostrarCarrito((prev) => !prev);
 
@@ -82,10 +88,14 @@ export default function OrdenDeCompra() {
   };
 
   const handleSubmitOrder = (e) => {
-    e.preventDefault();
-    console.log("Orden final enviada:", { seleccionados, datosCliente: "..." });
-    setMostrarConfirmacion(true);
-  };
+  e.preventDefault();
+  console.log("Orden final enviada:", { seleccionados, datosCliente: "..." });
+  setMostrarConfirmacion(true);
+
+  // Opcional:
+  setView("productos");
+};
+
 
   return (
     <div
@@ -165,11 +175,16 @@ export default function OrdenDeCompra() {
                 {t("ordenCompra.form_title")}
               </h2>
               <FormularioCliente
-                onSubmit={handleSubmitOrder}
-                seleccionados={seleccionados}
-                onEditItem={handleEditItem}
-                onRemoveItem={handleRemoveItem}
-              />
+  onSubmit={handleSubmitOrder}
+  seleccionados={seleccionados}
+  onEditItem={handleEditItem}
+  onRemoveItem={handleRemoveItem}
+  onGoBack={() => {
+    setView("productos");
+    window.scrollTo(0, 0);
+  }}
+/>
+
             </>
           )}
         </div>

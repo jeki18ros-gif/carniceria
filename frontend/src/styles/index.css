@@ -168,5 +168,6 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-"] {
   animation: none !important;
+
 }
 }
