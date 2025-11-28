@@ -395,7 +395,8 @@
     "confirmation": {
       "title": "Commande envoyée !",
       "message": "Votre demande a été transmise avec succès. Nous vous contacterons prochainement pour confirmer votre commande.",
-      "close": "Fermer"
+      "close": "Fermer",
+      "download_pdf": "Télécharger le PDF"
     }
   },
   "listaProductos": {

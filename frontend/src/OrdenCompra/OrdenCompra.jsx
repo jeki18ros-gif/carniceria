@@ -14,6 +14,7 @@ export default function OrdenDeCompra() {
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [productoEditar, setProductoEditar] = useState(null);
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
+  const [datosDelPedido, setDatosDelPedido] = useState(null);
  const [view, setView] = useState(() => {
   return localStorage.getItem("view") || "productos";
 });
@@ -86,16 +87,28 @@ useEffect(() => {
     setView("formulario");
     window.scrollTo(0, 0);
   };
-
-  const handleSubmitOrder = (e) => {
+// Define la función `generarPDFDelPedido` (simulada)
+const generarPDFDelPedido = (pedido) => {
+  console.log("Generando PDF para el pedido:", pedido);
+  alert("Simulando descarga de PDF para el pedido. ¡Reemplaza esta función con tu lógica de generación de PDF real!");
+  // Aquí iría tu lógica real para generar y descargar el PDF.
+};
+const handleSubmitOrder = (e, datosCliente) => { // <--- RECIBE 'datosCliente'
   e.preventDefault();
-  console.log("Orden final enviada:", { seleccionados, datosCliente: "..." });
+  const pedidoFinal = {
+    productos: seleccionados,
+    datosCliente: datosCliente,
+    fechaPedido: new Date().toLocaleDateString(),
+  };
+
+  console.log("Orden final enviada:", pedidoFinal);
+  setDatosDelPedido(pedidoFinal); // <--- ALMACENA EL PEDIDO COMPLETO
   setMostrarConfirmacion(true);
 
   // Opcional:
   setView("productos");
+  setSeleccionados({}); // Limpia el carrito después del envío (opcional)
 };
-
 
   return (
     <div
@@ -210,7 +223,7 @@ useEffect(() => {
       />
 
       <AnimatePresence>
-        {mostrarConfirmacion && (
+        {mostrarConfirmacion && datosDelPedido && ( // <--- Verifica que datosDelPedido exista
           <motion.div
             className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
@@ -229,12 +242,25 @@ useEffect(() => {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {t("ordenCompra.confirmation.message")}
               </p>
-              <button
-                onClick={() => setMostrarConfirmacion(false)}
-                className="px-4 py-2 rounded-lg font-medium transition-all btn"
-              >
-                {t("ordenCompra.confirmation.close")}
-              </button>
+
+              {/* BOTÓN DE DESCARGAR PDF */}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => generarPDFDelPedido(datosDelPedido)} // <--- NUEVO BOTÓN
+                  className="px-4 py-2 rounded-lg font-medium transition-all bg-yellow-500 hover:bg-yellow-600 text-black shadow-md"
+                >
+                  {t("ordenCompra.confirmation.download_pdf") || "Descargar PDF"}
+                </button>
+                <button
+                  onClick={() => {
+                    setMostrarConfirmacion(false);
+                    setDatosDelPedido(null); // Limpiar datos después de cerrar
+                  }}
+                  className="px-4 py-2 rounded-lg font-medium transition-all btn"
+                >
+                  {t("ordenCompra.confirmation.close")}
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

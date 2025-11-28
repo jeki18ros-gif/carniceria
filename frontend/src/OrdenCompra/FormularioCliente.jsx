@@ -25,6 +25,21 @@ export function FormularioCliente({
   const { theme } = useTheme();
   const { t } = useTranslation();
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const datosCliente = {
+      nombre,
+      telefono,
+      correo,
+      direccion,
+      entrega,
+      fechaEntrega,
+      horario,
+      comentarios
+    };
+    onSubmit(e, datosCliente);
+  };
+
   const isDark = theme === 'dark';
 
   const inputStyle = `
@@ -64,9 +79,9 @@ export function FormularioCliente({
 
       {/* FORMULARIO */}
       <form 
-        onSubmit={onSubmit} 
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
+        onSubmit={handleSubmit} // <--- CAMBIAR AQUÍ
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
 
         {/* Inputs */}
         <input
@@ -218,4 +233,4 @@ export function FormularioCliente({
       </form>
     </div>
   );
-}
+  }

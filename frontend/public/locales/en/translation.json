@@ -395,7 +395,8 @@
     "confirmation": {
       "title": "Order Sent!",
       "message": "Your request has been successfully submitted. We’ll contact you soon to confirm your order.",
-      "close": "Close"
+      "close": "Close",
+      "download_pdf": "Download PDF"
     }
   },
   "listaProductos": {
