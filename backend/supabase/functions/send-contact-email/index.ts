@@ -4,23 +4,17 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const corsHeaders = {
-  // Permite acceso desde tu dominio de Netlify. Es más seguro que usar '*'
   'Access-Control-Allow-Origin': 'https://les-aliments-benito.netlify.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 serve(async (req: Request) => {
-  
-  // 1. Manejar la solicitud Preflight (OPTIONS)
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-
-  // 2. Manejar la solicitud POST real (lógica principal)
   if (req.method !== "POST") {
-    // Si no es OPTIONS ni POST, devuelve 405
     return new Response(JSON.stringify({ message: "Método no permitido." }), {
       status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS aquí también
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 

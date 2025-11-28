@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Home from "./pages/Home";
 import OrdenDeCompra from "./OrdenCompra/OrdenCompra"; // ruta corregida
 import Header from "./components/Header";
-import { ThemeProvider, useTheme } from "./Theme/ThemeContext"; // ✅ importa ThemeProvider
+import { ThemeProvider, useTheme } from "./Theme/ThemeContext"; // importa ThemeProvider
 
 function AppContent() {
   const { theme } = useTheme();
