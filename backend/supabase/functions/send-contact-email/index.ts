@@ -31,7 +31,7 @@ serve(async (req: Request) => {
     // 1. Configurar el correo electrónico
     const resendPayload = {
       from: "onboarding@resend.dev", // Reemplaza con un dominio verificado si usas Resend en producción
-      to: "jeki18ros@gmail.com", // <--- TU CORREO DE DESTINO
+      to: "jeki18ros@gmail.com", //TU CORREO DE DESTINO
       subject: `Nuevo mensaje de contacto de: ${name}`,
       html: `
         <h1>Mensaje de Contacto del Sitio Web</h1>
@@ -59,14 +59,14 @@ serve(async (req: Request) => {
         
         return new Response(JSON.stringify({ message: "Error al enviar el correo con el servicio externo." }), {
             status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }
 
  // Éxito
     return new Response(JSON.stringify({ message: "Correo enviado con éxito." }), {
       status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS
+      headers: { ...corsHeaders, "Content-Type": "application/json" }, 
     });
 
   } catch (error) {
@@ -74,7 +74,7 @@ serve(async (req: Request) => {
     console.error("Error en la Edge Function:", error);
     return new Response(JSON.stringify({ message: "Error interno del servidor." }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS
+      headers: { ...corsHeaders, "Content-Type": "application/json" }, 
     });
   }
 });
