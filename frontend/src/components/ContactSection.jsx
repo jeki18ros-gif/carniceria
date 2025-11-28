@@ -16,18 +16,50 @@ export default function ContactSection() {
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
-  const handleSubmit = (e) => {
+const handleSubmit = async (e) => { // ¡Asegúrate de que sea asíncrona!
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
 
-    // Simulación de envío
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-      setForm({ name: "", email: "", message: "" });
-    }, 1500);
-  };
+    // Endpoint de la Edge Function. Usa tu URL real si lo necesitas, 
+    // o un path relativo si estás en un entorno de desarrollo con proxy.
+    // Usaremos la URL pública de Supabase:
+    // El formato es: [SUPABASE_URL]/functions/v1/[function-name]
+    const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`; 
+    // (Ajusta la forma de obtener tu URL base de Supabase si no usas Vite)
+
+    try {
+        const response = await fetch(FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // No necesitas la clave de servicio, la Edge Function ya la tiene
+            },
+            body: JSON.stringify(form), // 'form' contiene name, email, message
+        });
+
+        // La función de Supabase devuelve un 200 si todo sale bien
+        if (response.ok) {
+            setSuccess(true);
+            // Limpia el formulario
+            setForm({ name: "", email: "", message: "" });
+        } else {
+            // Manejar errores devueltos por la Edge Function (ej: 400, 500)
+            const errorData = await response.json();
+            // Aquí puedes manejar y mostrar 'errorData.message' al usuario
+            throw new Error(errorData.message || 'Ocurrió un error al enviar el mensaje.');
+        }
+
+    } catch (error) {
+        // Manejar errores de red o errores lanzados
+        console.error("Error de envío:", error);
+        // Aquí podrías añadir un estado de error: setError(t('contactSection.form.error'));
+    } finally {
+        setLoading(false);
+        // Si quieres que el mensaje de éxito desaparezca después de un tiempo:
+        if (success) { setTimeout(() => setSuccess(false), 5000); } 
+    }
+};
 
   // 🎯 Datos desde i18n
   const labels = t("contactSection.form.labels", { returnObjects: true });

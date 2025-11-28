@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '../supabase/supabase';
 
 import {
   XMarkIcon,
@@ -165,23 +166,35 @@ export default function FormComent({ onSubmit, onClose, isOpen }) {
     );
   }, [formData, bodyWordCount]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!isFormValid) {
-      return setFormError(t("formComent.form.messages.invalid_form"));
-    }
+  if (!isFormValid) {
+    return setFormError("Formulario inválido");
+  }
+  const ip = await fetch("https://api64.ipify.org?format=json")
+              .then(r => r.json())
+              .then(d => d.ip);
 
-    onSubmit({
-      ...formData,
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
-    });
+  const { data, error } = await supabase.from("comentarios").insert([
+    {
+      nombre: formData.name,
+      titulo: formData.title,
+      cuerpo: formData.body,
+      estrellas: formData.stars,
+      ip:ip
+    }
+  ]).select();
 
-    setFormError(t("formComent.form.messages.success", { userName: formData.name }));
-
-    setTimeout(onClose, 1200);
-  };
+  if (error) {
+    setFormError(error.message);
+    return;
+  }
+const newReviewData = data?.[0];
+  setFormError("Gracias por tu comentario 😊");
+  onSubmit(newReviewData);
+  setTimeout(onClose, 1500);
+};
 
   /* -------------------------------------
         INPUT STYLES

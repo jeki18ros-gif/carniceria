@@ -80,24 +80,40 @@
 /* --------------
    💬 Tarjetas de reseña
    -------------- */
+/* --------------
+   💬 Tarjetas de reseña
+   -------------- */
 .isolated-theme.testimonials .review-card {
-  background-color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 1rem;
-  padding: 1.5rem;
+  /* Fondo y bordes */
+  background-color: rgba(255, 255, 255, 0.9); /* Un poco menos transparente */
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Borde más sutil */
+  border-radius: 1.25rem; /* Un poco más redondo */
+  padding: 1.75rem; /* Más espacio interior */
+  display: flex; /* Usamos flexbox para controlar el contenido */
+  flex-direction: column;
+  justify-content: space-between; /* Empuja el footer hacia abajo */
+  min-height: 250px; /* Altura mínima para uniformidad */
+  
+  /* Animación y carrusel */
   transition: all 0.3s ease;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   flex: 0 0 auto;
-  width: 300px;
+  width: 320px; /* Ligeramente más ancho */
 }
 
+/* Modo oscuro */
 .dark .isolated-theme.testimonials .review-card {
-  background-color: rgba(30, 41, 59, 0.75);
-  border: 1px solid rgba(250, 204, 21, 0.2);
+  background-color: rgba(45, 55, 72, 0.9); /* Fondo oscuro más sólido */
+  border: 1px solid rgba(250, 204, 21, 0.15); /* Borde dorado/amarillo sutil */
 }
 
 .isolated-theme.testimonials .review-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px) scale(1.01); /* Efecto hover más notable */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dark .isolated-theme.testimonials .review-card:hover {
+  box-shadow: 0 10px 15px rgba(250, 204, 21, 0.1);
 }
 
 /* --------------
@@ -108,24 +124,68 @@
 }
 
 /* --------------
-   ✏️ Texto de la reseña
-   -------------- */
-.isolated-theme.testimonials .review-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+   ✏️ Texto de la reseña
+   -------------- */
+
+/* Contenedor del título y estrellas */
+.isolated-theme.testimonials .review-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.1); /* Separador sutil */
 }
 
-.isolated-theme.testimonials .review-body {
-  font-size: 0.95rem;
-  opacity: 0.9;
-  margin-bottom: 0.75rem;
+.dark .isolated-theme.testimonials .review-header {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
-.isolated-theme.testimonials .review-author {
-  font-style: italic;
-  font-size: 0.9rem;
-  opacity: 0.85;
+.isolated-theme.testimonials .review-card h4 { /* Apuntando al Título (h4) */
+  font-size: 1.35rem; /* Título más grande */
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.isolated-theme.testimonials .review-body-text { /* Cuerpo del comentario */
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem; /* Más espacio antes del footer */
+  flex-grow: 1; /* Permite que el cuerpo ocupe el espacio restante */
+  text-align: left; /* Alineación del texto del comentario */
+}
+
+/* --------------
+   🦶 Pie de página (Review Card Footer)
+   -------------- */
+.isolated-theme.testimonials .review-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto; /* Empuja el footer al final si hay espacio */
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05); /* Separador */
+}
+
+.dark .isolated-theme.testimonials .review-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.isolated-theme.testimonials .review-author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.isolated-theme.testimonials .review-name {
+  font-size: 1rem;
+  font-weight: 700; /* Nombre más destacado */
+}
+
+.isolated-theme.testimonials .review-date {
+  font-size: 0.85rem;
+  color: #6b7280; /* Gris sutil */
+}
+
+.dark .isolated-theme.testimonials .review-date {
+  color: #9ca3af;
 }
 
 /* --------------
@@ -149,10 +209,6 @@
 
 /* Animación */
 @keyframes scrollX {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }

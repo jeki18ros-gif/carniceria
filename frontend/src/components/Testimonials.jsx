@@ -1,57 +1,56 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import FormComent from "./FormComent";
 import ReviewCard from "./ReviewCard";
 import "../styles/Testimonials.css";
+import { supabase } from "../supabase/supabase";
 
 export default function Testimonials() {
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+const fetchReviews = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Ordenar por fecha de forma descendente para mostrar los más recientes primero
+      const { data, error } = await supabase
+        .from("comentarios")
+        .select("id, nombre, titulo, cuerpo, estrellas, fecha") // Selecciona solo las columnas necesarias
+        .order("fecha", { ascending: false }) 
+        .limit(100); // Limita la cantidad si tienes muchos
 
-  // Cargamos las reviews iniciales de i18n de forma segura.
-  // Si la clave existe pero está vacía, devolvemos [].
-  const INITIAL_REVIEWS = useMemo(() => {
-    const raw = t("testimonials.initial_reviews", { returnObjects: true });
-
-    // Si viene null/undefined/""/string -> fallback a []
-    if (!raw || (typeof raw !== "object" && !Array.isArray(raw))) return [];
-
-    // Si viene como array, lo usamos tal cual (mapeando campos esperados).
-    if (Array.isArray(raw)) {
-      return raw.map((value, i) => ({
-        id: value?.id ?? i + 1,
-        title: value?.title ?? "",
-        body: value?.body ?? "",
-        name: value?.name ?? "",
-        stars: value?.stars ?? 5,
+      if (error) throw error;
+      
+      // Mapear los nombres de columna de la DB a los que usa tu componente ReviewCard (data.nombre -> name, data.titulo -> title, etc.)
+      const formattedReviews = data.map(r => ({
+          id: r.id,
+          title: r.titulo,
+          body: r.cuerpo,
+          name: r.nombre,
+          stars: r.estrellas,
+          date: r.fecha,
       }));
+      
+      setReviews(formattedReviews);
+    } catch (err) {
+      console.error("Error cargando comentarios:", err);
+      setError("No se pudieron cargar los comentarios.");
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
 
-    // Si viene como objeto (ej. { review1: {...}, review2: {...} })
-    return Object.entries(raw).map(([key, value], i) => ({
-      id: value?.id ?? i + 1,
-      title: value?.title ?? "",
-      body: value?.body ?? "",
-      name: value?.name ?? "",
-      stars: value?.stars ?? 5,
-    }));
-  }, [t]);
+  // Cargar comentarios al montar el componente
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
-  // Estado iniciado con seguridad: si INITIAL_REVIEWS es falsy, []
-  const [reviews, setReviews] = useState(() => INITIAL_REVIEWS || []);
-
-  const handleAddReview = (newReview) => {
-    if (!newReview) return;
-    // Aseguramos id único simple — podrías mejorar con uuid si quieres.
-    const next = {
-      id: newReview.id ?? Date.now(),
-      title: newReview.title ?? "",
-      body: newReview.body ?? "",
-      name: newReview.name ?? t("testimonials.anonymous", "Anónimo"),
-      stars: newReview.stars ?? 5,
-    };
-    setReviews((prev) => [next, ...(prev || [])]);
+const handleAddReview = (newReview) => {
+    fetchReviews(); 
     setShowForm(false);
   };
 
@@ -78,6 +77,19 @@ export default function Testimonials() {
             {t("testimonials.button_leave_review")}
           </button>
         </div>
+        {isLoading && <p className="text-xl mt-8">Cargando comentarios...</p>}
+      {error && <p className="text-xl mt-8 text-red-500">{error}</p>}
+      {/* Asegúrate de que no haya error ni esté cargando antes de mostrar el carrusel */}
+      {!isLoading && !error && (
+        <div className="carousel-container">
+          <div className="carousel-track">
+            {/* LÍNEA CORREGIDA: Renderiza solo las reseñas una vez */}
+            {(reviews || []).map((r, i) => (
+              <ReviewCard key={r.id || `${r.title}-${i}`} data={r} />
+            ))}
+          </div>
+        </div>
+      )}
 
         {showForm && (
           <FormComent
@@ -86,15 +98,6 @@ export default function Testimonials() {
             onClose={() => setShowForm(false)}
           />
         )}
-
-        <div className="carousel-container">
-          <div className="carousel-track">
-            {/* Protegemos reviews: si es undefined usamos [] */}
-            {[...(reviews || []), ...(reviews || [])].map((r, i) => (
-              <ReviewCard key={`${r?.id ?? "r"}-${i}`} data={r} />
-            ))}
-          </div>
-        </div>
       </div>
     </motion.section>
   );
