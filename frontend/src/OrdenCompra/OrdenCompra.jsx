@@ -107,11 +107,15 @@ const handleSubmitOrder = async (e, datosCliente) => {
   };
 
   try {
-    const response = await fetch(FUNCTION_URL, { // 👉 LLAMADA AL BACKEND
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(pedidoFinal),
-    });
+    const response = await fetch(FUNCTION_URL, {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`, // ← AQUÍ
+  },
+  body: JSON.stringify(pedidoFinal),
+});
+
 
     if (!response.ok) {
       const errorData = await response.json();
