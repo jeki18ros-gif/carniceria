@@ -52,10 +52,9 @@ const handleSubmit = async (e) => {
 
     } catch (error) {
         console.error("Error de envío:", error);
-        // Aquí puedes usar el error de envío: setError(error.message);
-        setSuccess(false); // Asegura que el éxito esté en false si hay error
+        setSuccess(false);
     } finally {
-        setLoading(false); // Siempre se ejecuta, quita el botón de carga
+        setLoading(false);
     }
 };
 // ...
