@@ -4,7 +4,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://les-aliments-benito.netlify.app',
+  'Access-Control-Allow-Origin': 'https://les-aliments-benito.vercel.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 serve(async (req: Request) => {
