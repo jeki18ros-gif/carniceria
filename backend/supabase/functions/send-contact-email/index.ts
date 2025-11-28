@@ -3,14 +3,11 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
-
-// 🎯 Definir encabezados CORS
 const corsHeaders = {
   // Permite acceso desde tu dominio de Netlify. Es más seguro que usar '*'
   'Access-Control-Allow-Origin': 'https://les-aliments-benito.netlify.app',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
 serve(async (req: Request) => {
   
   // 1. Manejar la solicitud Preflight (OPTIONS)
@@ -37,13 +34,29 @@ serve(async (req: Request) => {
       });
     }
 
-    // ... (Tu lógica de Resend aquí, que está bien) ...
-    const resendPayload = { 
-        // ... (Contenido de Resend) ...
+    // 1. Configurar el correo electrónico
+    const resendPayload = {
+      from: "onboarding@resend.dev", // Reemplaza con un dominio verificado si usas Resend en producción
+      to: "jeki18ros@gmail.com", // <--- TU CORREO DE DESTINO
+      subject: `Nuevo mensaje de contacto de: ${name}`,
+      html: `
+        <h1>Mensaje de Contacto del Sitio Web</h1>
+        <p><strong>De:</strong> ${name}</p>
+        <p><strong>Correo Electrónico:</strong> ${email}</p>
+        <hr/>
+        <p><strong>Mensaje:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
     };
 
+    // 2. Enviar el correo a través de Resend
     const resendResponse = await fetch(RESEND_ENDPOINT, {
-        // ... (Configuración de fetch) ...
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify(resendPayload),
     });
 
     if (!resendResponse.ok) {
@@ -56,7 +69,7 @@ serve(async (req: Request) => {
         });
     }
 
-    // Éxito
+ // Éxito
     return new Response(JSON.stringify({ message: "Correo enviado con éxito." }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS
