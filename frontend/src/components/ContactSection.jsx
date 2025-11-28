@@ -21,10 +21,6 @@ const handleSubmit = async (e) => { // ¡Asegúrate de que sea asíncrona!
     setLoading(true);
     setSuccess(false);
 
-    // Endpoint de la Edge Function. Usa tu URL real si lo necesitas, 
-    // o un path relativo si estás en un entorno de desarrollo con proxy.
-    // Usaremos la URL pública de Supabase:
-    // El formato es: [SUPABASE_URL]/functions/v1/[function-name]
     const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`; 
     // (Ajusta la forma de obtener tu URL base de Supabase si no usas Vite)
 
@@ -77,7 +73,7 @@ const handleSubmit = async (e) => { // ¡Asegúrate de que sea asíncrona!
       viewport={{ once: true, amount: 0.2 }}
     >
       <div className="contact-container">
-        {/* 🧭 Información de contacto */}
+        {/* Información de contacto */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -103,7 +99,7 @@ const handleSubmit = async (e) => { // ¡Asegúrate de que sea asíncrona!
           </div>
         </motion.div>
 
-        {/* 💌 Formulario */}
+        {/* Formulario */}
         <motion.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, x: 40 }}

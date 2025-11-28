@@ -27,7 +27,7 @@ serve(async (req) => {
     // 1. Configurar el correo electrónico
     const resendPayload = {
       from: "onboarding@resend.dev", // Reemplaza con un dominio verificado si usas Resend en producción
-      to: "jeki18ros@gmail.com", // <--- 🎯 TU CORREO DE DESTINO
+      to: "jeki18ros@gmail.com", // <--- TU CORREO DE DESTINO
       subject: `Nuevo mensaje de contacto de: ${name}`,
       html: `
         <h1>Mensaje de Contacto del Sitio Web</h1>
