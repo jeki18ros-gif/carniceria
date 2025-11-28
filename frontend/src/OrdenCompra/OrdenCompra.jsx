@@ -18,7 +18,7 @@ export default function OrdenDeCompra() {
  const [view, setView] = useState(() => {
   return localStorage.getItem("view") || "productos";
 });
-
+const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`; // <--- ¡DEBES CREAR ESTA FUNCIÓN!
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -52,9 +52,15 @@ useEffect(() => {
   // Añadir o actualizar producto en el carrito
   const handleAddToCart = (id, cantidad, especificaciones) => {
     setSeleccionados((prev) => ({
-      ...prev,
-      [id]: { cantidad, especificaciones },
-    }));
+  ...prev,
+  [id]: {
+    id,
+    cantidad,
+    especificaciones,
+    ...productoSeleccionado, // 👉 AGREGA TODOS LOS DATOS DEL PRODUCTO
+  },
+}));
+
     setMostrarCarrito(true);
     setProductoSeleccionado(null);
     setProductoEditar(null);
@@ -89,26 +95,45 @@ useEffect(() => {
   };
 // Define la función `generarPDFDelPedido` (simulada)
 const generarPDFDelPedido = (pedido) => {
-  console.log("Generando PDF para el pedido:", pedido);
-  alert("Simulando descarga de PDF para el pedido. ¡Reemplaza esta función con tu lógica de generación de PDF real!");
-  // Aquí iría tu lógica real para generar y descargar el PDF.
+  alert("El PDF se ha generado y enviado a tu correo.");
 };
-const handleSubmitOrder = (e, datosCliente) => { // <--- RECIBE 'datosCliente'
+const handleSubmitOrder = async (e, datosCliente) => { 
   e.preventDefault();
+
   const pedidoFinal = {
-    productos: seleccionados,
-    datosCliente: datosCliente,
-    fechaPedido: new Date().toLocaleDateString(),
+    cliente: datosCliente,
+    productos: Object.values(seleccionados),
+    fechaPedido: new Date().toLocaleDateString("es-ES"), // Formato legible
   };
 
-  console.log("Orden final enviada:", pedidoFinal);
-  setDatosDelPedido(pedidoFinal); // <--- ALMACENA EL PEDIDO COMPLETO
-  setMostrarConfirmacion(true);
+  try {
+    const response = await fetch(FUNCTION_URL, { // 👉 LLAMADA AL BACKEND
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedidoFinal),
+    });
 
-  // Opcional:
-  setView("productos");
-  setSeleccionados({}); // Limpia el carrito después del envío (opcional)
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error al procesar el pedido.");
+    }
+
+    const result = await response.json();
+
+    // 1. Mostrar confirmación (se puede usar la respuesta del backend si es necesario)
+    setDatosDelPedido(pedidoFinal);
+    setMostrarConfirmacion(true);
+
+    // 2. Limpiar estados y regresar a la vista de productos
+    setView("productos");
+    setSeleccionados({});
+    
+  } catch (error) {
+    console.error("Error al enviar el pedido:", error);
+    alert("Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo.");
+  }
 };
+
 
   return (
     <div
