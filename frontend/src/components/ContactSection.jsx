@@ -21,14 +21,11 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
-    // Añade un estado para manejar errores si quieres mostrarlos al usuario
-    // const [error, setError] = useState(null);
 
     const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`; 
 
     try {
         const response = await fetch(FUNCTION_URL, {
-            // ... (resto de la configuración del fetch)
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(form),
@@ -38,15 +35,10 @@ const handleSubmit = async (e) => {
         if (response.ok) {
             setSuccess(true);
             setForm({ name: "", email: "", message: "" });
-            //setError(null);
-
-            // Mueve la lógica de temporizador aquí:
             setTimeout(() => setSuccess(false), 5000); 
 
-        // 2. Error del Servidor (400, 500)
         } else {
             const errorData = await response.json();
-            //setError(errorData.message || 'Error desconocido.');
             throw new Error(errorData.message || 'Ocurrió un error al enviar el mensaje.');
         }
 
@@ -57,8 +49,7 @@ const handleSubmit = async (e) => {
         setLoading(false);
     }
 };
-// ...
-  // 🎯 Datos desde i18n
+
   const labels = t("contactSection.form.labels", { returnObjects: true });
   const placeholders = t("contactSection.form.placeholders", { returnObjects: true });
   const buttons = t("contactSection.form.buttons", { returnObjects: true });
