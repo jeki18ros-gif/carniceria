@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../supabase/supabase';
+import { supabase } from '../supabase/supabaseClient';
 
 import {
   XMarkIcon,
