@@ -5,19 +5,13 @@
 # ====================================================
 [functions.send-contact-email]
 enabled = true
-verify_jwt = true
+verify_jwt = false          # <<< CAMBIO IMPORTANTE
 import_map = "./functions/send-contact-email/deno.json"
-# Asegúrate que la ruta sea correcta
 entrypoint = "./functions/send-contact-email/index.ts"
 
-
 # ====================================================
-# SECCIÓN 2: Configuración de generar-pedido-pdf (CORREGIDA)
+# SECCIÓN 2: Configuración de generar-pedido-pdf
 # ====================================================
 [functions.generar-pedido-pdf]
 enabled = true
-# La CLI automáticamente asocia el nombre de la carpeta con el nombre de la función.
-# Se eliminó 'name' para evitar el error "has invalid keys".
-# Se eliminó 'env' porque los Secrets se cargan automáticamente al desplegar.
-# Asegúrate que la ruta sea correcta
 entrypoint = "./functions/generar-pedido-pdf/index.ts"
