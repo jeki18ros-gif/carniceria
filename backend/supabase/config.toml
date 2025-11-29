@@ -1,16 +1,18 @@
 # Archivo: supabase/config.toml
 
 # ====================================================
-# SECCIÓN 1: Configuración de send-contact-email
+# 1. Función: send-contact-email
 # ====================================================
 [functions.send-contact-email]
 enabled = true
-verify_jwt = false          # <<< CAMBIO IMPORTANTE
+verify_jwt = false
 import_map = "./functions/send-contact-email/deno.json"
 entrypoint = "./functions/send-contact-email/index.ts"
 
+# ====================================================
+# 2. Función: generar-pedido-pdf
+# ====================================================
 [functions.generar-pedido-pdf]
 enabled = true
-entrypoint = "./functions/generar-pedido-pdf/index.ts"
-verify_jwt = false        # <<<<<< OBLIGATORIO
+verify_jwt = false
 entrypoint = "./functions/generar-pedido-pdf/index.ts"
