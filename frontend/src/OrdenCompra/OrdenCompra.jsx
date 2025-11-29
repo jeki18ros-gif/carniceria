@@ -72,11 +72,17 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
       id,
       cantidad_valor: cantidadValor,
       cantidad_unidad: cantidadUnidad,
+      cantidad: `${cantidadValor} ${cantidadUnidad}`, // 👈 AQUI EL CAMBIO
       especificaciones,
-      // nota: si quieres guardar nombre/imagen/precio en el carrito, agrégalos aquí
       ...(productoSeleccionado || {}),
     },
   }));
+
+  setMostrarCarrito(true);
+  setProductoSeleccionado(null);
+  setProductoEditar(null);
+};
+
 
   setMostrarCarrito(true);
   setProductoSeleccionado(null);
