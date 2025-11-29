@@ -1,6 +1,7 @@
 // generar-pedido-pdf/index.ts
 export const config = {
   runtime: "edge",
+   verifyJwt: false
 };
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
