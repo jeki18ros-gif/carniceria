@@ -65,21 +65,23 @@ export default function OrdenDeCompra() {
     setProductoSeleccionado(producto);
   };
 
-  const handleAddToCart = (id, cantidad, especificaciones) => {
-    setSeleccionados((prev) => ({
-      ...prev,
-      [id]: {
-        id,
-        cantidad,
-        especificaciones,
-        ...productoSeleccionado,
-      },
-    }));
+const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) => {
+  setSeleccionados((prev) => ({
+    ...prev,
+    [id]: {
+      id,
+      cantidad_valor: cantidadValor,
+      cantidad_unidad: cantidadUnidad,
+      especificaciones,
+      // nota: si quieres guardar nombre/imagen/precio en el carrito, agrégalos aquí
+      ...(productoSeleccionado || {}),
+    },
+  }));
 
-    setMostrarCarrito(true);
-    setProductoSeleccionado(null);
-    setProductoEditar(null);
-  };
+  setMostrarCarrito(true);
+  setProductoSeleccionado(null);
+  setProductoEditar(null);
+};
 
   const handleRemoveItem = (id) => {
     setSeleccionados((prev) => {
@@ -114,7 +116,110 @@ export default function OrdenDeCompra() {
   // ============================
   //   DESCARGAR PDF DESDE BOTÓN
   // ============================
-const generarPDFDelPedido = async (pedido) => {
+const generarPDFDelPedido = async (pedidoConMeta) => {
+  try {
+    // Si ya tenemos pdf_url (viene de handleSubmitOrder), la usamos directamente:
+    if (pedidoConMeta?.pdf_url) {
+      // fetch the pdf and force download (cross-browser)
+      const res = await fetch(pedidoConMeta.pdf_url);
+      if (!res.ok) throw new Error("No se pudo descargar el PDF");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      // nombre con id si existe
+      a.download = `pedido_${pedidoConMeta.orden_id || "pedido"}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    // Si NO hay pdf_url, pedimos al function (esto puede regenerar)
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify(pedidoConMeta),
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || "No se pudo generar/descargar el PDF");
+    }
+
+    const data = await response.json();
+    if (!data.pdf_url) throw new Error("No se devolvió la URL del PDF");
+
+    // descargar
+    const resPdf = await fetch(data.pdf_url);
+    if (!resPdf.ok) throw new Error("No se pudo descargar el PDF");
+    const blob = await resPdf.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pedido_${data.orden_id || "pedido"}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert("Error al generar/descargar PDF");
+    console.error(e);
+  }
+};
+
+  // ============================
+  //   ENVIAR PEDIDO FINAL
+  // ============================
+ const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
+  e.preventDefault();
+
+  if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
+    alert("Debes seleccionar al menos un producto para enviar el pedido.");
+    return;
+  }
+
+  // Construir array de productos en el formato que espera el backend
+  const productosArray = Object.values(productosSeleccionados).map((item) => {
+    // si el item viene con cantidad_valor/ unidad, usar esas; si viene con cantidad (string), intentar parsear
+    const cantidad_valor = item.cantidad_valor ?? (item.cantidad?.split?.(" ")[0] ?? "");
+    const cantidad_unidad = item.cantidad_unidad ?? (item.cantidad?.split?.(" ")[1] ?? "kg");
+
+    return {
+      id: item.id,
+      nombre: item.nombre,
+      cantidad_valor,
+      cantidad_unidad,
+      // pasar las especificaciones tal cual (puede ser objeto)
+      tipo_corte: item.especificaciones?.tipoCorte || item.especificaciones?.tipo_corte || null,
+      parte: item.especificaciones?.parte || null,
+      estado: item.especificaciones?.estado || null,
+      hueso: item.especificaciones?.hueso || null,
+      grasa: item.especificaciones?.grasa || null,
+      empaque: item.especificaciones?.empaque || null,
+      coccion: item.especificaciones?.coccion || null,
+      fecha_deseada: item.especificaciones?.fechaDeseada || item.especificaciones?.fecha_deseada || null,
+      observacion: item.especificaciones?.observacion || null,
+    };
+  });
+
+  const pedidoFinal = {
+    cliente: {
+      nombre: datosCliente.nombre,
+      telefono: datosCliente.telefono,
+      correo: datosCliente.correo,
+      direccion: datosCliente.direccion,
+      entrega: datosCliente.entrega,
+      comentarios: datosCliente.comentarios,
+    },
+    fecha_entrega: datosCliente.fechaEntrega || null, // para la tabla ordenes
+    productos: productosArray,
+    comentarios: datosCliente.comentarios || null,
+  };
+
   try {
     const response = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
@@ -124,75 +229,31 @@ const generarPDFDelPedido = async (pedido) => {
           "Content-Type": "application/json",
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
         },
-        body: JSON.stringify(pedido), // ✔ CORREGIDO
+        body: JSON.stringify(pedidoFinal),
       }
     );
 
-
-
-      if (!response.ok) throw new Error("No se pudo generar el PDF");
-
-      const pdfBlob = await response.blob();
-      const url = URL.createObjectURL(pdfBlob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "pedido.pdf";
-      link.click();
-    } catch (e) {
-      alert("Error al generar PDF");
-      console.error(e);
-    }
-  };
-
-  // ============================
-  //   ENVIAR PEDIDO FINAL
-  // ============================
-  const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
-    e.preventDefault();
-
-    if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
-      alert("Debes seleccionar al menos un producto para enviar el pedido.");
-      return;
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || "Error al procesar el pedido.");
     }
 
-    const pedidoFinal = {
-      cliente: datosCliente,
-      productos: Object.values(productosSeleccionados),
-      fechaPedido: new Date().toLocaleDateString("es-ES"),
-    };
+    const data = await response.json(); // { success, orden_id, pdf_url }
+    // guardamos para mostrar en modal
+    setDatosDelPedido({
+      ...pedidoFinal,
+      orden_id: data.orden_id,
+      pdf_url: data.pdf_url,
+    });
 
-    try {
-      const response = await fetch(
-  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify(pedidoFinal),
+    setMostrarConfirmacion(true);
+    setView("productos");
+    setSeleccionados({});
+  } catch (error) {
+    console.error("Error al enviar el pedido:", error);
+    alert(`Hubo un error al procesar tu pedido: ${error.message}`);
   }
-);
-
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || "Error al procesar el pedido.");
-      }
-
-      await response.json();
-
-      setDatosDelPedido(pedidoFinal);
-      setMostrarConfirmacion(true);
-
-      setView("productos");
-      setSeleccionados({});
-    } catch (error) {
-      console.error("Error al enviar el pedido:", error);
-      alert(`Hubo un error al procesar tu pedido: ${error.message}`);
-    }
-  };
+};
 
   // ============================
   //   RENDER PRINCIPAL

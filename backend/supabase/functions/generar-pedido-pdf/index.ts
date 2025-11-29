@@ -6,185 +6,284 @@ export const config = {
 };
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// =====================
-//   Helpers seguros Base64
-// =====================
+// =====================================================
+//      BASE64 HELPERS
+// =====================================================
 function encodeBase64(uint8: Uint8Array | string) {
-  if (typeof uint8 === "string") {
-    return btoa(uint8);
-  }
-  let binary = "";
-  for (let i = 0; i < uint8.length; i++) {
-    binary += String.fromCharCode(uint8[i]);
-  }
-  return btoa(binary);
+  if (typeof uint8 === "string") return btoa(uint8);
+
+  let bin = "";
+  uint8.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin);
 }
 
 function decodeBase64(base64: string) {
-  const binary = atob(base64);
-  const len = binary.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return bytes;
 }
 
+// =====================================================
+//      ENV KEYS
+// =====================================================
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const PDF_API_KEY = Deno.env.get("PDF_API_KEY");
 
-const RESEND_ENDPOINT = "https://api.resend.com/emails";
-const PDF_API_ENDPOINT = "https://api.pdfshift.io/v3/convert/pdf";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-const TU_CORREO_DE_NEGOCIO = "jeki18ros@gmail.com";
+const supabase = createClient(
+  SUPABASE_URL!,
+  SUPABASE_SERVICE_ROLE_KEY!
+);
 
-// ------------------ CORS ------------------
+const TU_CORREO = "jeki18ros@gmail.com";
+
+// =====================================================
+//      CORS
+// =====================================================
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "content-type, apikey",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// ------------------ GENERAR HTML ------------------
-function generarHTMLPedido(pedido) {
+// =====================================================
+//      GENERAR HTML
+// =====================================================
+function generarHTMLPedido(pedido: any) {
   const productosHTML = pedido.productos
     .map(
       (p) => `
-        <tr style="border-bottom:1px solid #eee;">
-          <td style="padding:8px 0;font-weight:bold;">${p.nombre}</td>
-          <td style="padding:8px 0;text-align:center;">${p.cantidad}</td>
-          <td style="padding:8px 0;">
-            ${
-              p.especificaciones
-                ? Object.entries(p.especificaciones)
-                    .filter(([, v]) => v)
-                    .map(([k, v]) => `• ${k}: ${v}`)
-                    .join("<br>")
-                : "—"
-            }
-          </td>
-        </tr>`
+      <tr>
+        <td><b>${p.nombre}</b></td>
+        <td>${p.cantidad_valor} ${p.cantidad_unidad}</td>
+        <td>
+          ${
+            Object.entries(p)
+              .filter(
+                ([key, val]) =>
+                  !["id", "nombre", "cantidad_valor", "cantidad_unidad"].includes(
+                    key
+                  ) && val
+              )
+              .map(([k, v]) => `• ${k}: ${v}`)
+              .join("<br>")
+          }
+        </td>
+      </tr>
+    `
     )
     .join("");
 
   return `
-  <html>
-    <body style="font-family:Arial;">
-      <h1>Orden de Compra</h1>
-      <p>Fecha: ${pedido.fechaPedido}</p>
+    <html>
+      <body style="font-family: Arial; padding: 20px;">
+        <h1>Orden de Compra</h1>
 
-      <h2>Datos del Cliente</h2>
-      <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
-      <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
-      <p><strong>Correo:</strong> ${pedido.cliente.correo}</p>
-      <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
-      <p><strong>Entrega:</strong> ${pedido.cliente.entrega}</p>
+        <h2>Cliente</h2>
+        <p><strong>${pedido.cliente.nombre}</strong></p>
+        <p>${pedido.cliente.telefono}</p>
+        <p>${pedido.cliente.correo}</p>
+        <p>${pedido.cliente.direccion}</p>
 
-      <h2>Productos</h2>
-      <table width="100%">${productosHTML}</table>
+        <h2>Productos</h2>
+        <table width="100%">
+          ${productosHTML}
+        </table>
 
-      ${
-        pedido.cliente.comentarios
-          ? `<h3>Comentarios:</h3><p>${pedido.cliente.comentarios}</p>`
-          : ""
-      }
-    </body>
-  </html>`;
+        ${
+          pedido.comentarios
+            ? `<h3>Comentarios:</h3><p>${pedido.comentarios}</p>`
+            : ""
+        }
+      </body>
+    </html>
+  `;
 }
 
-// ------------------ PDFShift ------------------
-async function generarPdfBase64(html) {
-  if (!PDF_API_KEY) throw new Error("PDF_API_KEY no configurada");
-
+// =====================================================
+//      GENERAR PDF (PDFShift)
+// =====================================================
+async function generarPdf(html: string) {
   const auth = encodeBase64(`${PDF_API_KEY}:`);
 
-  const response = await fetch(PDF_API_ENDPOINT, {
+  const res = await fetch("https://api.pdfshift.io/v3/convert/pdf", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${auth}`,
     },
-    body: JSON.stringify({
-      source: html,
-      filename: "OrdenDeCompra.pdf",
-    }),
+    body: JSON.stringify({ source: html }),
   });
 
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error("No se pudo generar el PDF");
-  }
+  if (!res.ok) throw new Error("Error generando PDF");
 
-  const buffer = new Uint8Array(await response.arrayBuffer());
-  return encodeBase64(buffer);
+  return new Uint8Array(await res.arrayBuffer());
 }
 
-// ------------------ EDGE FUNCTION ------------------
+// =====================================================
+//      MAIN
+// =====================================================
 serve(async (req) => {
-  if (req.method === "OPTIONS")
-    return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
     const pedido = await req.json();
 
+    // =====================================================
+    //      1. Buscar o crear cliente
+    // =====================================================
+    let { data: cliente } = await supabase
+      .from("clientes")
+      .select("*")
+      .eq("correo", pedido.cliente.correo)
+      .single();
+
+    if (!cliente) {
+      const result = await supabase
+        .from("clientes")
+        .insert({
+          nombre: pedido.cliente.nombre,
+          telefono: pedido.cliente.telefono,
+          correo: pedido.cliente.correo,
+          direccion: pedido.cliente.direccion,
+        })
+        .select()
+        .single();
+
+      cliente = result.data;
+    }
+
+    // =====================================================
+    //      2. Crear orden
+    // =====================================================
+    const { data: orden } = await supabase
+      .from("ordenes")
+      .insert({
+        cliente_id: cliente.id,
+        entrega_metodo: pedido.cliente.entrega,
+        fecha_entrega: pedido.fecha_entrega,
+        comentarios: pedido.comentarios,
+      })
+      .select()
+      .single();
+
+    // =====================================================
+    //      3. Crear items
+    // =====================================================
+    const items = pedido.productos.map((p) => ({
+      orden_id: orden.id,
+      producto_id: p.id,
+      cantidad_valor: p.cantidad_valor,
+      cantidad_unidad: p.cantidad_unidad,
+      tipo_corte: p.tipo_corte,
+      parte: p.parte,
+      estado: p.estado,
+      hueso: p.hueso,
+      grasa: p.grasa,
+      empaque: p.empaque,
+      coccion: p.coccion,
+      fecha_deseada: p.fecha_deseada,
+      observacion: p.observacion,
+    }));
+
+    await supabase.from("orden_items").insert(items);
+
+    // =====================================================
+    //      4. Generar PDF
+    // =====================================================
     const html = generarHTMLPedido(pedido);
-    const pdfBase64 = await generarPdfBase64(html);
+    const pdfBytes = await generarPdf(html);
 
-    const nombreArchivo = `Orden_${pedido.cliente.nombre
-      .replace(/\s+/g, "-")
-      .replace(/[^a-zA-Z0-9-]/g, "")}_${pedido.fechaPedido}.pdf`;
+    const fileName = `orden_${orden.id}.pdf`;
 
-    // envío de correos
-    const attachment = { filename: nombreArchivo, content: pdfBase64 };
+    // =====================================================
+    //      5. Subir a Storage
+    // =====================================================
+    const { data: fileData, error: uploadError } = await supabase.storage
+      .from("pedidos")
+      .upload(fileName, pdfBytes, {
+        contentType: "application/pdf",
+        upsert: true,
+      });
 
-    await Promise.all([
-      fetch(RESEND_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from: "onboarding@resend.dev",
-          to: TU_CORREO_DE_NEGOCIO,
-          subject: `🛒 Nuevo Pedido de ${pedido.cliente.nombre}`,
-          html: "<p>Nuevo pedido recibido.</p>",
-          attachments: [attachment],
-        }),
-      }),
+    if (uploadError) throw uploadError;
 
-      fetch(RESEND_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from: "onboarding@resend.dev",
-          to: pedido.cliente.correo,
-          subject: `✔ Confirmación de Pedido`,
-          html: `<p>Gracias por tu pedido, ${pedido.cliente.nombre}.</p>`,
-          attachments: [attachment],
-        }),
-      }),
-    ]);
+    const { data: publicUrl } = supabase.storage
+      .from("pedidos")
+      .getPublicUrl(fileName);
 
-    // devolver PDF al frontend
-    const pdfBytes = decodeBase64(pdfBase64);
-
-    return new Response(pdfBytes, {
-      status: 200,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${nombreArchivo}"`,
-      },
+    // =====================================================
+    //      6. Registrar el PDF en la tabla
+    // =====================================================
+    await supabase.from("ordenes_pdfs").insert({
+      orden_id: orden.id,
+      url_pdf: publicUrl.publicUrl,
+      enviado_al_cliente: true,
+      enviado_al_admin: true,
     });
-  } catch (e) {
-    console.error(e);
-    return new Response(JSON.stringify({ error: e.message }), {
+
+    // =====================================================
+    //      7. Enviar correos
+    // =====================================================
+    const attachmentBase64 = encodeBase64(pdfBytes);
+
+    const attachment = {
+      filename: fileName,
+      content: attachmentBase64,
+    };
+
+    // ADMIN
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "onboarding@resend.dev",
+        to: TU_CORREO,
+        subject: `Nuevo pedido (#${orden.id})`,
+        html: "<p>Se registró un nuevo pedido.</p>",
+        attachments: [attachment],
+      }),
+    });
+
+    // CLIENTE
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "onboarding@resend.dev",
+        to: cliente.correo,
+        subject: `Confirmación de Pedido`,
+        html: "<p>Gracias por tu compra.</p>",
+        attachments: [attachment],
+      }),
+    });
+
+    // =====================================================
+    //      8. Respuesta final
+    // =====================================================
+    return new Response(
+      JSON.stringify({
+        success: true,
+        orden_id: orden.id,
+        pdf_url: publicUrl.publicUrl,
+      }),
+      { headers: corsHeaders }
+    );
+  } catch (err) {
+    console.error(err);
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: corsHeaders,
     });

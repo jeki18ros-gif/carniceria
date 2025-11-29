@@ -65,18 +65,29 @@ export function DetalleProductoModal({ producto, productoEditar, onClose, onAddT
 
   if (!producto) return null;
 
-  const handleAdd = () => {
-    if (!cantidadValor.trim()) {
-      setError(true);
-      return;
-    }
+const handleAdd = () => {
+  if (!cantidadValor.toString().trim()) {
+    setError(true);
+    return;
+  }
 
-    const cantidadCompleta = `${cantidadValor.trim()} ${cantidadUnidad}`;
-    const especificaciones = { tipoCorte, parte, estado, hueso, grasa, empaque, coccion, fechaDeseada, observacion };
-
-    onAddToCart(producto.id, cantidadCompleta, especificaciones);
-    onClose();
+  const especificaciones = {
+    tipoCorte,
+    parte,
+    estado,
+    hueso,
+    grasa,
+    empaque,
+    coccion,
+    fechaDeseada,
+    observacion,
   };
+
+  // llamar con cantidad separada
+  onAddToCart(producto.id, cantidadValor.toString().trim(), cantidadUnidad, especificaciones);
+  onClose();
+};
+
 
   return (
     <AnimatePresence>
