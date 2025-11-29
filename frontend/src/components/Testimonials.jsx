@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import FormComent from "./FormComent";
 import ReviewCard from "./ReviewCard";
 import "../styles/Testimonials.css";
-import { supabase } from "../supabase/supabase";
+import { supabase } from "../supabase/supabaseClient";
 
 export default function Testimonials() {
   const { t } = useTranslation();
