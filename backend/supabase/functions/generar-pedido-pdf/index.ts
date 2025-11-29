@@ -1,3 +1,5 @@
+// generar-pedido-pdf/index.ts
+
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -13,121 +15,128 @@ const PDF_API_ENDPOINT = "https://api.pdfshift.io/v3/convert";
 const TU_CORREO_DE_NEGOCIO = "jeki18ros@gmail.com";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 // ------------------ HTML GENERATOR ------------------
 function generarHTMLPedido(pedido: any) {
-  const productosHTML = pedido.productos
-    .map(
-      (p: any) => `
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 10px 0; font-weight: 600;">${p.nombre}</td>
-            <td style="padding: 10px 0; text-align: center;">${p.cantidad}</td>
-            <td style="padding: 10px 0;">${p.especificaciones || "—"}</td>
-        </tr>
-    `
-    )
-    .join("");
+  const productosHTML = pedido.productos
+    .map(
+      (p: any) => `
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; font-weight: 600;">${p.nombre}</td>
+            <td style="padding: 10px 0; text-align: center;">${p.cantidad}</td>
+            <td style="padding: 10px 0;">${
+                p.especificaciones 
+                ? Object.entries(p.especificaciones)
+                    .filter(([, value]) => value && value !== '')
+                    .map(([key, value]) => `• ${key}: ${value}`)
+                    .join('<br/>') 
+                : "—"
+            }</td>
+        </tr>
+    `
+    )
+    .join("");
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body { font-family: Arial; line-height: 1.6; color: #333; }
-            .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
-            .header { background-color: #f7d246; color: #0b132b; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }
-            .section { margin-top: 20px; border: 1px solid #eee; padding: 15px; border-radius: 6px; }
-            h3 { color: #0b132b; border-bottom: 2px solid #f7d246; padding-bottom: 5px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th { background-color: #f9f9f9; padding: 10px 0; text-align: left; }
-            .comment { background-color: #fffbe6; padding: 10px; border-radius: 4px; margin-top: 15px; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>Orden de Compra #${Math.floor(Math.random() * 90000) + 10000}</h1>
-                <p>Fecha: ${pedido.fechaPedido}</p>
-            </div>
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial; line-height: 1.6; color: #333; }
+            .container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .header { background-color: #f7d246; color: #0b132b; padding: 15px; border-radius: 8px 8px 0 0; text-align: center; }
+            .section { margin-top: 20px; border: 1px solid #eee; padding: 15px; border-radius: 6px; }
+            h3 { color: #0b132b; border-bottom: 2px solid #f7d246; padding-bottom: 5px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th { background-color: #f9f9f9; padding: 10px 0; text-align: left; }
+            .comment { background-color: #fffbe6; padding: 10px; border-radius: 4px; margin-top: 15px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Orden de Compra #${Math.floor(Math.random() * 90000) + 10000}</h1>
+                <p>Fecha: ${pedido.fechaPedido}</p>
+            </div>
 
-            <div class="section">
-                <h3>Datos del Cliente</h3>
-                <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
-                <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
-                <p><strong>Correo:</strong> ${pedido.cliente.correo}</p>
-                <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
-                <p><strong>Entrega:</strong> ${
-                  pedido.cliente.entrega === "tienda"
-                    ? "Recoger en Tienda"
-                    : "A Domicilio"
-                }</p>
-                <p><strong>Fecha/Hora Solicitada:</strong> ${
-                  pedido.cliente.fechaEntrega
-                } / ${pedido.cliente.horario || "N/A"}</p>
-            </div>
+            <div class="section">
+                <h3>Datos del Cliente</h3>
+                <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
+                <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
+                <p><strong>Correo:</strong> ${pedido.cliente.correo}</p>
+                <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
+                <p><strong>Entrega:</strong> ${
+                  pedido.cliente.entrega === "tienda"
+                    ? "Recoger en Tienda"
+                    : "A Domicilio"
+                }</p>
+                <p><strong>Fecha/Hora Solicitada:</strong> ${
+                  pedido.cliente.fechaEntrega
+                } / ${pedido.cliente.horario || "N/A"}</p>
+            </div>
 
-            <div class="section">
-                <h3>Detalle de Productos</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th style="text-align: center;">Cantidad</th>
-                            <th>Especificaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${productosHTML}
-                    </tbody>
-                </table>
-            </div>
+            <div class="section">
+                <h3>Detalle de Productos</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th style="text-align: center;">Cantidad</th>
+                            <th>Especificaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productosHTML}
+                    </tbody>
+                </table>
+            </div>
 
-            ${
-              pedido.cliente.comentarios
-                ? `<div class="comment"><strong>Comentarios Adicionales:</strong> ${pedido.cliente.comentarios}</div>`
-                : ""
-            }
+            ${
+              pedido.cliente.comentarios
+                ? `<div class="comment"><strong>Comentarios Adicionales:</strong> ${pedido.cliente.comentarios}</div>`
+                : ""
+            }
 
-            <p style="text-align: center; margin-top: 30px; color: #666;">Gracias por su preferencia.</p>
-        </div>
-    </body>
-    </html>
-  `;
+            <p style="text-align: center; margin-top: 30px; color: #666;">Gracias por su preferencia.</p>
+        </div>
+    </body>
+    </html>
+  `;
 }
 
 // ------------------ PDF SHIFT ------------------
 async function generatePdfFromHtml(htmlContent: string): Promise<string> {
-  if (!PDF_API_KEY) throw new Error("PDF_API_KEY no está configurada.");
+  if (!PDF_API_KEY) throw new Error("PDF_API_KEY no está configurada.");
 
-  const authString = btoa(`${PDF_API_KEY}:`);
+  const authString = btoa(`${PDF_API_KEY}:`);
 
-  const response = await fetch(PDF_API_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${authString}`,
-    },
-    body: JSON.stringify({
-      source: htmlContent,
-      filename: "OrdenDeCompra.pdf",
-    }),
-  });
+  const response = await fetch(PDF_API_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${authString}`,
+    },
+    body: JSON.stringify({
+      source: htmlContent,
+      filename: "OrdenDeCompra.pdf",
+    }),
+  });
 
-  if (!response.ok) {
-    console.error(await response.text());
-    throw new Error(`Error generando PDF (${response.status})`);
-  }
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Error de PDFShift:", errorBody);
+    throw new Error(`Error generando PDF (${response.status}): ${errorBody.slice(0, 100)}...`);
+  }
 
-  const pdfBuffer = new Uint8Array(await response.arrayBuffer());
-  return btoa(String.fromCharCode(...pdfBuffer));
+  const pdfBuffer = new Uint8Array(await response.arrayBuffer());
+  return btoa(String.fromCharCode(...pdfBuffer));
 }
 
 // ------------------ EDGE FUNCTION ------------------
-// ------------------ EDGE FUNCTION (CORREGIDA FINAL) ------------------
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -140,13 +149,13 @@ serve(async (req) => {
     });
   }
 
-  try { // ⬅️ 1. ABRE EL TRY
-
+  try { 
     // ---------- LEER PEDIDO ----------
     const pedido = await req.json();
 
+    // ** ESTA VALIDACIÓN AHORA DEBE PASAR **
     if (!pedido || !pedido.cliente || pedido.productos.length === 0) {
-      return new Response(JSON.stringify({ error: "Datos del pedido incompletos" }), {
+      return new Response(JSON.stringify({ error: "Datos del pedido incompletos (cliente o productos faltantes)" }), {
         status: 400,
         headers: corsHeaders,
       });
@@ -166,6 +175,8 @@ serve(async (req) => {
     };
 
     // ---------- ENVIAR CORREOS ----------
+    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY no está configurada.");
+
     const emails = [
       {
         from: "onboarding@resend.dev",
@@ -185,7 +196,7 @@ serve(async (req) => {
 
     await Promise.all(
       emails.map((email) =>
-        fetch("https://api.resend.com/emails", { // <-- USAR LA CONSTANTE RESEND_ENDPOINT
+        fetch(RESEND_ENDPOINT, { // Se asegura de usar la constante
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -200,11 +211,13 @@ serve(async (req) => {
       JSON.stringify({ message: "PDF generado y correos enviados" }),
       { status: 200, headers: corsHeaders }
     );
-  } catch (error) { // ⬅️ 2. CIERRA EL TRY Y ABRE EL CATCH
-    console.error(error);
+  } catch (error) { 
+    // Log en la consola de Supabase para depurar el error 500
+    console.error("Error fatal en Edge Function:", error.message);
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || "Error interno del servidor." }),
       { status: 500, headers: corsHeaders }
     );
-  } // ⬅️ 3. CIERRA EL CATCH
+  } 
 });
