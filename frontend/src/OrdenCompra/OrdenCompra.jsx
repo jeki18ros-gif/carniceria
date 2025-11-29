@@ -83,12 +83,6 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
   setProductoEditar(null);
 };
 
-
-  setMostrarCarrito(true);
-  setProductoSeleccionado(null);
-  setProductoEditar(null);
-};
-
   const handleRemoveItem = (id) => {
     setSeleccionados((prev) => {
       const nuevo = { ...prev };
