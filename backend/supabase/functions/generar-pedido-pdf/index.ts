@@ -10,7 +10,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
-const PDF_API_ENDPOINT = "https://api.pdfshift.io/v3/convert";
+const PDF_API_ENDPOINT = "https://api.pdfshift.io/v3/convert/pdf";
 
 const TU_CORREO_DE_NEGOCIO = "jeki18ros@gmail.com";
 
