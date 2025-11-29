@@ -15,7 +15,7 @@ export default function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  
+
 const handleSubmit = async (e) => { 
   e.preventDefault();
   setLoading(true);
@@ -29,7 +29,6 @@ const handleSubmit = async (e) => {
       headers: {
         "Content-Type": "application/json",
         apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify(form),
     });
@@ -50,6 +49,7 @@ const handleSubmit = async (e) => {
     setLoading(false);
   }
 };
+
 
   const labels = t("contactSection.form.labels", { returnObjects: true });
   const placeholders = t("contactSection.form.placeholders", { returnObjects: true });
