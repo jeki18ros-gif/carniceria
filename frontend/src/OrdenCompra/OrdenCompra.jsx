@@ -115,15 +115,19 @@ const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
   };
 
   try {
-    const response = await fetch(SUPABASE_URL + "/functions/v1/generar-pedido-pdf", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-    Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
-  },
-  body: JSON.stringify(pedido),
-});
+    const response = await fetch(
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(pedido),
+  }
+);
+
 
 
 
