@@ -15,39 +15,40 @@ export default function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-
-// ...
+  
 const handleSubmit = async (e) => { 
-    e.preventDefault();
-    setLoading(true);
-    setSuccess(false);
+  e.preventDefault();
+  setLoading(true);
+  setSuccess(false);
 
-    const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`; 
+  const FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`;
 
-    try {
-        const response = await fetch(FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form),
-        });
+  try {
+    const response = await fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify(form),
+    });
 
-        // 1. Éxito
-        if (response.ok) {
-            setSuccess(true);
-            setForm({ name: "", email: "", message: "" });
-            setTimeout(() => setSuccess(false), 5000); 
-
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Ocurrió un error al enviar el mensaje.');
-        }
-
-    } catch (error) {
-        console.error("Error de envío:", error);
-        setSuccess(false);
-    } finally {
-        setLoading(false);
+    if (response.ok) {
+      setSuccess(true);
+      setForm({ name: "", email: "", message: "" });
+      setTimeout(() => setSuccess(false), 5000);
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Ocurrió un error al enviar el mensaje.");
     }
+
+  } catch (error) {
+    console.error("Error de envío:", error);
+    setSuccess(false);
+  } finally {
+    setLoading(false);
+  }
 };
 
   const labels = t("contactSection.form.labels", { returnObjects: true });
