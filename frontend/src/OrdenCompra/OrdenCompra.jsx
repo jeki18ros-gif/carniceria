@@ -115,14 +115,16 @@ const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
   };
 
   try {
-    const response = await fetch(FUNCTION_URL, {
-      method: "POST",
-      // Aseguramos que no se envíe ningún token de autenticación si la función es pública
-      headers: { 
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(pedidoFinal),
-    });
+    const response = await fetch(SUPABASE_URL + "/functions/v1/generar-pedido-pdf", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    apikey: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+  },
+  body: JSON.stringify(pedido),
+});
+
 
 
     if (!response.ok) {

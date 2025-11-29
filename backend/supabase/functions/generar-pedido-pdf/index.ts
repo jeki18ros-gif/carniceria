@@ -1,13 +1,9 @@
 // generar-pedido-pdf/index.ts
-
-// 👇 NECESARIO PARA PERMITIR LLAMADAS SIN AUTENTICACIÓN
 export const config = {
   runtime: "edge",
-  allowUnauthenticated: true,
 };
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // ------------------ ENV KEYS ------------------
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -21,7 +17,8 @@ const TU_CORREO_DE_NEGOCIO = "jeki18ros@gmail.com";
 // ------------------ CORS ------------------
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 // ------------------ HTML GENERATOR ------------------
@@ -137,7 +134,7 @@ async function generatePdfFromHtml(htmlContent: string): Promise<string> {
   if (!response.ok) {
     const errorBody = await response.text();
     console.error("Error de PDFShift:", errorBody);
-    throw new Error(`Error generando PDF (${response.status}): ${errorBody.slice(0, 100)}...`);
+    throw new Error(`Error generando PDF (${response.status})`);
   }
 
   const pdfBuffer = new Uint8Array(await response.arrayBuffer());
@@ -158,17 +155,15 @@ serve(async (req) => {
   }
 
   try {
-    // ---------- LEER PEDIDO ----------
     const pedido = await req.json();
 
     if (!pedido || !pedido.cliente || pedido.productos.length === 0) {
       return new Response(
-        JSON.stringify({ error: "Datos del pedido incompletos (cliente o productos faltantes)" }),
+        JSON.stringify({ error: "Datos del pedido incompletos" }),
         { status: 400, headers: corsHeaders }
       );
     }
 
-    // ---------- GENERAR PDF ----------
     const htmlContent = generarHTMLPedido(pedido);
     const pdfBase64 = await generatePdfFromHtml(htmlContent);
 
@@ -181,8 +176,8 @@ serve(async (req) => {
       content: pdfBase64,
     };
 
-    // ---------- ENVIAR CORREOS ----------
-    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY no está configurada.");
+    if (!RESEND_API_KEY)
+      throw new Error("RESEND_API_KEY no está configurada.");
 
     const emails = [
       {
@@ -214,17 +209,18 @@ serve(async (req) => {
       )
     );
 
-    return new Response(JSON.stringify({ message: "PDF generado y correos enviados" }), {
-      status: 200,
+    return new Response(
+      JSON.stringify({ message: "PDF generado y correos enviados" }),
+      {
+        status: 200,
+        headers: corsHeaders,
+      }
+    );
+  } catch (error: any) {
+    console.error("Error en Edge Function:", error.message);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
       headers: corsHeaders,
     });
-
-  } catch (error: any) {
-    console.error("Error fatal en Edge Function:", error.message);
-
-    return new Response(
-      JSON.stringify({ error: error.message || "Error interno del servidor." }),
-      { status: 500, headers: corsHeaders }
-    );
   }
 });
