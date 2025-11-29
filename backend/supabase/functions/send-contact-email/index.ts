@@ -6,10 +6,10 @@ const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://les-aliments-benito.vercel.app",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
 
 serve(async (req: Request) => {
   // Preflight CORS
