@@ -3,14 +3,21 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://les-aliments-benito.vercel.app',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "https://les-aliments-benito.vercel.app",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
+
 serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  // Preflight CORS
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
+
+  // Método incorrecto
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ message: "Método no permitido." }), {
       status: 405,
@@ -21,29 +28,32 @@ serve(async (req: Request) => {
   try {
     const { name, email, message } = await req.json();
 
+    // Validación completa
     if (!name || !email || !message) {
-      return new Response(JSON.stringify({ message: "Faltan campos requeridos." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }, // Añadir CORS
-      });
+      return new Response(
+        JSON.stringify({ message: "Faltan campos requeridos." }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
-    // 1. Configurar el correo electrónico
+    // Cuerpo del email
     const resendPayload = {
-      from: "onboarding@resend.dev", // Reemplaza con un dominio verificado si usas Resend en producción
-      to: "jeki18ros@gmail.com", //TU CORREO DE DESTINO
-      subject: `Nuevo mensaje de contacto de: ${name}`,
+      from: "onboarding@resend.dev", // Cambiar luego por dominio verificado
+      to: "jeki18ros@gmail.com",
+      subject: `Nuevo mensaje de contacto: ${name}`,
       html: `
-        <h1>Mensaje de Contacto del Sitio Web</h1>
-        <p><strong>De:</strong> ${name}</p>
-        <p><strong>Correo Electrónico:</strong> ${email}</p>
+        <h2>Nuevo Mensaje desde el Formulario Web</h2>
+        <p><strong>Nombre:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
         <hr/>
-        <p><strong>Mensaje:</strong></p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
+        <p>${message.replace(/\n/g, "<br>")}</p>
       `,
     };
 
-    // 2. Enviar el correo a través de Resend
+    // Enviar a Resend
     const resendResponse = await fetch(RESEND_ENDPOINT, {
       method: "POST",
       headers: {
@@ -54,27 +64,32 @@ serve(async (req: Request) => {
     });
 
     if (!resendResponse.ok) {
-        const resendError = await resendResponse.json();
-        console.error("Error de Resend:", resendError);
-        
-        return new Response(JSON.stringify({ message: "Error al enviar el correo con el servicio externo." }), {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      const resendError = await resendResponse.clone().json();
+      console.error("Error Resend:", resendError);
+
+      return new Response(
+        JSON.stringify({
+          message: "Error al enviar el correo con Resend.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
- // Éxito
-    return new Response(JSON.stringify({ message: "Correo enviado con éxito." }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }, 
-    });
-
+    return new Response(
+      JSON.stringify({ message: "Correo enviado con éxito." }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    // Error interno del servidor
-    console.error("Error en la Edge Function:", error);
-    return new Response(JSON.stringify({ message: "Error interno del servidor." }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }, 
-    });
+    console.error("Error en Edge Function:", error);
+    return new Response(
+      JSON.stringify({ message: "Error interno del servidor." }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 });
