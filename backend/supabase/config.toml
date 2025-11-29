@@ -1,21 +1,23 @@
+# Archivo: supabase/config.toml
 
+# ====================================================
+# SECCIÓN 1: Configuración de send-contact-email
+# ====================================================
 [functions.send-contact-email]
 enabled = true
 verify_jwt = true
 import_map = "./functions/send-contact-email/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+# Asegúrate que la ruta sea correcta
 entrypoint = "./functions/send-contact-email/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/send-contact-email/*.html" ]
-# ----------------------------------------------------
-# AÑADE ESTA SECCIÓN COMPLETA PARA GENERAR-PEDIDO-PDF
-# ----------------------------------------------------
+
+
+# ====================================================
+# SECCIÓN 2: Configuración de generar-pedido-pdf (CORREGIDA)
+# ====================================================
 [functions.generar-pedido-pdf]
-name = "generar-pedido-pdf"
 enabled = true
-# Asegúrate de que la ruta sea correcta
-entrypoint = "./functions/generar-pedido-pdf/index.ts" 
-# LISTA DE VARIABLES DE ENTORNO QUE DEBEN CARGARSE DESDE LOS SECRETS
-env = ["RESEND_API_KEY", "PDF_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
+# La CLI automáticamente asocia el nombre de la carpeta con el nombre de la función.
+# Se eliminó 'name' para evitar el error "has invalid keys".
+# Se eliminó 'env' porque los Secrets se cargan automáticamente al desplegar.
+# Asegúrate que la ruta sea correcta
+entrypoint = "./functions/generar-pedido-pdf/index.ts"
