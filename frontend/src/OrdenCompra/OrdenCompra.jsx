@@ -115,20 +115,18 @@ const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
   };
 
   try {
-   const response = await fetch(
+const response = await fetch(
   `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
   {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+      "X-Client-Info": "supabase-js-web",
     },
     body: JSON.stringify(pedidoFinal),
   }
 );
-
-
-
 
 
     if (!response.ok) {
