@@ -9,3 +9,13 @@ entrypoint = "./functions/send-contact-email/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/send-contact-email/*.html" ]
+# ----------------------------------------------------
+# AÑADE ESTA SECCIÓN COMPLETA PARA GENERAR-PEDIDO-PDF
+# ----------------------------------------------------
+[functions.generar-pedido-pdf]
+name = "generar-pedido-pdf"
+enabled = true
+# Asegúrate de que la ruta sea correcta
+entrypoint = "./functions/generar-pedido-pdf/index.ts" 
+# LISTA DE VARIABLES DE ENTORNO QUE DEBEN CARGARSE DESDE LOS SECRETS
+env = ["RESEND_API_KEY", "PDF_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
