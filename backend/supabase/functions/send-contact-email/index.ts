@@ -6,10 +6,9 @@ const RESEND_ENDPOINT = "https://api.resend.com/emails";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://les-aliments-benito.vercel.app",
-  "Access-Control-Allow-Headers": "apikey, content-type",
+  "Access-Control-Allow-Headers": "apikey, content-type, authorization",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
-
 
 serve(async (req: Request) => {
   // Preflight CORS
@@ -82,6 +81,7 @@ serve(async (req: Request) => {
       JSON.stringify({ message: "Correo enviado con éxito." }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     console.error("Error en Edge Function:", error);
     return new Response(
