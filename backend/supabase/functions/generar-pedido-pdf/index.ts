@@ -1,10 +1,35 @@
 // supabase/functions/generar-pedido-pdf/index.ts
+
 export const config = {
   runtime: "edge",
   verifyJwt: false,
 };
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+
+// =====================
+//   Helpers seguros Base64
+// =====================
+function encodeBase64(uint8: Uint8Array | string) {
+  if (typeof uint8 === "string") {
+    return btoa(uint8);
+  }
+  let binary = "";
+  for (let i = 0; i < uint8.length; i++) {
+    binary += String.fromCharCode(uint8[i]);
+  }
+  return btoa(binary);
+}
+
+function decodeBase64(base64: string) {
+  const binary = atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const PDF_API_KEY = Deno.env.get("PDF_API_KEY");
@@ -23,31 +48,30 @@ const corsHeaders = {
 };
 
 // ------------------ GENERAR HTML ------------------
-function generarHTMLPedido(pedido: any) {
+function generarHTMLPedido(pedido) {
   const productosHTML = pedido.productos
     .map(
-      (p: any) => `
-        <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 10px 0; font-weight: 600;">${p.nombre}</td>
-          <td style="padding: 10px 0; text-align: center;">${p.cantidad}</td>
-          <td style="padding: 10px 0;">
+      (p) => `
+        <tr style="border-bottom:1px solid #eee;">
+          <td style="padding:8px 0;font-weight:bold;">${p.nombre}</td>
+          <td style="padding:8px 0;text-align:center;">${p.cantidad}</td>
+          <td style="padding:8px 0;">
             ${
               p.especificaciones
                 ? Object.entries(p.especificaciones)
-                    .filter(([, value]) => value)
-                    .map(([key, value]) => `• ${key}: ${value}`)
+                    .filter(([, v]) => v)
+                    .map(([k, v]) => `• ${k}: ${v}`)
                     .join("<br>")
                 : "—"
             }
           </td>
-        </tr>
-      `
+        </tr>`
     )
     .join("");
 
   return `
   <html>
-    <body style="font-family: Arial;">
+    <body style="font-family:Arial;">
       <h1>Orden de Compra</h1>
       <p>Fecha: ${pedido.fechaPedido}</p>
 
@@ -59,9 +83,7 @@ function generarHTMLPedido(pedido: any) {
       <p><strong>Entrega:</strong> ${pedido.cliente.entrega}</p>
 
       <h2>Productos</h2>
-      <table width="100%">
-        ${productosHTML}
-      </table>
+      <table width="100%">${productosHTML}</table>
 
       ${
         pedido.cliente.comentarios
@@ -72,109 +94,97 @@ function generarHTMLPedido(pedido: any) {
   </html>`;
 }
 
-// ------------------ PDF CREATOR ------------------
-async function generatePdfFromHtml(htmlContent: string): Promise<string> {
+// ------------------ PDFShift ------------------
+async function generarPdfBase64(html) {
   if (!PDF_API_KEY) throw new Error("PDF_API_KEY no configurada");
+
+  const auth = encodeBase64(`${PDF_API_KEY}:`);
 
   const response = await fetch(PDF_API_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Basic ${btoa(PDF_API_KEY + ":")}`,
+      Authorization: `Basic ${auth}`,
     },
     body: JSON.stringify({
-      source: htmlContent,
+      source: html,
       filename: "OrdenDeCompra.pdf",
     }),
   });
 
   if (!response.ok) {
-    console.error("PDFShift error:", await response.text());
-    throw new Error("Error generando el PDF");
+    console.error(await response.text());
+    throw new Error("No se pudo generar el PDF");
   }
 
   const buffer = new Uint8Array(await response.arrayBuffer());
-  return btoa(String.fromCharCode(...buffer));
+  return encodeBase64(buffer);
 }
 
 // ------------------ EDGE FUNCTION ------------------
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  if (req.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
-  }
-
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ message: "Método no permitido" }), {
-      status: 405,
-      headers: corsHeaders,
-    });
-  }
 
   try {
     const pedido = await req.json();
 
-    if (!pedido || !pedido.cliente || !pedido.productos?.length) {
-      return new Response(
-        JSON.stringify({ error: "Datos del pedido incompletos" }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
+    const html = generarHTMLPedido(pedido);
+    const pdfBase64 = await generarPdfBase64(html);
 
-    // Generar HTML y PDF
-    const htmlContent = generarHTMLPedido(pedido);
-    const pdfBase64 = await generatePdfFromHtml(htmlContent);
-
-    const nombreSanitizado = pedido.cliente.nombre
+    const nombreArchivo = `Orden_${pedido.cliente.nombre
       .replace(/\s+/g, "-")
-      .replace(/[^a-zA-Z0-9-]/g, "");
+      .replace(/[^a-zA-Z0-9-]/g, "")}_${pedido.fechaPedido}.pdf`;
 
-    const attachment = {
-      filename: `Orden_${nombreSanitizado}_${pedido.fechaPedido}.pdf`,
-      content: pdfBase64,
-    };
+    // envío de correos
+    const attachment = { filename: nombreArchivo, content: pdfBase64 };
 
-    if (!RESEND_API_KEY)
-      throw new Error("RESEND_API_KEY no configurada");
+    await Promise.all([
+      fetch(RESEND_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: "onboarding@resend.dev",
+          to: TU_CORREO_DE_NEGOCIO,
+          subject: `🛒 Nuevo Pedido de ${pedido.cliente.nombre}`,
+          html: "<p>Nuevo pedido recibido.</p>",
+          attachments: [attachment],
+        }),
+      }),
 
-    // Crear correos
-    const correos = [
-      {
-        from: "onboarding@resend.dev",
-        to: TU_CORREO_DE_NEGOCIO,
-        subject: `🛒 Nuevo Pedido de ${pedido.cliente.nombre}`,
-        html: "<p>Nuevo pedido recibido.</p>",
-        attachments: [attachment],
+      fetch(RESEND_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: "onboarding@resend.dev",
+          to: pedido.cliente.correo,
+          subject: `✔ Confirmación de Pedido`,
+          html: `<p>Gracias por tu pedido, ${pedido.cliente.nombre}.</p>`,
+          attachments: [attachment],
+        }),
+      }),
+    ]);
+
+    // devolver PDF al frontend
+    const pdfBytes = decodeBase64(pdfBase64);
+
+    return new Response(pdfBytes, {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${nombreArchivo}"`,
       },
-      {
-        from: "onboarding@resend.dev",
-        to: pedido.cliente.correo,
-        subject: `✔ Confirmación de Pedido`,
-        html: `<p>Gracias por tu pedido, ${pedido.cliente.nombre}.</p>`,
-        attachments: [attachment],
-      },
-    ];
-
-    // Enviar correos en paralelo
-    await Promise.all(
-      correos.map((email) =>
-        fetch(RESEND_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-          },
-          body: JSON.stringify(email),
-        })
-      )
-    );
-
-    return new Response(
-      JSON.stringify({ message: "PDF generado y correos enviados" }),
-      { status: 200, headers: corsHeaders }
-    );
-  } catch (error: any) {
-    console.error("Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    });
+  } catch (e) {
+    console.error(e);
+    return new Response(JSON.stringify({ error: e.message }), {
       status: 500,
       headers: corsHeaders,
     });

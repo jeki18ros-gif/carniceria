@@ -9,9 +9,8 @@ verify_jwt = false          # <<< CAMBIO IMPORTANTE
 import_map = "./functions/send-contact-email/deno.json"
 entrypoint = "./functions/send-contact-email/index.ts"
 
-# ====================================================
-# SECCIÓN 2: Configuración de generar-pedido-pdf
-# ====================================================
 [functions.generar-pedido-pdf]
 enabled = true
+entrypoint = "./functions/generar-pedido-pdf/index.ts"
+verify_jwt = false        # <<<<<< OBLIGATORIO
 entrypoint = "./functions/generar-pedido-pdf/index.ts"

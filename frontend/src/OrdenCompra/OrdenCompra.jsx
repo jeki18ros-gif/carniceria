@@ -114,20 +114,21 @@ export default function OrdenDeCompra() {
   // ============================
   //   DESCARGAR PDF DESDE BOTÓN
   // ============================
-  const generarPDFDelPedido = async (pedido) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify(pedido),
-        }
-      );
+const generarPDFDelPedido = async (pedido) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify(pedido), // ✔ CORREGIDO
+      }
+    );
+
+
 
       if (!response.ok) throw new Error("No se pudo generar el PDF");
 
@@ -163,17 +164,17 @@ export default function OrdenDeCompra() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify(pedidoFinal),
-        }
-      );
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify(pedidoFinal),
+  }
+);
+
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
