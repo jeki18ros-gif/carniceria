@@ -223,7 +223,7 @@ export function MiniCarritoModal({
                     <span className="font-bold">{item.cantidad}</span>
                   </p>
 
-                  {/* Corrección 2: Asegura que item.especificaciones sea un objeto (o vacío) antes de llamar a Object.entries() */}
+                  {/*Asegura que item.especificaciones sea un objeto (o vacío) antes de llamar a Object.entries() */}
                   {Object.entries(item.especificaciones || {}).map(
                     ([key, value]) =>
                       value &&
