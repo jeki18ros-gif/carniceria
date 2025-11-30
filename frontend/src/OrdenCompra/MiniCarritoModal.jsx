@@ -2,7 +2,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { useProductosData } from "../data/productosData"; // Corregida la ruta
+import { useProductosData } from "./productosData";
 import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useTheme } from "../Theme/ThemeContext"; // Corregida la ruta
