@@ -18,16 +18,15 @@ function encodeBase64(uint8: Uint8Array | string) {
   return btoa(bin);
 }
 
-async function bufferToUint8Array(buffer: ArrayBuffer) {
-  return new Uint8Array(buffer);
-}
+// Nota: bufferToUint8Array no es necesario si usas res.arrayBuffer() directamente.
 
 // -------------------------
 // ENV / CONFIG
 // -------------------------
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY"); // required for sending mail
 const RESEND_FROM = Deno.env.get("RESEND_FROM") ?? "no-reply@tu-dominio.com";
-const PDF_API_KEY = Deno.env.get("PDF_API_KEY"); // servicio para generar pdf (pdfshift u otro)
+// ELIMINADA: PDF_API_KEY (ya no se usa PDFShift)
+const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL"); // NUEVA URL: https://les-aliments-benito.vercel.app/api/generar-pedido-pdf
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); // service role para funciones server-side
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "jeki18ros@gmail.com";
@@ -37,6 +36,10 @@ const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "*").split(",");
 if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error("Faltan variables SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY");
 }
+if (!PDF_GENERATOR_URL) {
+  console.error("Falta PDF_GENERATOR_URL. ¡Necesaria para generar PDF!");
+}
+
 
 // -------------------------
 // CLIENTE SUPABASE
@@ -68,6 +71,35 @@ function buildCorsHeaders(origin: string | null) {
 // -------------------------
 // HTML / PDF
 // -------------------------
+
+// IMPLEMENTACIÓN DE GENERACIÓN DE PDF VÍA API EXTERNA (PUPPETEER EN VERCEL)
+async function generarPdf(html: string) {
+  if (!PDF_GENERATOR_URL) {
+    throw new Error("PDF_GENERATOR_URL no está definido. No se puede generar el PDF.");
+  }
+  
+  const res = await fetch(PDF_GENERATOR_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // Si el endpoint de Vercel requiere un token de autenticación, agrégalo aquí
+    },
+    // Enviamos el HTML que la función de Vercel usará para renderizar
+    body: JSON.stringify({ html: html, fileName: "orden_de_compra.pdf" }), 
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Error al llamar a la API de PDF (Vercel):", res.status, text);
+    throw new Error(`Fallo el generador de PDF (código: ${res.status}). Mensaje: ${text}`);
+  }
+
+  // La respuesta es el buffer binario del PDF
+  const ab = await res.arrayBuffer();
+  return new Uint8Array(ab); 
+}
+
+
 function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
   const productosHTML = items
     .map(
@@ -131,31 +163,6 @@ function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
       </body>
     </html>
   `;
-}
-async function generarPdf(html: string) {
-  // OBTENER la URL del servicio donde alojaste el código de Puppeteer/Vercel
-  const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL");
-  if (!PDF_GENERATOR_URL) throw new Error("Falta PDF_GENERATOR_URL en variables de entorno.");
-
-  const res = await fetch(PDF_GENERATOR_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // Si tu API de Vercel necesita un token secreto para ser llamada, añádelo aquí
-    },
-    // El body envía el HTML que el servicio de Puppeteer necesita para renderizar el PDF
-    body: JSON.stringify({ html: html, fileName: "orden_de_compra.pdf" }), 
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Error al llamar al Generador de PDF externo:", res.status, text);
-    throw new Error(`Fallo el generador de PDF (código: ${res.status}). Mensaje: ${text}`);
-  }
-
-  // El endpoint de Vercel (el código Puppeteer) devuelve el PDF binario
-  const ab = await res.arrayBuffer();
-  return new Uint8Array(ab); // Devuelve los bytes del PDF
 }
 
 // -------------------------
