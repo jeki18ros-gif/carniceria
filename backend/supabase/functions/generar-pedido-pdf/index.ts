@@ -133,29 +133,6 @@ function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
   `;
 }
 
-async function generarPdf(html: string) {
-  if (!PDF_API_KEY) throw new Error("Falta PDF_API_KEY");
-  const auth = encodeBase64(`${PDF_API_KEY}:`);
-  const res = await fetch("https://api.pdfshift.io/v3/convert/pdf", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${auth}`,
-    },
-    body: JSON.stringify({ source: html }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Error PDF:", res.status, text);
-    // Línea 153 modificada para DEBUGGING:
-throw new Error(`PDFShift falló con código ${res.status}. Mensaje de PDFShift: ${text}`);
-  }
-
-  const ab = await res.arrayBuffer();
-  return new Uint8Array(ab);
-}
-
 // -------------------------
 // MAIN
 // -------------------------
