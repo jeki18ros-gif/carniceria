@@ -13,7 +13,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { html, fileName } = req.body;
+    // 💥 CORRECCIÓN: req.json() en vez de req.body
+    let body: any = {};
+
+    try {
+      body = await new Promise((resolve, reject) => {
+        let data = "";
+        req.on("data", (chunk) => (data += chunk));
+        req.on("end", () => {
+          try {
+            resolve(JSON.parse(data || "{}"));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      });
+    } catch {
+      return res.status(400).json({ error: "El body no es JSON válido." });
+    }
+
+    const { html, fileName } = body;
 
     if (!html) {
       return res.status(400).json({ error: "Falta el HTML en el body." });
@@ -26,7 +45,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const page = await browser.newPage();
-
     await page.setViewport({ width: 1080, height: 1024 });
 
     await page.setContent(html, { waitUntil: "networkidle0" });
@@ -51,6 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     return res.send(pdfBuffer);
+
   } catch (error: any) {
     console.error("❌ Error generando PDF:", error);
     return res.status(500).json({
