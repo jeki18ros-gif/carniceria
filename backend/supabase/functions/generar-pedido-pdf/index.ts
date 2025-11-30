@@ -26,7 +26,7 @@ function encodeBase64(uint8: Uint8Array | string) {
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY"); // required for sending mail
 const RESEND_FROM = Deno.env.get("RESEND_FROM") ?? "no-reply@tu-dominio.com";
 // ELIMINADA: PDF_API_KEY (ya no se usa PDFShift)
-const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL"); // NUEVA URL: https://les-aliments-benito.vercel.app/api/generar-pedido-pdf
+const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL"); // NUEVA URL: https://les-aliments-benito.vercel.app/api/generarpedidopdf
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); // service role para funciones server-side
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "jeki18ros@gmail.com";
