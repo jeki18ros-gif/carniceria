@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 // Importamos el cliente Supabase
-import { supabase } from '../supabaseClient'; 
+import { supabase } from '../supabase/supabaseClient'; 
 
 // --- Importación de las Imágenes (Localmente) ---
 // Las imágenes en producción deberían estar en un CDN o Supabase Storage
