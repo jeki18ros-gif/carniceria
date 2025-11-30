@@ -132,6 +132,31 @@ function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
     </html>
   `;
 }
+async function generarPdf(html: string) {
+  // OBTENER la URL del servicio donde alojaste el código de Puppeteer/Vercel
+  const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL");
+  if (!PDF_GENERATOR_URL) throw new Error("Falta PDF_GENERATOR_URL en variables de entorno.");
+
+  const res = await fetch(PDF_GENERATOR_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // Si tu API de Vercel necesita un token secreto para ser llamada, añádelo aquí
+    },
+    // El body envía el HTML que el servicio de Puppeteer necesita para renderizar el PDF
+    body: JSON.stringify({ html: html, fileName: "orden_de_compra.pdf" }), 
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Error al llamar al Generador de PDF externo:", res.status, text);
+    throw new Error(`Fallo el generador de PDF (código: ${res.status}). Mensaje: ${text}`);
+  }
+
+  // El endpoint de Vercel (el código Puppeteer) devuelve el PDF binario
+  const ab = await res.arrayBuffer();
+  return new Uint8Array(ab); // Devuelve los bytes del PDF
+}
 
 // -------------------------
 // MAIN
