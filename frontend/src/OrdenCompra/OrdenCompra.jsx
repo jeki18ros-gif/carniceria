@@ -180,13 +180,16 @@ const generarPDFDelPedido = async (pedido) => {
     //  ENVIAR HTML A API PDF
     // =============================
     const response = await fetch("/api/pdf", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        html,
-        fileName: `pedido_${pedido.orden_id || "cliente"}.pdf`,
-      }),
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    html,
+    cliente: pedido.cliente,
+    productos: pedido.productos,
+    orden_id: pedido.orden_id || null
+  })
+});
+
 
     if (!response.ok) throw new Error("Error generando PDF");
 

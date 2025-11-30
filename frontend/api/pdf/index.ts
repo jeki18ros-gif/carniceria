@@ -1,80 +1,95 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+import { createClient } from "@supabase/supabase-js";
+import pdf from "html-pdf-node";
 
 export const config = {
-  maxDuration: 30,
+  runtime: "edge"
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export default async function handler(req: NextRequest) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed. Solo se acepta POST." });
+    return NextResponse.json({ error: "Método no permitido" }, { status: 405 });
   }
 
   try {
-    // 💥 CORRECCIÓN: req.json() en vez de req.body
-    let body: any = {};
+    const pedido = await req.json();
 
-    try {
-      body = await new Promise((resolve, reject) => {
-        let data = "";
-        req.on("data", (chunk) => (data += chunk));
-        req.on("end", () => {
-          try {
-            resolve(JSON.parse(data || "{}"));
-          } catch (e) {
-            reject(e);
-          }
-        });
+    // ===========================
+    // 1) GENERAR PDF
+    // ===========================
+    const file = { content: pedido.html };
+    const pdfBuffer = await pdf.generatePdf(file, { format: "A4" });
+
+    // Convertir a base64 para email
+    const pdfBase64 = Buffer.from(pdfBuffer).toString("base64");
+
+    // ===========================
+    // 2) SUBIR A SUPABASE STORAGE
+    // ===========================
+    const nombrePDF = `pedido_${Date.now()}.pdf`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("ordenes_pdf")
+      .upload(nombrePDF, pdfBuffer, {
+        contentType: "application/pdf"
       });
-    } catch {
-      return res.status(400).json({ error: "El body no es JSON válido." });
+
+    if (uploadError) {
+      console.error(uploadError);
+      return NextResponse.json({ error: "Error subiendo PDF a Supabase" }, { status: 500 });
     }
 
-    const { html, fileName } = body;
+    const urlPDF = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ordenes_pdf/${nombrePDF}`;
 
-    if (!html) {
-      return res.status(400).json({ error: "Falta el HTML en el body." });
-    }
-
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+    // ===========================
+    // 3) GUARDAR EN TABLA ordenes_pdfs
+    // ===========================
+    await supabase.from("ordenes_pdfs").insert({
+      orden_id: pedido.orden_id || null,
+      url_pdf: urlPDF,
+      enviado_al_cliente: false,
+      enviado_al_admin: false
     });
 
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1080, height: 1024 });
-
-    await page.setContent(html, { waitUntil: "networkidle0" });
-
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: {
-        top: "1cm",
-        right: "1cm",
-        bottom: "1cm",
-        left: "1cm",
-      },
-    });
-
-    await browser.close();
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${fileName || "pedido.pdf"}"`
+    // ===========================
+    // 4) ENVIAR EMAIL DESDE EDGE FUNCTION SUPABASE
+    // ===========================
+    await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-order-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        },
+        body: JSON.stringify({
+          customerName: pedido.cliente.nombre,
+          customerEmail: pedido.cliente.correo,
+          pdfBase64,
+          orderSummaryHtml: pedido.html
+        })
+      }
     );
 
-    return res.send(pdfBuffer);
-
-  } catch (error: any) {
-    console.error("❌ Error generando PDF:", error);
-    return res.status(500).json({
-      error: "Fallo interno al generar el PDF.",
-      details: error.message,
+    // ===========================
+    // 5) DEVOLVER LA URL AL FRONTEND
+    // ===========================
+    return new Response(pdfBuffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${nombrePDF}"`
+      }
     });
+
+  } catch (error) {
+    console.error("Error en /api/pdf:", error);
+    return NextResponse.json({ error: "Error generando PDF" }, { status: 500 });
   }
 }
