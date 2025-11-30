@@ -8,9 +8,9 @@ export const config = {
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// -------------------------
-// UTILIDADES
-// -------------------------
+/* -------------------------
+   UTILIDADES
+------------------------- */
 function encodeBase64(uint8: Uint8Array | string) {
   if (typeof uint8 === "string") return btoa(uint8);
   let bin = "";
@@ -18,112 +18,99 @@ function encodeBase64(uint8: Uint8Array | string) {
   return btoa(bin);
 }
 
-// Nota: bufferToUint8Array no es necesario si usas res.arrayBuffer() directamente.
-
-// -------------------------
-// ENV / CONFIG
-// -------------------------
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY"); // required for sending mail
+/* -------------------------
+   ENV / CONFIG
+------------------------- */
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_FROM = Deno.env.get("RESEND_FROM") ?? "no-reply@tu-dominio.com";
-// ELIMINADA: PDF_API_KEY (ya no se usa PDFShift)
-const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL"); // NUEVA URL: https://les-aliments-benito.vercel.app/api/generarpedidopdf
+const PDF_GENERATOR_URL = Deno.env.get("PDF_GENERATOR_URL"); // Vercel puppeteer
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); // service role para funciones server-side
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "jeki18ros@gmail.com";
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "*").split(",");
 
-// validaciones mínimas de env
+// Detener si falta SUPABASE o PDF
 if (!SUPABASE_URL || !SERVICE_KEY) {
-  console.error("Faltan variables SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY");
+  console.error("Faltan SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY");
 }
 if (!PDF_GENERATOR_URL) {
-  console.error("Falta PDF_GENERATOR_URL. ¡Necesaria para generar PDF!");
+  console.error("❌ Falta PDF_GENERATOR_URL (requerida)");
 }
 
-
-// -------------------------
-// CLIENTE SUPABASE
-// -------------------------
+/* -------------------------
+   CLIENTE SUPABASE
+------------------------- */
 const supabase = createClient(SUPABASE_URL!, SERVICE_KEY!, {
   auth: { persistSession: false },
 });
 
-// -------------------------
-// CORS
-// -------------------------
+/* -------------------------
+   CORS
+------------------------- */
 function buildCorsHeaders(origin: string | null) {
   const headers: Record<string, string> = {
     "Access-Control-Allow-Headers": "content-type, apikey, x-api-key",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
-  if (!origin) {
-    headers["Access-Control-Allow-Origin"] = "*";
-  } else if (ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin)) {
+  if (!origin) headers["Access-Control-Allow-Origin"] = "*";
+  else if (ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin))
     headers["Access-Control-Allow-Origin"] = origin;
-  } else {
-    headers["Access-Control-Allow-Origin"] = "null";
-  }
+  else headers["Access-Control-Allow-Origin"] = "null";
 
   return headers;
 }
 
-// -------------------------
-// HTML / PDF
-// -------------------------
-
-// IMPLEMENTACIÓN DE GENERACIÓN DE PDF VÍA API EXTERNA (PUPPETEER EN VERCEL)
+/* -------------------------
+   GENERAR PDF (Vercel)
+------------------------- */
 async function generarPdf(html: string) {
   if (!PDF_GENERATOR_URL) {
-    throw new Error("PDF_GENERATOR_URL no está definido. No se puede generar el PDF.");
+    throw new Error("PDF_GENERATOR_URL no está definido en las variables de entorno.");
   }
-  
+
   const res = await fetch(PDF_GENERATOR_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // Si el endpoint de Vercel requiere un token de autenticación, agrégalo aquí
-    },
-    // Enviamos el HTML que la función de Vercel usará para renderizar
-    body: JSON.stringify({ html: html, fileName: "orden_de_compra.pdf" }), 
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ html, fileName: "orden_de_compra.pdf" }),
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    console.error("Error al llamar a la API de PDF (Vercel):", res.status, text);
-    throw new Error(`Fallo el generador de PDF (código: ${res.status}). Mensaje: ${text}`);
+    const errText = await res.text();
+    throw new Error(`Error del generador PDF (${res.status}): ${errText}`);
   }
 
-  // La respuesta es el buffer binario del PDF
-  const ab = await res.arrayBuffer();
-  return new Uint8Array(ab); 
+  const arrayBuffer = await res.arrayBuffer();
+  return new Uint8Array(arrayBuffer);
 }
 
-
+/* -------------------------
+   HTML DEL PEDIDO
+------------------------- */
 function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
   const productosHTML = items
     .map(
       (p) => `
-        <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding:8px;"><b>${p.nombre}</b></td>
-          <td style="padding:8px;">${p.cantidad_valor} ${p.cantidad_unidad}</td>
-          <td style="padding:8px;">
-            ${p.tipo_corte ?? ""} 
-            ${p.parte ?? ""} 
-            ${p.estado ?? ""} 
-            ${p.hueso ?? ""} 
-            ${p.grasa ?? ""} 
-            ${p.empaque ?? ""} 
-            ${p.coccion ?? ""} 
-            ${p.observacion ? "<br><i>" + p.observacion + "</i>" : ""}
-          </td>
-        </tr>`
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding:8px;"><b>${p.nombre}</b></td>
+        <td style="padding:8px;">${p.cantidad_valor} ${p.cantidad_unidad}</td>
+        <td style="padding:8px;">
+          ${p.tipo_corte ?? ""}
+          ${p.parte ?? ""}
+          ${p.estado ?? ""}
+          ${p.hueso ?? ""}
+          ${p.grasa ?? ""}
+          ${p.empaque ?? ""}
+          ${p.coccion ?? ""}
+          ${p.observacion ? "<br><i>" + p.observacion + "</i>" : ""}
+        </td>
+      </tr>`
     )
     .join("");
 
   return `
     <html>
-      <body style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.5;">
+      <body style="font-family: Arial; padding:20px;">
         <h1>Orden de Pedido</h1>
 
         <h2>Cliente</h2>
@@ -132,18 +119,18 @@ function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
         <p>Email: ${cliente.correo}</p>
         <p>Dirección: ${cliente.direccion}</p>
 
-        <h2>Detalles de Entrega</h2>
+        <h2>Entrega</h2>
         <p>Método: ${pedido.entrega_metodo}</p>
-        <p>Fecha entrega: ${pedido.fecha_entrega || "-"}</p>
-        <p>Horario: ${pedido.horario || "-"}</p>
+        <p>Fecha: ${pedido.fecha_entrega ?? "-"}</p>
+        <p>Horario: ${pedido.horario ?? "-"}</p>
 
         <h2 style="margin-top:20px;">Productos</h2>
         <table width="100%" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
           <thead>
             <tr style="background:#f7f7f7;">
-              <th style="text-align:left; padding:8px;">Producto</th>
-              <th style="text-align:left; padding:8px;">Cantidad</th>
-              <th style="text-align:left; padding:8px;">Detalles</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Detalles</th>
             </tr>
           </thead>
           <tbody>
@@ -157,17 +144,17 @@ function generarHTMLPedido(pedido: any, cliente: any, items: any[]) {
             : ""
         }
 
-        <p style="font-size: 12px; color: #666; margin-top:30px;">
-          Documento generado: ${new Date().toLocaleString()}
+        <p style="font-size:12px; color:#666; margin-top:30px;">
+          Generado: ${new Date().toLocaleString()}
         </p>
       </body>
     </html>
   `;
 }
 
-// -------------------------
-// MAIN
-// -------------------------
+/* -------------------------
+   MAIN FUNCTION
+------------------------- */
 serve(async (req) => {
   const origin = req.headers.get("origin");
   const corsHeaders = buildCorsHeaders(origin);
@@ -184,35 +171,34 @@ serve(async (req) => {
       });
     }
 
+    /* -------------------------
+       1) PARSE BODY
+    ------------------------- */
     const payload = await req.json();
+    if (!payload) throw new Error("No se recibió cuerpo JSON.");
 
-    // --------- VALIDACIONES BÁSICAS ----------
-    if (!payload) throw new Error("Cuerpo de la petición vacío");
     const clientePayload = payload.cliente;
     const productosPayload = payload.productos;
 
-    if (!clientePayload?.correo) throw new Error("Falta correo del cliente");
-    if (!clientePayload?.nombre) throw new Error("Falta nombre del cliente");
-    if (!clientePayload?.telefono) throw new Error("Falta teléfono del cliente");
-    if (!clientePayload?.direccion) throw new Error("Falta dirección del cliente");
+    if (!clientePayload?.correo) throw new Error("Falta correo del cliente.");
+    if (!clientePayload?.nombre) throw new Error("Falta nombre del cliente.");
+    if (!clientePayload?.telefono) throw new Error("Falta teléfono del cliente.");
+    if (!clientePayload?.direccion) throw new Error("Falta dirección del cliente.");
+
     if (!Array.isArray(productosPayload) || productosPayload.length === 0)
-      throw new Error("Debe incluir al menos un producto");
+      throw new Error("Debe incluir productos.");
 
-    // Opcional: tamaño máximo razonable de pedido
-    if (productosPayload.length > 200) throw new Error("Pedido demasiado grande");
-
-    // --------- 1) Buscar o crear cliente ----------
-    let { data: cliente, error: clienteError } = await supabase
+    /* -------------------------
+       2) BUSCAR/CREAR CLIENTE
+    ------------------------- */
+    let { data: cliente } = await supabase
       .from("clientes")
       .select("*")
       .eq("correo", clientePayload.correo)
-      .limit(1)
       .maybeSingle();
 
-    if (clienteError) throw clienteError;
-
     if (!cliente) {
-      const { data: nuevoCliente, error: nuevoClienteErr } = await supabase
+      const insert = await supabase
         .from("clientes")
         .insert({
           nombre: clientePayload.nombre,
@@ -223,15 +209,15 @@ serve(async (req) => {
         .select()
         .single();
 
-      if (nuevoClienteErr) throw nuevoClienteErr;
-      cliente = nuevoCliente;
+      if (insert.error) throw insert.error;
+      cliente = insert.data;
     }
 
-    // --------- 2) VALIDAR PRODUCTOS EXISTENTES Y TOMAR PRECIOS ----------
-    const productoIds = productosPayload.map((p: any) => p.id).filter(Boolean);
-    if (productoIds.length === 0) throw new Error("Productos sin id válidos");
-
-    const { data: productsFromDb, error: prodErr } = await supabase
+    /* -------------------------
+       3) VALIDAR PRODUCTOS
+    ------------------------- */
+    const productoIds = productosPayload.map((p: any) => Number(p.id));
+    const { data: productsDb, error: prodErr } = await supabase
       .from("productos")
       .select("*")
       .in("id", productoIds);
@@ -239,18 +225,16 @@ serve(async (req) => {
     if (prodErr) throw prodErr;
 
     const productsMap = new Map<number, any>();
-    productsFromDb?.forEach((pr: any) => productsMap.set(Number(pr.id), pr));
+    productsDb?.forEach((p) => productsMap.set(Number(p.id), p));
 
-    // Validar que todos existan
-    const missing = productoIds.filter((id: any) => !productsMap.has(Number(id)));
-    if (missing.length) throw new Error(`Productos no encontrados: ${missing.join(", ")}`);
-
-    // --------- 3) Crear orden ----------
+    /* -------------------------
+       4) CREAR ORDEN
+    ------------------------- */
     const { data: orden, error: ordenError } = await supabase
       .from("ordenes")
       .insert({
         cliente_id: cliente.id,
-        entrega_metodo: payload.entrega_metodo ?? clientePayload.entrega ?? "tienda",
+        entrega_metodo: payload.entrega_metodo ?? "tienda",
         fecha_entrega: payload.fecha_entrega ?? null,
         horario: payload.horario ?? null,
         comentarios: payload.comentarios ?? null,
@@ -260,8 +244,9 @@ serve(async (req) => {
 
     if (ordenError) throw ordenError;
 
-    // --------- 4) Crear orden_items (con datos sencillos) ----------
-    // Nota: tu schema no tiene precio_unitario/subtotal — si quieres persistirlos, tendrías que modificar schema.
+    /* -------------------------
+       5) INSERTAR ITEMS
+    ------------------------- */
     const itemsToInsert = productosPayload.map((p: any) => ({
       orden_id: orden.id,
       producto_id: p.id,
@@ -278,74 +263,69 @@ serve(async (req) => {
       observacion: p.observacion ?? null,
     }));
 
-    const { error: itemsError } = await supabase.from("orden_items").insert(itemsToInsert);
-    if (itemsError) throw itemsError;
+    await supabase.from("orden_items").insert(itemsToInsert);
 
-    // --------- 5) Preparar items para PDF (con precios traídos de la tabla productos) ----------
+    /* -------------------------
+       6) PREPARAR ITEMS PARA PDF
+    ------------------------- */
     const itemsConPrecio = productosPayload.map((p: any) => {
       const dbProd = productsMap.get(Number(p.id));
-      const precio_unitario = dbProd?.precio ? Number(dbProd.precio) : 0;
-      const cantidadNumeric = Number(p.cantidad_valor) || 1;
-      const subtotal = Number((precio_unitario * cantidadNumeric).toFixed(2));
+      const precio_unitario = Number(dbProd?.precio ?? 0);
+      const cantidad = Number(p.cantidad_valor) || 1;
       return {
         id: p.id,
-        nombre: dbProd?.nombre ?? p.nombre ?? "Producto",
-        cantidad_valor: p.cantidad_valor ?? "1",
-        cantidad_unidad: p.cantidad_unidad ?? "",
+        nombre: dbProd?.nombre ?? "Producto",
+        cantidad_valor: p.cantidad_valor,
+        cantidad_unidad: p.cantidad_unidad,
         precio_unitario,
-        subtotal,
-        // conservar otras especificaciones para extender si quieres
+        subtotal: Number((precio_unitario * cantidad).toFixed(2)),
         tipo_corte: p.tipo_corte,
         parte: p.parte,
         observacion: p.observacion,
       };
     });
 
-    // --------- 6) Generar HTML y PDF ----------
-    const html = generarHTMLPedido(payload, cliente, itemsConPrecio);
-    const pdfBytes = await generarPdf(html); // Uint8Array
+    /* -------------------------
+       7) GENERAR HTML Y PDF
+    ------------------------- */
+    // ✔ FIX PRINCIPAL
+    const html = generarHTMLPedido(orden, cliente, itemsConPrecio);
 
-    // --------- 7) Subir al storage en carpeta por orden ----------
+    const pdfBytes = await generarPdf(html);
+
+    /* -------------------------
+       8) SUBIR PDF A STORAGE
+    ------------------------- */
     const filePath = `pedidos/${orden.id}/orden_${orden.id}.pdf`;
-    // En supabase-js v2: upload(path, file)
-    // convert Uint8Array a Blob para compatibilidad
+
     const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
-    const uploadRes = await supabase.storage.from("pedidos").upload(filePath, pdfBlob, {
-      contentType: "application/pdf",
-      upsert: true,
-    });
+    const upload = await supabase.storage
+      .from("pedidos")
+      .upload(filePath, pdfBlob, { upsert: true });
 
-    if (uploadRes.error) {
-      console.error("Upload error:", uploadRes.error);
-      throw uploadRes.error;
-    }
+    if (upload.error) throw upload.error;
 
-    // Obtener URL pública (v2)
-    const { data: publicUrlData, error: publicUrlErr } = await supabase.storage
+    const { data: publicUrlData } = await supabase.storage
       .from("pedidos")
       .getPublicUrl(filePath);
 
-    if (publicUrlErr) {
-      console.warn("Error obteniendo publicUrl:", publicUrlErr);
-    }
-
     const publicUrl = publicUrlData?.publicUrl ?? null;
 
-    // --------- 8) Registrar en ordenes_pdfs ----------
-    const { error: pdfInsertErr } = await supabase.from("ordenes_pdfs").insert({
+    /* -------------------------
+       9) REGISTRAR PDF
+    ------------------------- */
+    await supabase.from("ordenes_pdfs").insert({
       orden_id: orden.id,
       url_pdf: publicUrl ?? filePath,
       enviado_al_cliente: false,
       enviado_al_admin: false,
     });
 
-    if (pdfInsertErr) console.warn("No se pudo registrar ordenes_pdfs:", pdfInsertErr);
-
-    // --------- 9) Enviar correos (Resend) con attachment ----------
-    if (!RESEND_API_KEY) {
-      console.warn("RESEND_API_KEY no definido, se omite envío de correos.");
-    } else {
+    /* -------------------------
+       10) ENVIAR EMAILS (Resend)
+    ------------------------- */
+    if (RESEND_API_KEY) {
       const attachment = {
         filename: `orden_${orden.id}.pdf`,
         content: encodeBase64(pdfBytes),
@@ -366,39 +346,33 @@ serve(async (req) => {
             attachments: [attachment],
           }),
         });
-
-        const text = await r.text();
-        if (!r.ok) {
-          console.error(`Error al enviar email a ${to}:`, r.status, text);
-          return { ok: false, status: r.status, body: text };
-        }
-        return { ok: true, status: r.status, body: text };
+        return r.ok;
       };
 
-      // admin
-      const adminResp = await send(
+      const okAdmin = await send(
         ADMIN_EMAIL,
-        `Nuevo pedido #${orden.id}`,
-        `<p>Nuevo pedido recibido. ID: ${orden.id}</p><p>Ver PDF: ${publicUrl ?? "Adjunto"}</p>`
+        `Nuevo Pedido #${orden.id}`,
+        `<p>Nuevo pedido recibido. PDF adjunto.</p>`
       );
 
-      // cliente
-      const clienteResp = await send(
+      const okCliente = await send(
         cliente.correo,
         `Confirmación de Pedido #${orden.id}`,
-        `<p>Gracias por tu compra, ${cliente.nombre}.</p><p>Adjuntamos el detalle del pedido.</p>`
+        `<p>Gracias por tu compra, ${cliente.nombre}.</p>`
       );
 
-      // actualizar tabla ordenes_pdfs con resultado (opcional)
       await supabase
         .from("ordenes_pdfs")
         .update({
-          enviado_al_admin: adminResp.ok,
-          enviado_al_cliente: clienteResp.ok,
+          enviado_al_admin: okAdmin,
+          enviado_al_cliente: okCliente,
         })
         .eq("orden_id", orden.id);
     }
-    // --------- 10) Respuesta ----------
+
+    /* -------------------------
+       RESPUESTA
+    ------------------------- */
     return new Response(
       JSON.stringify({
         success: true,
@@ -409,10 +383,8 @@ serve(async (req) => {
     );
   } catch (err: any) {
     console.error("❌ ERROR:", err);
-    const origin = req.headers.get("origin");
-    const corsHeaders = buildCorsHeaders(origin);
     return new Response(
-      JSON.stringify({ success: false, error: err.message ?? String(err) }),
+      JSON.stringify({ success: false, error: err?.message ?? String(err) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
