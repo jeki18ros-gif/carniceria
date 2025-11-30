@@ -13,15 +13,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { html, cliente, productos, orden_id } = req.body;
+    const { cliente, productos, orden_id } = req.body;
 
-    // ======================
     // 1) GENERAR PDF SIMPLE
-    // ======================
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 800]);
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const { width, height } = page.getSize();
+    const { height } = page.getSize();
 
     page.drawText("Orden de Pedido", {
       x: 50,
@@ -45,9 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const pdfBytes = await pdfDoc.save();
 
-    // ======================
     // 2) SUBIR PDF A SUPABASE
-    // ======================
     const fileName = `pedido_${Date.now()}.pdf`;
 
     const { error: uploadError } = await supabase.storage
@@ -64,13 +60,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const publicUrl =
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ordenes_pdf/${fileName}`;
 
-    // 3) GUARDAR REGISTRO EN TABLA
+    // 3) GUARDAR EN TABLA
     await supabase.from("ordenes_pdfs").insert({
       orden_id,
       url_pdf: publicUrl,
     });
 
-    // 4) RESPONDER PDF AL FRONTEND
+    // 4) RESPUESTA AL FRONTEND
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
     return res.send(Buffer.from(pdfBytes));
