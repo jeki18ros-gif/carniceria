@@ -116,68 +116,95 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
   // ============================
   //   DESCARGAR PDF DESDE BOTÓN
   // ============================
-const generarPDFDelPedido = async (pedidoConMeta) => {
+const generarPDFDelPedido = async (pedido) => {
   try {
+    // =============================
+    //  ARMAR HTML PROFESIONAL
+    // =============================
+    const productosHTML = pedido.productos
+      .map(
+        (p) => `
+      <tr>
+        <td style="padding:8px; border:1px solid #ddd;">${p.nombre}</td>
+        <td style="padding:8px; border:1px solid #ddd;">${p.cantidad_valor} ${p.cantidad_unidad}</td>
+        <td style="padding:8px; border:1px solid #ddd;">
+          ${p.tipo_corte || ""} 
+          ${p.parte || ""} 
+          ${p.estado || ""} 
+          ${p.grasa || ""} 
+          ${p.hueso || ""} 
+          ${p.coccion || ""} 
+          ${p.empaque || ""} 
+          ${p.observacion || ""}
+        </td>
+      </tr>
+    `
+      )
+      .join("");
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; padding: 40px;">
+        <h1 style="text-align:center; color:#b8860b;">Orden de Compra</h1>
+
+        <h2>Datos del Cliente</h2>
+        <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
+        <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
+        <p><strong>Correo:</strong> ${pedido.cliente.correo}</p>
+        <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
+        <p><strong>Entrega:</strong> ${pedido.cliente.entrega}</p>
+
+        <h2 style="margin-top:30px;">Productos solicitados</h2>
+        <table style="width:100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background:#eee;">
+              <th style="padding:10px; border:1px solid #ccc;">Producto</th>
+              <th style="padding:10px; border:1px solid #ccc;">Cantidad</th>
+              <th style="padding:10px; border:1px solid #ccc;">Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productosHTML}
+          </tbody>
+        </table>
+
+        <h2 style="margin-top:30px;">Comentarios</h2>
+        <p>${pedido.cliente.comentarios || "Sin comentarios"}</p>
+
+        <p style="margin-top:40px; text-align:center; color:gray; font-size:14px;">
+          Les Aliments Benito – Gracias por su compra.
+        </p>
+      </div>
+    `;
+
+    // =============================
+    //  ENVIAR HTML A API PDF
+    // =============================
     const response = await fetch("/api/pdf", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        html: pedidoConMeta.html, // luego generamos html real
-        fileName: `pedido_${pedidoConMeta.orden_id}.pdf`,
+        html,
+        fileName: `pedido_${pedido.orden_id || "cliente"}.pdf`,
       }),
     });
 
-    if (!response.ok) throw new Error("Error al generar PDF");
+    if (!response.ok) throw new Error("Error generando PDF");
 
+    // =============================
+    //  DESCARGAR PDF
+    // =============================
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
-    a.download = `pedido_${pedidoConMeta.orden_id}.pdf`;
+    a.download = `pedido_${pedido.orden_id || "cliente"}.pdf`;
     a.click();
-    URL.revokeObjectURL(url);
 
-  } catch (error) {
-    console.error(error);
-    alert("Error generando PDF");
-  }
-};
-
-
-const response = await fetch("/api/pdf", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    html: "<h1>Pedido recibido</h1>", // luego lo reemplazamos con tu HTML real
-    fileName: "pedido.pdf",
-  }),
-});
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error || "No se pudo generar/descargar el PDF");
-    }
-
-    const data = await response.json();
-    if (!data.pdf_url) throw new Error("No se devolvió la URL del PDF");
-
-    // descargar
-    const resPdf = await fetch(data.pdf_url);
-    if (!resPdf.ok) throw new Error("No se pudo descargar el PDF");
-    const blob = await resPdf.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pedido_${data.orden_id || "pedido"}.pdf`;
-    a.click();
     URL.revokeObjectURL(url);
   } catch (e) {
-    alert("Error al generar/descargar PDF");
     console.error(e);
+    alert("Error al generar PDF");
   }
 };
 
@@ -192,9 +219,8 @@ const response = await fetch("/api/pdf", {
     return;
   }
 
-  // Construir array de productos en el formato que espera el backend
+  // Convertir productos al formato final
   const productosArray = Object.values(productosSeleccionados).map((item) => {
-    // si el item viene con cantidad_valor/ unidad, usar esas; si viene con cantidad (string), intentar parsear
     const cantidad_valor = item.cantidad_valor ?? (item.cantidad?.split?.(" ")[0] ?? "");
     const cantidad_unidad = item.cantidad_unidad ?? (item.cantidad?.split?.(" ")[1] ?? "kg");
 
@@ -203,15 +229,14 @@ const response = await fetch("/api/pdf", {
       nombre: item.nombre,
       cantidad_valor,
       cantidad_unidad,
-      // pasar las especificaciones tal cual (puede ser objeto)
-      tipo_corte: item.especificaciones?.tipoCorte || item.especificaciones?.tipo_corte || null,
+      tipo_corte: item.especificaciones?.tipoCorte || null,
       parte: item.especificaciones?.parte || null,
       estado: item.especificaciones?.estado || null,
       hueso: item.especificaciones?.hueso || null,
       grasa: item.especificaciones?.grasa || null,
       empaque: item.especificaciones?.empaque || null,
       coccion: item.especificaciones?.coccion || null,
-      fecha_deseada: item.especificaciones?.fechaDeseada || item.especificaciones?.fecha_deseada || null,
+      fecha_deseada: item.especificaciones?.fechaDeseada || null,
       observacion: item.especificaciones?.observacion || null,
     };
   });
@@ -225,45 +250,44 @@ const response = await fetch("/api/pdf", {
       entrega: datosCliente.entrega,
       comentarios: datosCliente.comentarios,
     },
-    fecha_entrega: datosCliente.fechaEntrega || null, // para la tabla ordenes
     productos: productosArray,
     comentarios: datosCliente.comentarios || null,
   };
 
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify(pedidoFinal),
-      }
-    );
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error || "Error al procesar el pedido.");
-    }
-
-    const data = await response.json(); // { success, orden_id, pdf_url }
-    // guardamos para mostrar en modal
-    setDatosDelPedido({
-      ...pedidoFinal,
-      orden_id: data.orden_id,
-      pdf_url: data.pdf_url,
+    // Enviar el pedido al backend de Vercel para generar PDF
+    const response = await fetch("/api/pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedidoFinal),
     });
 
+    if (!response.ok) throw new Error("Error generando PDF");
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    // Descargar PDF
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pedido_${Date.now()}.pdf`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    // Mostrar modal de confirmación
+    setDatosDelPedido(pedidoFinal);
     setMostrarConfirmacion(true);
+
+    // Limpiar vista
     setView("productos");
     setSeleccionados({});
   } catch (error) {
     console.error("Error al enviar el pedido:", error);
-    alert(`Hubo un error al procesar tu pedido: ${error.message}`);
+    alert("Error al procesar tu pedido.");
   }
 };
+
 
   // ============================
   //   RENDER PRINCIPAL
@@ -392,8 +416,7 @@ const response = await fetch("/api/pdf", {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => generarPDFDelPedido(datosDelPedido)}
+                <button onClick={() => generarPDFDelPedido(datosDelPedido)}
                   className="px-4 py-2 rounded-lg font-medium bg-yellow-500 hover:bg-yellow-600 text-black shadow-md"
                 >
                   {t("ordenCompra.confirmation.download_pdf") ||
