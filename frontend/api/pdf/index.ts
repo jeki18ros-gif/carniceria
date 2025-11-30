@@ -1,95 +1,82 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-import { createClient } from "@supabase/supabase-js";
-import pdf from "html-pdf-node";
-
-export const config = {
-  runtime: "edge"
-};
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export default async function handler(req: NextRequest) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
-    return NextResponse.json({ error: "Método no permitido" }, { status: 405 });
+    return res.status(405).json({ error: "Método no permitido" });
   }
 
   try {
-    const pedido = await req.json();
+    const { html, cliente, productos, orden_id } = req.body;
 
-    // ===========================
-    // 1) GENERAR PDF
-    // ===========================
-    const file = { content: pedido.html };
-    const pdfBuffer = await pdf.generatePdf(file, { format: "A4" });
+    // ======================
+    // 1) GENERAR PDF SIMPLE
+    // ======================
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 800]);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const { width, height } = page.getSize();
 
-    // Convertir a base64 para email
-    const pdfBase64 = Buffer.from(pdfBuffer).toString("base64");
+    page.drawText("Orden de Pedido", {
+      x: 50,
+      y: height - 80,
+      size: 24,
+      font
+    });
 
-    // ===========================
-    // 2) SUBIR A SUPABASE STORAGE
-    // ===========================
-    const nombrePDF = `pedido_${Date.now()}.pdf`;
+    page.drawText(`Cliente: ${cliente.nombre}`, { x: 50, y: height - 120, size: 16 });
+    page.drawText(`Correo: ${cliente.correo}`, { x: 50, y: height - 160, size: 16 });
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    let offsetY = height - 220;
+    productos.forEach((p: any) => {
+      page.drawText(`• ${p.nombre} - ${p.cantidad}kg`, {
+        x: 50,
+        y: offsetY,
+        size: 14,
+      });
+      offsetY -= 30;
+    });
+
+    const pdfBytes = await pdfDoc.save();
+
+    // ======================
+    // 2) SUBIR PDF A SUPABASE
+    // ======================
+    const fileName = `pedido_${Date.now()}.pdf`;
+
+    const { error: uploadError } = await supabase.storage
       .from("ordenes_pdf")
-      .upload(nombrePDF, pdfBuffer, {
-        contentType: "application/pdf"
+      .upload(fileName, Buffer.from(pdfBytes), {
+        contentType: "application/pdf",
       });
 
     if (uploadError) {
       console.error(uploadError);
-      return NextResponse.json({ error: "Error subiendo PDF a Supabase" }, { status: 500 });
+      return res.status(500).json({ error: "Error subiendo PDF" });
     }
 
-    const urlPDF = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ordenes_pdf/${nombrePDF}`;
+    const publicUrl =
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/ordenes_pdf/${fileName}`;
 
-    // ===========================
-    // 3) GUARDAR EN TABLA ordenes_pdfs
-    // ===========================
+    // 3) GUARDAR REGISTRO EN TABLA
     await supabase.from("ordenes_pdfs").insert({
-      orden_id: pedido.orden_id || null,
-      url_pdf: urlPDF,
-      enviado_al_cliente: false,
-      enviado_al_admin: false
+      orden_id,
+      url_pdf: publicUrl,
     });
 
-    // ===========================
-    // 4) ENVIAR EMAIL DESDE EDGE FUNCTION SUPABASE
-    // ===========================
-    await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-order-email`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-        },
-        body: JSON.stringify({
-          customerName: pedido.cliente.nombre,
-          customerEmail: pedido.cliente.correo,
-          pdfBase64,
-          orderSummaryHtml: pedido.html
-        })
-      }
-    );
+    // 4) RESPONDER PDF AL FRONTEND
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    return res.send(Buffer.from(pdfBytes));
 
-    // ===========================
-    // 5) DEVOLVER LA URL AL FRONTEND
-    // ===========================
-    return new Response(pdfBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${nombrePDF}"`
-      }
-    });
-
-  } catch (error) {
-    console.error("Error en /api/pdf:", error);
-    return NextResponse.json({ error: "Error generando PDF" }, { status: 500 });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "Error generando PDF" });
   }
 }
