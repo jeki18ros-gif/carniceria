@@ -1,4 +1,3 @@
-// supabase/functions/send-contact-email/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -11,12 +10,10 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-  // Preflight CORS
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // Método incorrecto
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ message: "Método no permitido." }), {
       status: 405,
@@ -25,10 +22,10 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { name, email, message } = await req.json();
+    const { customerName, customerEmail, pdfBase64, orderSummaryHtml } =
+      await req.json();
 
-    // Validación completa
-    if (!name || !email || !message) {
+    if (!customerName || !customerEmail || !pdfBase64) {
       return new Response(
         JSON.stringify({ message: "Faltan campos requeridos." }),
         {
@@ -38,28 +35,33 @@ serve(async (req: Request) => {
       );
     }
 
-    // Cuerpo del email
-    const resendPayload = {
-      from: "onboarding@resend.dev", // Cambiar luego por dominio verificado
-      to: "jeki18ros@gmail.com",
-      subject: `Nuevo mensaje de contacto: ${name}`,
+    const emailToSend = {
+      from: "onboarding@resend.dev",
+      to: ["jeki18ros@gmail.com", customerEmail], // admin + cliente
+      subject: `Nuevo Pedido de ${customerName}`,
       html: `
-        <h2>Nuevo Mensaje desde el Formulario Web</h2>
-        <p><strong>Nombre:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
+        <h2>Nuevo Pedido</h2>
+        <p><strong>Cliente:</strong> ${customerName}</p>
+        <p><strong>Email:</strong> ${customerEmail}</p>
         <hr/>
-        <p>${message.replace(/\n/g, "<br>")}</p>
+        ${orderSummaryHtml || "<p>Pedido adjunto en PDF.</p>"}
       `,
+      attachments: [
+        {
+          filename: "pedido.pdf",
+          content: pdfBase64,
+          encoding: "base64",
+        },
+      ],
     };
 
-    // Enviar a Resend
     const resendResponse = await fetch(RESEND_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(resendPayload),
+      body: JSON.stringify(emailToSend),
     });
 
     if (!resendResponse.ok) {
@@ -78,10 +80,9 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Correo enviado con éxito." }),
+      JSON.stringify({ message: "Pedido enviado con éxito." }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Error en Edge Function:", error);
     return new Response(
