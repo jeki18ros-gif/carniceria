@@ -1,0 +1,303 @@
+{
+  "afterHero": {
+    "image_left_alt": "",
+    "title": "",
+    "image_right_alt": "",
+    "banner_delivery": ""
+  },
+  "contactSection": {
+    "form": {
+      "labels": "",
+      "placeholders": "",
+      "buttons": "",
+      "success": ""
+    },
+    "title": "",
+    "description": ""
+  },
+  "exploreMore": {
+    "cta": ""
+  },
+  "featuresGrid": "",
+  "footer": {
+    "brand": "",
+    "blurb": "",
+    "schedule": {
+      "title": "",
+      "week": "",
+      "saturday": "",
+      "sunday": ""
+    },
+    "contact": {
+      "title": ""
+    },
+    "copyright": ""
+  },
+  "formComent": {
+    "rating": {
+      "labels": ""
+    },
+    "form": {
+      "title": "",
+      "fields": {
+        "title": {
+          "label": "",
+          "placeholder": ""
+        },
+        "body": {
+          "label": "",
+          "placeholder": "",
+          "counter_suffix": ""
+        },
+        "rating": {
+          "label": ""
+        }
+      },
+      "actions": {
+        "submit": ""
+      }
+    },
+    "login": {
+      "labels": {
+        "displayName": ""
+      }
+    }
+  },
+  "header": {
+    "logo_alt": "",
+    "nav": {
+      "productos": "",
+      "nosotros": "",
+      "resenas": "",
+      "contacto": ""
+    },
+    "aria": {
+      "font_size": "",
+      "select_language": "",
+      "open_menu": "",
+      "toggle_theme": ""
+    }
+  },
+  "hero": {
+    "image_alt": "",
+    "title": "",
+    "description": "",
+    "cta_order": ""
+  },
+  "menu": {
+    "categories": "",
+    "items": "",
+    "title": "",
+    "verTodo": ""
+  },
+  "promoHero": "",
+  "testimonials": {
+    "title_small": "",
+    "title_big": "",
+    "button_leave_review": ""
+  },
+  "detalleProductoModal": {
+    "image_note": "",
+    "quantity": {
+      "label": "",
+      "placeholder": "",
+      "units": {
+        "kg": "",
+        "lb": "",
+        "units": "",
+        "boxes": ""
+      },
+      "invalid": ""
+    },
+    "sections": {
+      "presentacion": {
+        "title": "",
+        "tipo_corte": {
+          "label": "",
+          "options": {
+            "select": "",
+            "fileteado": "",
+            "trozos": "",
+            "molido": "",
+            "tiras": "",
+            "entero": ""
+          }
+        },
+        "parte_especifica": {
+          "label": "",
+          "options": {
+            "lomo_fino": "",
+            "costilla": "",
+            "pierna": "",
+            "pecho": ""
+          }
+        }
+      },
+      "estado_producto": {
+        "title": "",
+        "estado": {
+          "label": "",
+          "options": {
+            "fresca": "",
+            "congelada": "",
+            "curada": ""
+          }
+        },
+        "hueso": {
+          "label": "",
+          "options": {
+            "con_hueso": "",
+            "sin_hueso": ""
+          }
+        }
+      },
+      "empaque_grasa": {
+        "title": "",
+        "empaque": {
+          "label": "",
+          "options": {
+            "vacuum": "",
+            "tray": "",
+            "bag": ""
+          }
+        },
+        "grasa": {
+          "label": "",
+          "options": {
+            "con_grasa": "",
+            "sin_grasa": ""
+          }
+        }
+      },
+      "tipo_coccion": {
+        "title": "",
+        "options": {
+          "parrilla": "",
+          "horno": "",
+          "guisado": "",
+          "frito": "",
+          "otros": ""
+        }
+      }
+    },
+    "update_button": "Actualizar Orden",
+    "add_button": "Añadir a la Orden"
+  },
+  "PreferenciasCliente": {
+    "fields": {
+      "delivery": {
+        "title": "Entrega y observaciones",
+        "date": "Fecha deseada"
+      },
+      "comments": {
+        "label": "Comentarios adicionales",
+        "placeholder": ""
+      }
+    }
+  },
+  "formularioCliente": {
+    "actions": {
+      "go_back": "",
+      "delete_item": "",
+      "submit": ""
+    },
+    "title": "",
+    "fields": {
+      "name": {
+        "placeholder": ""
+      },
+      "phone": {
+        "placeholder": ""
+      },
+      "email": {
+        "placeholder": ""
+      },
+      "address": {
+        "placeholder": ""
+      },
+      "delivery_method": {
+        "label": "",
+        "options": {
+          "pickup": "",
+          "delivery": ""
+        }
+      },
+      "comments": {
+        "placeholder": ""
+      }
+    },
+    "warnings": {
+      "pricing": ""
+    },
+    "summary_title": ""
+  },
+  "listaProductos": {
+    "filters": {
+      "ver_todo": ""
+    },
+    "headers": {
+      "producto": ""
+    },
+    "loading": "Cargando productos...",
+    "results_for": "",
+    "all_products": "",
+    "empty": "No se encontraron productos.",
+    "badges": {
+      "fresco": "",
+      "con_hueso": "",
+      "sin_hueso": ""
+    },
+    "labels": {
+      "corte": "",
+      "empaque": "",
+      "peso_aprox": ""
+    },
+    "na": ""
+  },
+  "miniCart": {
+    "unknown_product": "",
+    "title": "",
+    "close": "",
+    "quantity": "",
+    "obs_prefix": "",
+    "edit": "",
+    "delete_title": "",
+    "continue": ""
+  },
+  "ordenCompra": {
+    "products_title": "",
+    "search": {
+      "placeholder": ""
+    },
+    "form_title": "",
+    "confirmation": {
+      "title": "",
+      "message": "",
+      "download_pdf": "",
+      "close": ""
+    }
+  },
+  "ordenCompraHeader": {
+    "title": "",
+    "aria": {
+      "theme": "",
+      "font": ""
+    },
+    "back": "",
+    "font_size": {
+      "small": "",
+      "normal": "",
+      "large": ""
+    }
+  },
+  "productosData": {
+    "categories": {
+      "res": "",
+      "cerdo": "",
+      "pollo": "",
+      "embutidos": "",
+      "ahumados": "",
+      "especiales": ""
+    }
+  }
+}

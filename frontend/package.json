@@ -4,11 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "lint": "eslint .",
+  "preview": "vite preview",
+  "i18n": "i18next 'src/**/*.{js,jsx,ts,tsx}' --output 'public/locales/$LOCALE/$NAMESPACE.json'"
+}
+,
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@sparticuz/chromium": "^141.0.0",
