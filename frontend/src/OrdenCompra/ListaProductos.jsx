@@ -1,19 +1,18 @@
-// src/components/ListaProductos.jsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { useProductosData } from './productosData'; // ✅ Importación correcta
-import "../styles/ListaProductos.css";
+import { useProductosData } from './productosData'; 
+import "../styles/ListaProductos.css"; // Asumido
 
 // --------------------------------------------------------------------------
 // COMPONENTE: CATEGORÍAS PRINCIPALES
 const CategoriasPrincipales = ({ categoriasPrincipales, onSelectCategory, activeCategory }) => {
     const { t } = useTranslation();
 
-const categoriaVerTodo = categoriasPrincipales?.find?.(c => c.filtro === 'Todos');
-const categoriasVisibles = categoriasPrincipales?.filter?.(c => c.filtro !== 'Todos') || [];
+    const categoriaVerTodo = categoriasPrincipales?.find?.(c => c.filtro === 'Todos');
+    const categoriasVisibles = categoriasPrincipales?.filter?.(c => c.filtro !== 'Todos') || [];
 
     const filtroToKey = {
         Res: 'res',
@@ -89,18 +88,14 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todos');
     const [hoveredProduct, setHoveredProduct] = useState(null);
 
-    // ✅ Obtener los datos del hook
-    const { categoriasPrincipales, productos } = useProductosData();
+    // ✅ Obtener los datos y el estado de carga del hook
+    const { categoriasPrincipales, productos, loading } = useProductosData();
 
     const normalizedSearchTerm = searchTerm.toLowerCase().trim();
 
     const filtroToKey = {
-        Res: 'res',
-        Cerdo: 'cerdo',
-        Pollo: 'pollo',
-        Embutido: 'embutidos',
-        Ahumado: 'ahumados',
-        Especial: 'especiales',
+        Res: 'res', Cerdo: 'cerdo', Pollo: 'pollo', Embutido: 'embutidos', 
+        Ahumado: 'ahumados', Especial: 'especiales',
     };
 
     const getDisplayCategory = (categoria) => {
@@ -113,8 +108,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
         const categoriaMatch = categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada;
         const searchMatch = normalizedSearchTerm === '' || 
             producto.nombre.toLowerCase().includes(normalizedSearchTerm) ||
-            producto.descripcion.toLowerCase().includes(normalizedSearchTerm) ||
-            (producto.tipoCorte || '').toLowerCase().includes(normalizedSearchTerm) || 
+            producto.descripcion?.toLowerCase().includes(normalizedSearchTerm) ||
             getDisplayCategory(producto.categoria).toLowerCase().includes(normalizedSearchTerm);
         return categoriaMatch && searchMatch;
     });
@@ -122,17 +116,20 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
     const isProductSelected = (producto) => selectedProducts.some(p => p.id === producto.id);
     const showCategories = normalizedSearchTerm === '';
 
+    if (loading) {
+      return <p className="text-center text-xl mt-10">{t('listaProductos.loading', 'Cargando productos...')}</p>
+    }
+    
     return (
         <div>
             {/* CATEGORÍAS */}
-           {showCategories && Array.isArray(categoriasPrincipales) && (
-  <CategoriasPrincipales 
-      categoriasPrincipales={categoriasPrincipales}
-      onSelectCategory={setCategoriaSeleccionada}
-      activeCategory={categoriaSeleccionada}
-  />
-)}
-
+            {showCategories && Array.isArray(categoriasPrincipales) && (
+              <CategoriasPrincipales 
+                  categoriasPrincipales={categoriasPrincipales}
+                  onSelectCategory={setCategoriaSeleccionada}
+                  activeCategory={categoriaSeleccionada}
+              />
+            )}
 
             {/* TÍTULO */}
             <h2 className="text-2xl font-bold text-center mb-6">
@@ -145,7 +142,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
 
             {/* SIN RESULTADOS */}
             {productosFiltrados.length === 0 ? (
-                <p className="text-center text-gray-500">{t('listaProductos.empty')}</p>
+                <p className="text-center text-gray-500">{t('listaProductos.empty', 'No se encontraron productos.')}</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-10">
                     {productosFiltrados.map((producto) => {
@@ -179,6 +176,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                                         alt={producto.nombre} 
                                         className="w-full h-40 object-cover" 
                                     />
+                                    {/* NOTA: Estos badges (fresco, conHueso) deberían ser columnas BOOLEAN en tu tabla 'productos' */}
                                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                                         {producto.fresco && <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.fresco')}</span>}
                                         {producto.conHueso && <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{t('listaProductos.badges.con_hueso')}</span>}
@@ -205,6 +203,7 @@ export function ListaProductos({ onSelectProduct, selectedProducts = [], searchT
                                             exit={{ opacity: 0, y: 10 }}
                                             className="absolute inset-0 bg-black/70 text-white p-3 rounded-2xl flex flex-col justify-center items-start z-20"
                                         >
+                                            {/* NOTA: Las propiedades tipoCorte, empaque, peso también deben estar en tu tabla 'productos' si quieres que se muestren aquí */}
                                             <p className="text-sm mb-1"><strong>{t('listaProductos.labels.corte')}</strong> {producto.tipoCorte || t('listaProductos.na')}</p>
                                             <p className="text-sm mb-1"><strong>{t('listaProductos.labels.empaque')}</strong> {producto.empaque || t('listaProductos.na')}</p>
                                             <p className="text-sm mb-1"><strong>{t('listaProductos.labels.peso_aprox')}</strong> {producto.peso || t('listaProductos.na')}</p>

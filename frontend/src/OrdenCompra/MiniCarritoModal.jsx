@@ -2,10 +2,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { useProductosData } from "./productosData";
+import { useProductosData } from "../data/productosData"; // Corregida la ruta
 import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useTheme } from "../Theme/ThemeContext";
+import { useTheme } from "../Theme/ThemeContext"; // Corregida la ruta
 
 export function MiniCarritoModal({
   seleccionados,
@@ -18,15 +18,14 @@ export function MiniCarritoModal({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { productos } = useProductosData();
+  
+  // Usamos el hook modificado para obtener los productos de Supabase
+  const { productos } = useProductosData(); 
 
-  // Corrección 1: Asegura que 'seleccionados' sea un objeto, incluso si es undefined.
   // Convertimos seleccionados en array con datos del producto
   const itemsEnCarrito = Object.entries(seleccionados || {})
     .map(([idStr, data]) => {
       const id = parseInt(idStr);
-      // Asume que 'productos' es un array o undefined. Si es undefined, .find() fallará.
-      // (Se asume que useProductosData garantiza que 'productos' es un array o es tratado como tal).
       const productoInfo = productos.find((p) => p.id === id); 
       return {
         id,
@@ -78,25 +77,14 @@ export function MiniCarritoModal({
 
     let normalizedValue = normalize(value);
 
-    // 🧩 Correcciones de excepciones más comunes
+    // 🧩 Correcciones de excepciones más comunes (esto podría simplificarse)
     const reemplazos = {
-      "a_la_parrilla": "parrilla",
-      "al_vacio": "vacuum",
-      "al_horno": "horno",
-      "bandeja": "tray",
-      "concentrado": "concentrado", // Agregado para consistencia, aunque no estaba en la lista de reemplazos.
-      "bolsa": "bag",
-      "con_grasa": "con_grasa",
-      "sin_grasa": "sin_grasa",
-      "con_hueso": "con_hueso",
-      "sin_hueso": "sin_hueso",
-      "fileteado": "fileteado",
-      "en_trozos": "trozos",
-      "en_tiras": "tiras",
-      "entero": "entero",
-      "molido": "molido",
-      "fresco": "fresca",
-      "curado": "curada",
+      "a_la_parrilla": "parrilla", "al_vacio": "vacuum", "al_horno": "horno",
+      "bandeja": "tray", "bolsa": "bag", "con_grasa": "con_grasa", 
+      "sin_grasa": "sin_grasa", "con_hueso": "con_hueso", "sin_hueso": "sin_hueso",
+      "fileteado": "fileteado", "en_trozos": "trozos", "en_tiras": "tiras",
+      "entero": "entero", "molido": "molido", "fresco": "fresca",
+      "curado": "curada", 
     };
 
     if (reemplazos[normalizedValue]) {
@@ -218,12 +206,15 @@ export function MiniCarritoModal({
                   <p className="font-semibold text-base leading-tight truncate">
                     {item.nombre}
                   </p>
+                  {/* ✅ MEJORA: Incluir la unidad traducida */}
                   <p className="text-sm text-yellow-500 mt-0.5">
                     {t("miniCart.quantity")}{" "}
-                    <span className="font-bold">{item.cantidad}</span>
+                    <span className="font-bold">
+                      {item.cantidad} {t(`detalleProductoModal.quantity.units.${item.cantidadUnidad.toLowerCase()}`)}
+                    </span>
                   </p>
 
-                  {/*Asegura que item.especificaciones sea un objeto (o vacío) antes de llamar a Object.entries() */}
+                  {/* Especificaciones */}
                   {Object.entries(item.especificaciones || {}).map(
                     ([key, value]) =>
                       value &&

@@ -1,7 +1,10 @@
-// src/data/productosData.js
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+// Importamos el cliente Supabase
+import { supabase } from '../supabaseClient'; 
 
-// --- 1. Importación de las Imágenes ---
+// --- Importación de las Imágenes (Localmente) ---
+// Las imágenes en producción deberían estar en un CDN o Supabase Storage
 import productoPlaceholder from '../assets/otros4.jpg';
 import resImg from '../assets/otros1.jpg';
 import cerdoImg from '../assets/otros2.jpg';
@@ -11,10 +14,34 @@ import ahumadosImg from '../assets/otros5.jpg';
 import especialesImg from '../assets/otros6.jpg';
 import verTodoImg from '../assets/relleno1.jpg';
 
-// --- 2. Hook que provee los datos traducidos ---
+// --- Hook que provee los datos ---
 export const useProductosData = () => {
   const { t } = useTranslation();
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // EFECTO PARA CARGAR LOS PRODUCTOS DE SUPABASE
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      
+      // NOTA: Usamos el ID como clave principal, por lo que es crucial que
+      // los IDs en Supabase coincidan con los IDs que solías tener localmente.
+      const { data, error } = await supabase
+        .from('productos')
+        .select('*'); 
+
+      if (error) {
+        console.error('Error al cargar productos desde Supabase:', error);
+        // Podrías poner aquí un fallback a datos locales si es crítico que cargue algo
+      } else {
+        setProductos(data);
+      }
+      setLoading(false);
+    }
+
+    fetchProducts();
+  }, []);
   // --- Categorías principales ---
   const categoriasPrincipales = [
     { id: 1, nombre: t('productosData.categories.res'), imagen: resImg, filtro: 'Res' },
@@ -85,5 +112,5 @@ export const useProductosData = () => {
     { id: 44, nombre: t('productosData.items.carne_venado.name'), descripcion: t('productosData.items.carne_venado.description'), imagen: especialesImg, categoria: 'Especial' },
   ];
 
-  return { categoriasPrincipales, productos, verTodoImg };
+ return { categoriasPrincipales, productos, loading, verTodoImg };
 };
