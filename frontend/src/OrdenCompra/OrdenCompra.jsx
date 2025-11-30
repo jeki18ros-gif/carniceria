@@ -118,34 +118,44 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
   // ============================
 const generarPDFDelPedido = async (pedidoConMeta) => {
   try {
-    // Si ya tenemos pdf_url (viene de handleSubmitOrder), la usamos directamente:
-    if (pedidoConMeta?.pdf_url) {
-      // fetch the pdf and force download (cross-browser)
-      const res = await fetch(pedidoConMeta.pdf_url);
-      if (!res.ok) throw new Error("No se pudo descargar el PDF");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      // nombre con id si existe
-      a.download = `pedido_${pedidoConMeta.orden_id || "pedido"}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-      return;
-    }
+    const response = await fetch("/api/pdf", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        html: pedidoConMeta.html, // luego generamos html real
+        fileName: `pedido_${pedidoConMeta.orden_id}.pdf`,
+      }),
+    });
 
-    // Si NO hay pdf_url, pedimos al function (esto puede regenerar)
-    const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify(pedidoConMeta),
-      }
-    );
+    if (!response.ok) throw new Error("Error al generar PDF");
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pedido_${pedidoConMeta.orden_id}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error(error);
+    alert("Error generando PDF");
+  }
+};
+
+
+const response = await fetch("/api/pdf", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    html: "<h1>Pedido recibido</h1>", // luego lo reemplazamos con tu HTML real
+    fileName: "pedido.pdf",
+  }),
+});
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
