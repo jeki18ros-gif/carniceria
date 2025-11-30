@@ -51,10 +51,7 @@ export const useProductosData = () => {
     { id: 5, nombre: t('productosData.categories.ahumados'), imagen: ahumadosImg, filtro: 'Ahumado' },
     { id: 6, nombre: t('productosData.categories.especiales'), imagen: especialesImg, filtro: 'Especial' },
     { id: 0, nombre: t('menu.verTodo'), imagen: verTodoImg, filtro: 'Todos' },
-  ];
 
-  // --- Productos principales ---
-  const productos = [
     // 🥩 RES
     { id: 1, nombre: t('productosData.items.lomo_fino.name'), descripcion: t('productosData.items.lomo_fino.description'), imagen: resImg, categoria: 'Res' },
     { id: 2, nombre: t('productosData.items.costillar_res.name'), descripcion: t('productosData.items.costillar_res.description'), imagen: resImg, categoria: 'Res' },
