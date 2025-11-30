@@ -30,7 +30,6 @@ const RESEND_FROM = Deno.env.get("RESEND_FROM") ?? "no-reply@tu-dominio.com";
 const PDF_API_KEY = Deno.env.get("PDF_API_KEY"); // servicio para generar pdf (pdfshift u otro)
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"); // service role para funciones server-side
-const INCOMING_API_KEY = Deno.env.get("INCOMING_API_KEY"); // opcional: si está definido, se exige que la petición lleve x-api-key
 const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL") ?? "jeki18ros@gmail.com";
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") ?? "*").split(",");
 
@@ -169,17 +168,6 @@ serve(async (req) => {
   }
 
   try {
-    // seguridad: si INCOMING_API_KEY está definida → exigir header x-api-key
-    if (INCOMING_API_KEY) {
-      const incoming = req.headers.get("x-api-key") || req.headers.get("apikey");
-      if (!incoming || incoming !== INCOMING_API_KEY) {
-        return new Response(
-          JSON.stringify({ success: false, error: "Unauthorized - invalid x-api-key" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    }
-
     if (req.method !== "POST") {
       return new Response(JSON.stringify({ success: false, error: "Method not allowed" }), {
         status: 405,
