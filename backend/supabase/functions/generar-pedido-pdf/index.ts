@@ -149,7 +149,8 @@ async function generarPdf(html: string) {
   if (!res.ok) {
     const text = await res.text();
     console.error("Error PDF:", res.status, text);
-    throw new Error("No se pudo generar el PDF");
+    // Línea 153 modificada para DEBUGGING:
+throw new Error(`PDFShift falló con código ${res.status}. Mensaje de PDFShift: ${text}`);
   }
 
   const ab = await res.arrayBuffer();
