@@ -72,7 +72,7 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
       id,
       cantidad_valor: cantidadValor,
       cantidad_unidad: cantidadUnidad,
-      cantidad: `${cantidadValor} ${cantidadUnidad}`, // 👈 AQUI EL CAMBIO
+      cantidad: `${cantidadValor} ${cantidadUnidad}`, //AQUI EL CAMBIO
       especificaciones,
       ...(productoSeleccionado || {}),
     },
