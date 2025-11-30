@@ -209,9 +209,9 @@ export function MiniCarritoModal({
                   {/* ✅ MEJORA: Incluir la unidad traducida */}
                   <p className="text-sm text-yellow-500 mt-0.5">
                     {t("miniCart.quantity")}{" "}
-                    <span className="font-bold">
-                      {item.cantidad} {t(`detalleProductoModal.quantity.units.${item.cantidadUnidad.toLowerCase()}`)}
-                    </span>
+<span className="font-bold">
+  {item.cantidad} {t(`detalleProductoModal.quantity.units.${(item.cantidadUnidad || '').toLowerCase()}`)}
+</span>
                   </p>
 
                   {/* Especificaciones */}
