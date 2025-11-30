@@ -401,7 +401,6 @@ serve(async (req) => {
         })
         .eq("orden_id", orden.id);
     }
-
     // --------- 10) Respuesta ----------
     return new Response(
       JSON.stringify({
