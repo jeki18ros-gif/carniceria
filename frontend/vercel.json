@@ -6,6 +6,11 @@
       "maxDuration": 30
     }
   },
+  "build": {
+    "env": {
+      "VERCEL_FORCE_BUILD_RUNTIME": "nodejs20.x"
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/" }
