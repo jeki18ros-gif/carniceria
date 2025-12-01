@@ -11,119 +11,133 @@ const corsHeaders = {
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Método no permitido" }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   try {
     const pedido = await req.json();
 
-    const { cliente } = pedido;
-    const customerEmail = cliente?.correo;
-    const customerName = cliente?.nombre;
+    const cliente = pedido.cliente;
+    const productos = pedido.productos;
 
-    if (!customerEmail || !customerName) {
+    if (!cliente?.correo || !cliente?.nombre) {
       return new Response(
-        JSON.stringify({ message: "Faltan datos del cliente." }),
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ error: "Faltan datos del cliente" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // HTML del pedido
+    if (!productos || productos.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "El pedido no tiene productos" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ===============================
+    //   CONSTRUIR HTML PARA EL PDF
+    // ===============================
+    const productosHTML = productos
+      .map((p: any) => `
+        <li style="margin-bottom: 8px;">
+          <strong>${p.nombre}</strong><br/>
+          Cant: ${p.cantidad_valor} ${p.cantidad_unidad}<br/>
+          ${p.tipo_corte ? `Tipo de corte: ${p.tipo_corte}<br/>` : ""}
+          ${p.parte ? `Parte: ${p.parte}<br/>` : ""}
+          ${p.estado ? `Estado: ${p.estado}<br/>` : ""}
+          ${p.hueso ? `Hueso: ${p.hueso}<br/>` : ""}
+          ${p.grasa ? `Grasa: ${p.grasa}<br/>` : ""}
+          ${p.empaque ? `Empaque: ${p.empaque}<br/>` : ""}
+          ${p.coccion ? `Cocción: ${p.coccion}<br/>` : ""}
+          ${p.fecha_deseada ? `Fecha deseada: ${p.fecha_deseada}<br/>` : ""}
+          ${p.observacion ? `Obs: ${p.observacion}<br/>` : ""}
+        </li>
+      `)
+      .join("");
+
     const html = `
       <h1>Orden de Pedido</h1>
-      <p><strong>Cliente:</strong> ${customerName}</p>
-      <p><strong>Email:</strong> ${customerEmail}</p>
-      <h2>Productos</h2>
-      <ul>
-        ${pedido.productos
-          .map(
-            (p) => `
-            <li>
-              ${p.nombre} -  
-              ${p.cantidad_valor} ${p.cantidad_unidad}
-            </li>
-          `
-          )
-          .join("")}
-      </ul>
+      <p><strong>Cliente:</strong> ${cliente.nombre}</p>
+      <p><strong>Email:</strong> ${cliente.correo}</p>
+      <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
+      <p><strong>Dirección:</strong> ${cliente.direccion}</p>
+      <p><strong>Método de entrega:</strong> ${cliente.entrega}</p>
+      <p><strong>Comentarios:</strong> ${cliente.comentarios || "Ninguno"}</p>
+
+      <h3>Productos solicitados:</h3>
+      <ul>${productosHTML}</ul>
     `;
 
-    // 1️⃣ Generar PDF con PDFShift
+    // ===============================
+    //   1️⃣ GENERAR PDF CON PDFSHIFT
+    // ===============================
     const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
       method: "POST",
       headers: {
         Authorization: `Basic ${btoa(PDFSHIFT_API_KEY + ":")}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        source: html,
-      }),
+      body: JSON.stringify({ source: html }),
     });
 
     if (!pdfResponse.ok) {
-      const error = await pdfResponse.text();
-      console.error("Error PDFShift:", error);
-      return new Response(JSON.stringify({ error: "Error al generar PDF." }), {
-        status: 500,
-        headers: corsHeaders,
-      });
+      return new Response(
+        JSON.stringify({ error: "Error generando PDF" }),
+        { status: 500, headers: corsHeaders }
+      );
     }
 
     const pdfArrayBuffer = await pdfResponse.arrayBuffer();
-    const pdfBase64 = btoa(
-      String.fromCharCode(...new Uint8Array(pdfArrayBuffer))
-    );
+    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfArrayBuffer)));
 
-    // 2️⃣ Enviar correo con Resend
-    const emailPayload = {
-      from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", customerEmail],
-      subject: `Nuevo Pedido de ${customerName}`,
-      html: `
-        <h2>Nuevo Pedido</h2>
-        <p><strong>Cliente:</strong> ${customerName}</p>
-        <p><strong>Email:</strong> ${customerEmail}</p>
-        <p>Adjuntamos el PDF generado con los detalles del pedido.</p>
-      `,
-      attachments: [
-        {
-          filename: "pedido.pdf",
-          content: pdfBase64,
-          encoding: "base64",
-        },
-      ],
-    };
-
-    const resendResponse = await fetch("https://api.resend.com/emails", {
+    // ===============================
+    //   2️⃣ ENVIAR PDF POR EMAIL
+    // ===============================
+    const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(emailPayload),
+      body: JSON.stringify({
+        from: "onboarding@resend.dev",
+        to: ["jeki18ros@gmail.com", cliente.correo],
+        subject: `Nuevo Pedido de ${cliente.nombre}`,
+        html: "<p>Adjuntamos el PDF de su pedido.</p>",
+        attachments: [
+          {
+            filename: "pedido.pdf",
+            content: pdfBase64,
+            encoding: "base64",
+          },
+        ],
+      }),
     });
 
-    if (!resendResponse.ok) {
-      const resendError = await resendResponse.json();
-      console.error("Error Resend:", resendError);
-
+    if (!emailResponse.ok) {
       return new Response(
-        JSON.stringify({ error: "No se pudo enviar el correo." }),
+        JSON.stringify({ error: "Error enviando correo" }),
         { status: 500, headers: corsHeaders }
       );
     }
 
     return new Response(
-      JSON.stringify({
-        message: "PDF generado y correos enviados con éxito",
-      }),
-      { status: 200, headers: corsHeaders }
+      JSON.stringify({ message: "Pedido enviado correctamente" }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
   } catch (error) {
     console.error("Error general:", error);
-    return new Response(JSON.stringify({ error: "Error interno." }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    return new Response(
+      JSON.stringify({ error: "Error interno del servidor" }),
+      { status: 500, headers: corsHeaders }
+    );
   }
 });
