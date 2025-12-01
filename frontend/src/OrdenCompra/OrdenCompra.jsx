@@ -18,7 +18,7 @@ export default function OrdenDeCompra() {
   const [mostrarCarrito, setMostrarCarrito] = useState(false);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [datosDelPedido, setDatosDelPedido] = useState(null);
-
+  const [cargandoPedido, setCargandoPedido] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const [view, setView] = useState(() => {
@@ -125,83 +125,87 @@ export default function OrdenDeCompra() {
   // ============================
   //   ENVIAR PEDIDO FINAL
   // ============================
-  const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
-    e.preventDefault();
+ const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
+  e.preventDefault();
 
-    if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
-      alert("Debes seleccionar al menos un producto.");
-      return;
+  if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
+    alert("Debes seleccionar al menos un producto.");
+    return;
+  }
+
+  setCargandoPedido(true);
+
+  const productosArray = Object.values(productosSeleccionados).map((item) => {
+    const cantidad_valor = item.cantidad_valor ?? item.cantidad.split(" ")[0];
+    const cantidad_unidad = item.cantidad_unidad ?? item.cantidad.split(" ")[1] ?? "kg";
+
+    return {
+      id: item.id,
+      nombre: item.nombre,
+      cantidad_valor,
+      cantidad_unidad,
+      tipo_corte: item.especificaciones?.tipoCorte || null,
+      parte: item.especificaciones?.parte || null,
+      estado: item.especificaciones?.estado || null,
+      hueso: item.especificaciones?.hueso || null,
+      grasa: item.especificaciones?.grasa || null,
+      empaque: item.especificaciones?.empaque || null,
+      coccion: item.especificaciones?.coccion || null,
+      fecha_deseada: item.especificaciones?.fechaDeseada || null,
+      observacion: item.especificaciones?.observacion || null,
+    };
+  });
+
+  const pedidoFinal = {
+    cliente: {
+      nombre: datosCliente.nombre,
+      telefono: datosCliente.telefono,
+      correo: datosCliente.correo,
+      direccion: datosCliente.direccion,
+      entrega: datosCliente.entrega,
+      comentarios: datosCliente.comentarios,
+    },
+    fecha_entrega: datosCliente.fechaEntrega || null,
+    productos: productosArray,
+    comentarios: datosCliente.comentarios || null,
+  };
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify(pedidoFinal),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Error al procesar el pedido");
     }
 
-    const productosArray = Object.values(productosSeleccionados).map((item) => {
-      const cantidad_valor = item.cantidad_valor ?? item.cantidad.split(" ")[0];
-      const cantidad_unidad = item.cantidad_unidad ?? item.cantidad.split(" ")[1] ?? "kg";
-
-      return {
-        id: item.id,
-        nombre: item.nombre,
-        cantidad_valor,
-        cantidad_unidad,
-        tipo_corte: item.especificaciones?.tipoCorte || null,
-        parte: item.especificaciones?.parte || null,
-        estado: item.especificaciones?.estado || null,
-        hueso: item.especificaciones?.hueso || null,
-        grasa: item.especificaciones?.grasa || null,
-        empaque: item.especificaciones?.empaque || null,
-        coccion: item.especificaciones?.coccion || null,
-        fecha_deseada: item.especificaciones?.fechaDeseada || null,
-        observacion: item.especificaciones?.observacion || null,
-      };
+    setDatosDelPedido({
+      ...pedidoFinal,
+      orden_id: data.orden_id,
+      pdf_url: data.pdf_url,
     });
 
-    const pedidoFinal = {
-      cliente: {
-        nombre: datosCliente.nombre,
-        telefono: datosCliente.telefono,
-        correo: datosCliente.correo,
-        direccion: datosCliente.direccion,
-        entrega: datosCliente.entrega,
-        comentarios: datosCliente.comentarios,
-      },
-      fecha_entrega: datosCliente.fechaEntrega || null,
-      productos: productosArray,
-      comentarios: datosCliente.comentarios || null,
-    };
+    setMostrarConfirmacion(true);
+    setView("productos");
+    setSeleccionados({});
+  } catch (error) {
+    console.error("Error al enviar el pedido:", error);
+    alert(`Hubo un error: ${error.message}`);
+  } finally {
+    setCargandoPedido(false);
+  }
+};
 
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify(pedidoFinal),
-        }
-      );
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || "Error al procesar el pedido.");
-      }
-
-      const data = await response.json(); // { success, orden_id, pdf_url }
-
-      setDatosDelPedido({
-        ...pedidoFinal,
-        orden_id: data.orden_id,
-        pdf_url: data.pdf_url,
-      });
-
-      setMostrarConfirmacion(true);
-      setView("productos");
-      setSeleccionados({});
-    } catch (error) {
-      console.error("Error al enviar el pedido:", error);
-      alert(`Hubo un error: ${error.message}`);
-    }
-  };
 
   // ============================
   //   RENDER PRINCIPAL
@@ -280,6 +284,31 @@ export default function OrdenDeCompra() {
         onEditItem={handleEditItem}
         isVisible={mostrarCarrito}
       />
+
+      <AnimatePresence>
+  {cargandoPedido && (
+    <motion.div
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div
+        className="bg-white dark:bg-[#1e1e1e] rounded-xl p-6 shadow-xl text-center"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.8 }}
+      >
+        <div className="loader mx-auto mb-4"></div>
+        <h3 className="text-lg font-semibold mb-2">Procesando pedido...</h3>
+        <p className="text-gray-600 dark:text-gray-300">
+          Generando comprobante en PDF, por favor espera.
+        </p>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
       {/* ===================== CONFIRMACIÓN ===================== */}
       <AnimatePresence>
