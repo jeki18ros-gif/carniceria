@@ -4,13 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "i18n": "i18next 'src/**/*.{js,jsx,ts,tsx}' --output 'public/locales/$LOCALE/$NAMESPACE.json'"
-}
-,
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@sparticuz/chromium": "^141.0.0",
@@ -43,6 +41,6 @@
     "vite": "^7.1.7"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   }
 }
