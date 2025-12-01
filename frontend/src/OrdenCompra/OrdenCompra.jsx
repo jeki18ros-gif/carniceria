@@ -29,10 +29,8 @@ export default function OrdenDeCompra() {
   //   THEME DETECTION
   // ============================
   useEffect(() => {
-    const root = document.documentElement;
     const storedTheme = localStorage.getItem("theme");
-    const isDark = storedTheme === "dark" || root.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
+    setTheme(storedTheme === "dark" ? "dark" : "light");
   }, []);
 
   useEffect(() => {
@@ -65,23 +63,23 @@ export default function OrdenDeCompra() {
     setProductoSeleccionado(producto);
   };
 
-const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) => {
-  setSeleccionados((prev) => ({
-    ...prev,
-    [id]: {
-      id,
-      cantidad_valor: cantidadValor,
-      cantidad_unidad: cantidadUnidad,
-      cantidad: `${cantidadValor} ${cantidadUnidad}`, //AQUI EL CAMBIO
-      especificaciones,
-      ...(productoSeleccionado || {}),
-    },
-  }));
+  const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) => {
+    setSeleccionados((prev) => ({
+      ...prev,
+      [id]: {
+        id,
+        cantidad_valor: cantidadValor,
+        cantidad_unidad: cantidadUnidad,
+        cantidad: `${cantidadValor} ${cantidadUnidad}`,
+        especificaciones,
+        ...(productoSeleccionado || {}),
+      },
+    }));
 
-  setMostrarCarrito(true);
-  setProductoSeleccionado(null);
-  setProductoEditar(null);
-};
+    setMostrarCarrito(true);
+    setProductoSeleccionado(null);
+    setProductoEditar(null);
+  };
 
   const handleRemoveItem = (id) => {
     setSeleccionados((prev) => {
@@ -93,9 +91,7 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
   };
 
   const handleEditItem = (item) => {
-    const cantidadSplit = item.cantidad.split(" ");
-    const cantidadValor = cantidadSplit[0];
-    const cantidadUnidad = cantidadSplit[1] || "kg";
+    const [cantidadValor, cantidadUnidad = "kg"] = item.cantidad.split(" ");
 
     setProductoEditar({
       id: item.id,
@@ -114,183 +110,98 @@ const handleAddToCart = (id, cantidadValor, cantidadUnidad, especificaciones) =>
   };
 
   // ============================
-  //   DESCARGAR PDF DESDE BOTÓN
+  //   DESCARGAR PDF DESDE BACKEND
   // ============================
-const generarPDFDelPedido = async (pedido) => {
-  try {
-    // =============================
-    //  ARMAR HTML PROFESIONAL
-    // =============================
-    const productosHTML = pedido.productos
-      .map(
-        (p) => `
-      <tr>
-        <td style="padding:8px; border:1px solid #ddd;">${p.nombre}</td>
-        <td style="padding:8px; border:1px solid #ddd;">${p.cantidad_valor} ${p.cantidad_unidad}</td>
-        <td style="padding:8px; border:1px solid #ddd;">
-          ${p.tipo_corte || ""} 
-          ${p.parte || ""} 
-          ${p.estado || ""} 
-          ${p.grasa || ""} 
-          ${p.hueso || ""} 
-          ${p.coccion || ""} 
-          ${p.empaque || ""} 
-          ${p.observacion || ""}
-        </td>
-      </tr>
-    `
-      )
-      .join("");
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; padding: 40px;">
-        <h1 style="text-align:center; color:#b8860b;">Orden de Compra</h1>
-
-        <h2>Datos del Cliente</h2>
-        <p><strong>Nombre:</strong> ${pedido.cliente.nombre}</p>
-        <p><strong>Teléfono:</strong> ${pedido.cliente.telefono}</p>
-        <p><strong>Correo:</strong> ${pedido.cliente.correo}</p>
-        <p><strong>Dirección:</strong> ${pedido.cliente.direccion}</p>
-        <p><strong>Entrega:</strong> ${pedido.cliente.entrega}</p>
-
-        <h2 style="margin-top:30px;">Productos solicitados</h2>
-        <table style="width:100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background:#eee;">
-              <th style="padding:10px; border:1px solid #ccc;">Producto</th>
-              <th style="padding:10px; border:1px solid #ccc;">Cantidad</th>
-              <th style="padding:10px; border:1px solid #ccc;">Detalles</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${productosHTML}
-          </tbody>
-        </table>
-
-        <h2 style="margin-top:30px;">Comentarios</h2>
-        <p>${pedido.cliente.comentarios || "Sin comentarios"}</p>
-
-        <p style="margin-top:40px; text-align:center; color:gray; font-size:14px;">
-          Les Aliments Benito – Gracias por su compra.
-        </p>
-      </div>
-    `;
-
-    // =============================
-    //  ENVIAR HTML A API PDF
-    // =============================
-    const response = await fetch("/api/pdf", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    html,
-    cliente: pedido.cliente,
-    productos: pedido.productos,
-    orden_id: pedido.orden_id || null
-  })
-});
-
-
-    if (!response.ok) throw new Error("Error generando PDF");
-
-    // =============================
-    //  DESCARGAR PDF
-    // =============================
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pedido_${pedido.orden_id || "cliente"}.pdf`;
-    a.click();
-
-    URL.revokeObjectURL(url);
-  } catch (e) {
-    console.error(e);
-    alert("Error al generar PDF");
-  }
-};
+  const descargarPDF = async (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "pedido.pdf";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
 
   // ============================
   //   ENVIAR PEDIDO FINAL
   // ============================
- const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
-  e.preventDefault();
+  const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
+    e.preventDefault();
 
-  if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
-    alert("Debes seleccionar al menos un producto para enviar el pedido.");
-    return;
-  }
+    if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
+      alert("Debes seleccionar al menos un producto.");
+      return;
+    }
 
-  // Convertir productos al formato final
-  const productosArray = Object.values(productosSeleccionados).map((item) => {
-    const cantidad_valor = item.cantidad_valor ?? (item.cantidad?.split?.(" ")[0] ?? "");
-    const cantidad_unidad = item.cantidad_unidad ?? (item.cantidad?.split?.(" ")[1] ?? "kg");
+    const productosArray = Object.values(productosSeleccionados).map((item) => {
+      const cantidad_valor = item.cantidad_valor ?? item.cantidad.split(" ")[0];
+      const cantidad_unidad = item.cantidad_unidad ?? item.cantidad.split(" ")[1] ?? "kg";
 
-    return {
-      id: item.id,
-      nombre: item.nombre,
-      cantidad_valor,
-      cantidad_unidad,
-      tipo_corte: item.especificaciones?.tipoCorte || null,
-      parte: item.especificaciones?.parte || null,
-      estado: item.especificaciones?.estado || null,
-      hueso: item.especificaciones?.hueso || null,
-      grasa: item.especificaciones?.grasa || null,
-      empaque: item.especificaciones?.empaque || null,
-      coccion: item.especificaciones?.coccion || null,
-      fecha_deseada: item.especificaciones?.fechaDeseada || null,
-      observacion: item.especificaciones?.observacion || null,
-    };
-  });
-
-  const pedidoFinal = {
-    cliente: {
-      nombre: datosCliente.nombre,
-      telefono: datosCliente.telefono,
-      correo: datosCliente.correo,
-      direccion: datosCliente.direccion,
-      entrega: datosCliente.entrega,
-      comentarios: datosCliente.comentarios,
-    },
-    productos: productosArray,
-    comentarios: datosCliente.comentarios || null,
-  };
-
-  try {
-    // Enviar el pedido al backend de Vercel para generar PDF
-    const response = await fetch("/api/pdf", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(pedidoFinal),
+      return {
+        id: item.id,
+        nombre: item.nombre,
+        cantidad_valor,
+        cantidad_unidad,
+        tipo_corte: item.especificaciones?.tipoCorte || null,
+        parte: item.especificaciones?.parte || null,
+        estado: item.especificaciones?.estado || null,
+        hueso: item.especificaciones?.hueso || null,
+        grasa: item.especificaciones?.grasa || null,
+        empaque: item.especificaciones?.empaque || null,
+        coccion: item.especificaciones?.coccion || null,
+        fecha_deseada: item.especificaciones?.fechaDeseada || null,
+        observacion: item.especificaciones?.observacion || null,
+      };
     });
 
-    if (!response.ok) throw new Error("Error generando PDF");
+    const pedidoFinal = {
+      cliente: {
+        nombre: datosCliente.nombre,
+        telefono: datosCliente.telefono,
+        correo: datosCliente.correo,
+        direccion: datosCliente.direccion,
+        entrega: datosCliente.entrega,
+        comentarios: datosCliente.comentarios,
+      },
+      fecha_entrega: datosCliente.fechaEntrega || null,
+      productos: productosArray,
+      comentarios: datosCliente.comentarios || null,
+    };
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify(pedidoFinal),
+        }
+      );
 
-    // Descargar PDF
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pedido_${Date.now()}.pdf`;
-    a.click();
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || "Error al procesar el pedido.");
+      }
 
-    URL.revokeObjectURL(url);
+      const data = await response.json(); // { success, orden_id, pdf_url }
 
-    // Mostrar modal de confirmación
-    setDatosDelPedido(pedidoFinal);
-    setMostrarConfirmacion(true);
+      setDatosDelPedido({
+        ...pedidoFinal,
+        orden_id: data.orden_id,
+        pdf_url: data.pdf_url,
+      });
 
-    // Limpiar vista
-    setView("productos");
-    setSeleccionados({});
-  } catch (error) {
-    console.error("Error al enviar el pedido:", error);
-    alert("Error al procesar tu pedido.");
-  }
-};
-
+      setMostrarConfirmacion(true);
+      setView("productos");
+      setSeleccionados({});
+    } catch (error) {
+      console.error("Error al enviar el pedido:", error);
+      alert(`Hubo un error: ${error.message}`);
+    }
+  };
 
   // ============================
   //   RENDER PRINCIPAL
@@ -305,45 +216,21 @@ const generarPDFDelPedido = async (pedido) => {
 
       <main className="flex-grow py-10 px-6">
         <div className="max-w-6xl mx-auto">
-          {/* ===================== VISTA PRODUCTOS ===================== */}
           {view === "productos" && (
             <>
               <h2 className="text-3xl font-extrabold mb-8">
                 {t("ordenCompra.products_title")}
               </h2>
 
-              {/* Buscador */}
               <div className="mb-8 relative medium-block rounded-xl shadow-inner p-3">
                 <input
                   type="text"
                   placeholder={t("ordenCompra.search.placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-transparent border-b-2 border-gray-300 dark:border-gray-600 
-                  focus:border-[var(--color-dorado)] focus:outline-none py-2 px-1 text-lg transition-colors pr-10"
+                  className="w-full bg-transparent border-b-2 border-gray-300 
+                  dark:border-gray-600 focus:border-[var(--color-dorado)] focus:outline-none py-2 px-1 text-lg"
                 />
-
-                {searchTerm ? (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 
-                    dark:text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    ✕
-                  </button>
-                ) : (
-                  <svg
-                    className="h-6 w-6 absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 
-                    dark:text-gray-400 pointer-events-none"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                )}
               </div>
 
               <ListaProductos
@@ -353,7 +240,6 @@ const generarPDFDelPedido = async (pedido) => {
             </>
           )}
 
-          {/* ===================== VISTA FORMULARIO ===================== */}
           {view === "formulario" && (
             <>
               <h2 className="text-3xl font-extrabold mb-8">
@@ -419,11 +305,11 @@ const generarPDFDelPedido = async (pedido) => {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onClick={() => generarPDFDelPedido(datosDelPedido)}
+                <button
+                  onClick={() => descargarPDF(datosDelPedido.pdf_url)}
                   className="px-4 py-2 rounded-lg font-medium bg-yellow-500 hover:bg-yellow-600 text-black shadow-md"
                 >
-                  {t("ordenCompra.confirmation.download_pdf") ||
-                    "Descargar PDF"}
+                  {t("ordenCompra.confirmation.download_pdf")}
                 </button>
 
                 <button
