@@ -5,7 +5,7 @@
       "memory": 2048,
       "maxDuration": 30
     }
-  },
+  } ,
   "build": {
     "env": {
       "VERCEL_FORCE_BUILD_RUNTIME": "nodejs20.x"
