@@ -31,7 +31,7 @@ i18n
     react: { useSuspense: true }, // ✅ Habilitado para usar <Suspense>
   });
 
-// ❌ Se ELIMINAN las llamadas precarga no controladas (void loadLanguageResources(...))
+// Se ELIMINAN las llamadas precarga no controladas (void loadLanguageResources(...))
 
 // Actualizar <html lang> y guardar idioma actual
 i18n.on("languageChanged", (lng) => {
