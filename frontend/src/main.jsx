@@ -7,7 +7,7 @@ import "./i18n.js"; // Inicializa i18n globalmente
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    {/* 👈 Aplicamos Suspense aquí */}
+    {/*Aplicamos Suspense aquí */}
     <Suspense fallback={<div>Cargando...</div>}> 
       <ThemeProvider>
         <App />
