@@ -10,6 +10,7 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
+  // Preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: corsHeaders });
   }
@@ -41,11 +42,8 @@ serve(async (req: Request) => {
       );
     }
 
-    // ===============================
-    //   CONSTRUIR HTML PARA EL PDF
-    // ===============================
     const productosHTML = productos
-      .map((p: any) => `
+      .map((p) => `
         <li style="margin-bottom: 8px;">
           <strong>${p.nombre}</strong><br/>
           Cant: ${p.cantidad_valor} ${p.cantidad_unidad}<br/>
@@ -70,14 +68,10 @@ serve(async (req: Request) => {
       <p><strong>Dirección:</strong> ${cliente.direccion}</p>
       <p><strong>Método de entrega:</strong> ${cliente.entrega}</p>
       <p><strong>Comentarios:</strong> ${cliente.comentarios || "Ninguno"}</p>
-
       <h3>Productos solicitados:</h3>
       <ul>${productosHTML}</ul>
     `;
 
-    // ===============================
-    //   1️⃣ GENERAR PDF CON PDFSHIFT
-    // ===============================
     const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
       method: "POST",
       headers: {
@@ -90,16 +84,13 @@ serve(async (req: Request) => {
     if (!pdfResponse.ok) {
       return new Response(
         JSON.stringify({ error: "Error generando PDF" }),
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     const pdfArrayBuffer = await pdfResponse.arrayBuffer();
     const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfArrayBuffer)));
 
-    // ===============================
-    //   2️⃣ ENVIAR PDF POR EMAIL
-    // ===============================
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -124,7 +115,7 @@ serve(async (req: Request) => {
     if (!emailResponse.ok) {
       return new Response(
         JSON.stringify({ error: "Error enviando correo" }),
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -137,7 +128,7 @@ serve(async (req: Request) => {
     console.error("Error general:", error);
     return new Response(
       JSON.stringify({ error: "Error interno del servidor" }),
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
