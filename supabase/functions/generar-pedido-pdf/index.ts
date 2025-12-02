@@ -54,7 +54,7 @@ const { data: orden, error: ordenError } = await supabase
     nombre_cliente: cliente.nombre_cliente, // Coincide (se ve en imagen 1)
     cliente_telefono: cliente.telefono || null, // ¡CORREGIDO!
     cliente_correo: cliente.correo, // ¡CORREGIDO! (Si la BD solo tiene cliente_correo)
-    descripcion: productos.map((p: any) => p.nombre).join(", "), // No se ve la descripción, pero asumimos que existe
+    comentarios: productos.map((p: any) => p.nombre).join(", "), // No se ve la descripción, pero asumimos que existe
   })
   .select()
   .single();
