@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
-const PDFSHIFT_API_KEY = Deno.env.get("PDFSHIFT_API_KEY");
+const PDFSHIFT_API_KEY = Deno.env.get("PDF_API_KEY");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
