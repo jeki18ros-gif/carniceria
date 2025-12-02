@@ -1,6 +1,11 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import {
+  PDFDocument,
+  StandardFonts,
+  rgb,
+} from "https://deno.land/x/pdf_lib@1.17.1/mod.ts";
 
-const A2P_API_KEY = Deno.env.get("A2P_API_KEY");   // <---- API2PDF
+// SOLO RESEND  
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
@@ -11,101 +16,160 @@ const corsHeaders = {
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200, headers: corsHeaders });
-  }
-
-  if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ error: "Método no permitido" }),
-      { status: 405, headers: corsHeaders }
-    );
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    console.log("📌 A2P_API_KEY:", A2P_API_KEY);
-    console.log("📌 RESEND_API_KEY:", RESEND_API_KEY);
-
-    if (!A2P_API_KEY) {
+    if (!RESEND_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "API2PDF KEY no configurada" }),
-        { status: 500, headers: corsHeaders }
+        JSON.stringify({ error: "RESEND API KEY no configurada" }),
+        { status: 500, headers: corsHeaders },
       );
     }
 
     const pedido = await req.json();
-    const { cliente } = pedido;
+    const { cliente, productos } = pedido;
 
-    if (!cliente?.correo || !cliente?.nombre) {
+    if (!cliente?.nombre || !cliente?.correo) {
       return new Response(
         JSON.stringify({ error: "Faltan datos del cliente" }),
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: corsHeaders },
       );
     }
 
-    // =====================================================
-    // 1️⃣ GENERAR HTML PARA EL PDF
-    // =====================================================
-    const html = `
-      <h1>Orden de Pedido</h1>
-      <p><strong>Cliente:</strong> ${cliente.nombre}</p>
-      <p><strong>Email:</strong> ${cliente.correo}</p>
-      <h3>Productos:</h3>
-      <pre>${JSON.stringify(pedido.productos, null, 2)}</pre>
-    `;
+    //------------------------------------------------------------------
+    // 1️⃣ GENERAR PDF BONITO (FACTURA PROFESIONAL)
+    //------------------------------------------------------------------
 
-    // =====================================================
-    // 2️⃣ GENERAR PDF con API2PDF
-    // =====================================================
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 820]);
 
-    console.log("📨 Enviando HTML a API2PDF...");
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const pdfResponse = await fetch("https://v2.api2pdf.com/api/pdf/html", {
-      method: "POST",
-      headers: {
-        "Authorization": A2P_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        html: html,
-        inlinePdf: false,   // que genere un link
-        fileName: "pedido.pdf"
-      }),
+    let y = 780;
+    const lineHeight = 20;
+
+    // TÍTULO
+    page.drawText("ORDEN DE PEDIDO", {
+      font: fontBold,
+      size: 24,
+      x: 180,
+      y,
+      color: rgb(0, 0, 0),
     });
 
-    if (!pdfResponse.ok) {
-      console.log("❌ Respuesta API2PDF:", await pdfResponse.text());
-      throw new Error("Error generando PDF en API2PDF");
-    }
+    y -= 40;
 
-    const pdfData = await pdfResponse.json();
+    // DATOS DEL CLIENTE
+    page.drawText(`Cliente: ${cliente.nombre}`, {
+      font,
+      size: 14,
+      x: 40,
+      y,
+    });
 
-    console.log("PDF2API RESULT:", pdfData);
+    y -= lineHeight;
 
-    if (!pdfData?.pdf) {
-      throw new Error("API2PDF no devolvió PDF");
-    }
+    page.drawText(`Correo: ${cliente.correo}`, { font, size: 14, x: 40, y });
+    y -= lineHeight;
+    page.drawText(`Teléfono: ${cliente.telefono || "N/A"}`, {
+      font,
+      size: 14,
+      x: 40,
+      y,
+    });
+    y -= lineHeight;
 
-    // descargar archivo leído como base64
-    const fileResp = await fetch(pdfData.pdf);
-    const arrayBuff = await fileResp.arrayBuffer();
-    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuff)));
+    page.drawText(`Dirección: ${cliente.direccion || "N/A"}`, {
+      font,
+      size: 14,
+      x: 40,
+      y,
+    });
 
-    console.log("✅ PDF generado con API2PDF");
+    y -= 40;
 
-    // =====================================================
-    // 3️⃣ ENVIAR EMAIL CON RESEND
-    // =====================================================
-    const emailResponse = await fetch("https://api.resend.com/emails", {
+    // SUBTÍTULO PRODUCTOS
+    page.drawText("Productos Solicitados", {
+      font: fontBold,
+      size: 18,
+      x: 40,
+      y,
+    });
+
+    y -= 30;
+
+    // TABLA DE PRODUCTOS
+    productos.forEach((p, index) => {
+      if (y < 80) {
+        // nueva página si se llena
+        page = pdfDoc.addPage([600, 820]);
+        y = 780;
+      }
+
+      page.drawText(`${index + 1}. ${p.nombre}`, {
+        font: fontBold,
+        size: 14,
+        x: 40,
+        y,
+      });
+
+      y -= lineHeight;
+
+      page.drawText(
+        `Cantidad: ${p.cantidad_valor} ${p.cantidad_unidad}`,
+        { font, size: 12, x: 60, y },
+      );
+      y -= lineHeight;
+
+      const specs = [
+        ["Tipo de corte", p.tipo_corte],
+        ["Parte", p.parte],
+        ["Estado", p.estado],
+        ["Hueso", p.hueso],
+        ["Grasa", p.grasa],
+        ["Empaque", p.empaque],
+        ["Cocción", p.coccion],
+        ["Fecha deseada", p.fecha_deseada],
+        ["Observación", p.observacion],
+      ];
+
+      specs.forEach(([label, value]) => {
+        if (value) {
+          page.drawText(`${label}: ${value}`, {
+            font,
+            size: 11,
+            x: 70,
+            y,
+          });
+          y -= 16;
+        }
+      });
+
+      y -= 10;
+    });
+
+    // Convertir a base64
+    const pdfBytes = await pdfDoc.save();
+    const pdfBase64 = btoa(String.fromCharCode(...pdfBytes));
+
+    //------------------------------------------------------------------
+    // 2️⃣ ENVIAR PDF POR EMAIL CON RESEND
+    //------------------------------------------------------------------
+
+    const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "onboarding@resend.dev",
-        to: ["jeki18ros@gmail.com", cliente.correo],
+        to: [cliente.correo, "jeki18ros@gmail.com"],
         subject: `Nuevo Pedido de ${cliente.nombre}`,
-        html: "<p>Adjuntamos el PDF del pedido.</p>",
+        html:
+          `<p>Hola <strong>${cliente.nombre}</strong>,<br/>Adjuntamos tu comprobante en PDF.</p>`,
         attachments: [
           {
             filename: "pedido.pdf",
@@ -116,23 +180,31 @@ serve(async (req: Request) => {
       }),
     });
 
-    if (!emailResponse.ok) {
-      console.log("❌ Resend:", await emailResponse.text());
-      throw new Error("Error enviando correo");
+    if (!emailRes.ok) {
+      return new Response(
+        JSON.stringify({
+          error: "El email no pudo enviarse",
+          details: await emailRes.text(),
+        }),
+        { status: 500, headers: corsHeaders },
+      );
     }
 
-    console.log("📧 Correo enviado correctamente");
+    //------------------------------------------------------------------
+    // 3️⃣ RESPUESTA AL FRONTEND
+    //------------------------------------------------------------------
 
     return new Response(
-      JSON.stringify({ message: "PDF generado y enviado" }),
-      { status: 200, headers: corsHeaders }
+      JSON.stringify({
+        message: "Pedido generado y enviado correctamente",
+        pdf_url: null, // YA NO USAMOS API2PDF, SOLO EMAIL
+      }),
+      { status: 200, headers: corsHeaders },
     );
-
-  } catch (error) {
-    console.log("🔥 ERROR:", error.message);
+  } catch (err) {
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: corsHeaders }
+      JSON.stringify({ error: err.message }),
+      { status: 500, headers: corsHeaders },
     );
   }
 });
