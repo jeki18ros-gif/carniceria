@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
-const PDFSHIFT_API_KEY = Deno.env.get("PDF_API_KEY");    // <--- TU VARIABLE REAL
+const A2P_API_KEY = Deno.env.get("A2P_API_KEY");   // <---- API2PDF
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
@@ -10,7 +10,6 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-  // Preflight (CORS)
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: corsHeaders });
   }
@@ -23,21 +22,18 @@ serve(async (req: Request) => {
   }
 
   try {
-    console.log("📌 PDFSHIFT_API_KEY:", PDFSHIFT_API_KEY);
+    console.log("📌 A2P_API_KEY:", A2P_API_KEY);
     console.log("📌 RESEND_API_KEY:", RESEND_API_KEY);
 
-    if (!PDFSHIFT_API_KEY) {
-      console.log("❌ ERROR: PDFSHIFT_API_KEY está vacío o no existe");
+    if (!A2P_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "PDF API KEY no configurada" }),
+        JSON.stringify({ error: "API2PDF KEY no configurada" }),
         { status: 500, headers: corsHeaders }
       );
     }
 
     const pedido = await req.json();
     const { cliente } = pedido;
-
-    console.log("📦 Pedido recibido:", pedido);
 
     if (!cliente?.correo || !cliente?.nombre) {
       return new Response(
@@ -46,9 +42,9 @@ serve(async (req: Request) => {
       );
     }
 
-    // ============================
-    // 1️⃣ GENERAR HTML DEL PDF
-    // ============================
+    // =====================================================
+    // 1️⃣ GENERAR HTML PARA EL PDF
+    // =====================================================
     const html = `
       <h1>Orden de Pedido</h1>
       <p><strong>Cliente:</strong> ${cliente.nombre}</p>
@@ -57,35 +53,48 @@ serve(async (req: Request) => {
       <pre>${JSON.stringify(pedido.productos, null, 2)}</pre>
     `;
 
-    // ============================
-    // 2️⃣ GENERAR PDF EN PDFSHIFT
-    // ============================
-    console.log("📨 Enviando HTML a PDFShift...");
+    // =====================================================
+    // 2️⃣ GENERAR PDF con API2PDF
+    // =====================================================
 
-    const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
+    console.log("📨 Enviando HTML a API2PDF...");
+
+    const pdfResponse = await fetch("https://v2.api2pdf.com/api/pdf/html", {
       method: "POST",
       headers: {
-        Authorization: `Basic ${btoa(PDFSHIFT_API_KEY + ":")}`,
+        "Authorization": A2P_API_KEY,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ source: html }),
+      body: JSON.stringify({
+        html: html,
+        inlinePdf: false,   // que genere un link
+        fileName: "pedido.pdf"
+      }),
     });
 
     if (!pdfResponse.ok) {
-      console.log("❌ Respuesta PDFShift:", await pdfResponse.text());
-      throw new Error("Error generando PDF en PDFShift");
+      console.log("❌ Respuesta API2PDF:", await pdfResponse.text());
+      throw new Error("Error generando PDF en API2PDF");
     }
 
-    console.log("✅ PDF generado correctamente");
+    const pdfData = await pdfResponse.json();
 
-    const pdfBuffer = await pdfResponse.arrayBuffer();
-    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfBuffer)));
+    console.log("PDF2API RESULT:", pdfData);
 
-    // ============================
-    // 3️⃣ ENVIAR CORREO CON RESEND
-    // ============================
-    console.log("📨 Enviando correo con Resend...");
+    if (!pdfData?.pdf) {
+      throw new Error("API2PDF no devolvió PDF");
+    }
 
+    // descargar archivo leído como base64
+    const fileResp = await fetch(pdfData.pdf);
+    const arrayBuff = await fileResp.arrayBuffer();
+    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuff)));
+
+    console.log("✅ PDF generado con API2PDF");
+
+    // =====================================================
+    // 3️⃣ ENVIAR EMAIL CON RESEND
+    // =====================================================
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -108,23 +117,21 @@ serve(async (req: Request) => {
     });
 
     if (!emailResponse.ok) {
-      console.log("❌ Respuesta Resend:", await emailResponse.text());
-      throw new Error("Error enviando correo con Resend");
+      console.log("❌ Resend:", await emailResponse.text());
+      throw new Error("Error enviando correo");
     }
 
     console.log("📧 Correo enviado correctamente");
 
     return new Response(
-      JSON.stringify({
-        message: "PDF generado y correos enviados exitosamente",
-      }),
+      JSON.stringify({ message: "PDF generado y enviado" }),
       { status: 200, headers: corsHeaders }
     );
 
   } catch (error) {
-    console.log("🔥 Error interno:", error.message);
+    console.log("🔥 ERROR:", error.message);
     return new Response(
-      JSON.stringify({ error: `Error interno del servidor: ${error.message}` }),
+      JSON.stringify({ error: error.message }),
       { status: 500, headers: corsHeaders }
     );
   }
