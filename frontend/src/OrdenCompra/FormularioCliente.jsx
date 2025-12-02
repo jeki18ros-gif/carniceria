@@ -28,20 +28,19 @@ export function FormularioCliente({
 
   const hoy = new Date().toISOString().split("T")[0];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+    e.preventDefault();
 
-    const datosCliente = {
-  nombre_cliente: nombre.trim(),
-  correo: correo.trim(),
-  telefono: telefono.trim(),
-  direccion: direccion.trim(),
-  entrega: entrega,   
-  fecha_entrega: fechaEntrega,  
-  horario_entrega: horario,
-  comentarios: comentarios.trim()
-};
-
+    const datosCliente = {
+      nombre_cliente: nombre.trim(),
+      cliente_correo: correo.trim(), // ⬅️ CAMBIADO (Debe ser cliente_correo)
+      cliente_telefono: telefono.trim(), // ⬅️ CAMBIADO
+      cliente_direccion: direccion.trim(), // ⬅️ CAMBIADO (Si la BD usa cliente_direccion)
+      entrega: entrega,
+      fecha_entrega: fechaEntrega,
+      horario_entrega: horario,
+      comentarios: comentarios.trim()
+    };
 
     onSubmit(e, datosCliente, seleccionados);
   };

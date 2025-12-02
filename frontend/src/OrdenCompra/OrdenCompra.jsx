@@ -147,19 +147,20 @@ observacion: item.especificaciones?.observacion || null,
     };
   });
 
-  const pedidoFinal = {
-    cliente: {
-      nombre_cliente: datosCliente.nombre_cliente || datosCliente.nombre,
-      telefono: datosCliente.telefono,
-      correo: datosCliente.correo,
-      direccion: datosCliente.direccion,
-      entrega: datosCliente.entrega,
-      comentarios: datosCliente.comentarios,
-    },
-    fecha_entrega: datosCliente.fechaEntrega || null,
-    productos: productosArray,
-    comentarios: datosCliente.comentarios || null,
-  };
+const pedidoFinal = {
+    cliente: {
+      nombre_cliente: datosCliente.nombre_cliente || datosCliente.nombre,
+      // Usar las claves que vienen del FormularioCliente AHORA CORREGIDAS:
+      cliente_telefono: datosCliente.cliente_telefono, // ⬅️ CAMBIADO
+      cliente_correo: datosCliente.cliente_correo, // ⬅️ CAMBIADO
+      cliente_direccion: datosCliente.cliente_direccion, // ⬅️ CAMBIADO
+      entrega: datosCliente.entrega,
+      comentarios: datosCliente.comentarios,
+    },
+    fecha_entrega: datosCliente.fechaEntrega || null,
+    productos: productosArray,
+    comentarios: datosCliente.comentarios || null,
+  };
 
   try {
     // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
@@ -172,9 +173,16 @@ const response = await fetch(
       apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     },
     body: JSON.stringify({
-      cliente: pedidoFinal.cliente,
-      productos: productosArray
-    }),
+        cliente: {
+            nombre_cliente: pedidoFinal.cliente.nombre_cliente,
+            telefono: pedidoFinal.cliente.cliente_telefono, // Mapear la clave del frontend a la clave esperada por el DB (en el Edge Function)
+            correo: pedidoFinal.cliente.cliente_correo, // Mapear la clave del frontend a la clave esperada por el DB (en el Edge Function)
+            direccion: pedidoFinal.cliente.cliente_direccion,
+            entrega: pedidoFinal.cliente.entrega,
+            comentarios: pedidoFinal.cliente.comentarios,
+        },
+        productos: productosArray
+      }),
   }
 );
 
@@ -198,7 +206,8 @@ const emailResponse = await fetch(
       orden_id: data.orden_id,
       pdf_url: data.pdf_url,
       nombre_cliente: pedidoFinal.cliente.nombre_cliente,
-      correo: pedidoFinal.cliente.correo,
+      correo: pedidoFinal.cliente.cliente_correo, // ⬅️ CAMBIADO
+      pdfBase64: data.pdfBase64, // ¡Asegúrate de incluir esto para el adjunto!
     }),
   }
 );
