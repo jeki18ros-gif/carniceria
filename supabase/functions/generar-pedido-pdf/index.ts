@@ -1,52 +1,67 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
-const PDFSHIFT_API_KEY = Deno.env.get("PDF_API_KEY");
+const PDFSHIFT_API_KEY = Deno.env.get("PDF_API_KEY");    // <--- TU VARIABLE REAL
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://les-aliments-benito.vercel.app",
-  "Access-Control-Allow-Headers":
-    "apikey, content-type, authorization, x-client-info, x-supabase-api-version",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "apikey, content-type, authorization",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 serve(async (req: Request) => {
-
-  // 🔥 PRE-FLIGHT OPTIONS
+  // Preflight (CORS)
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      status: 200,
-      headers: corsHeaders,
-    });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
-  // ❌ Métodos no permitidos
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({ error: "Método no permitido" }),
-      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 405, headers: corsHeaders }
     );
   }
 
   try {
+    console.log("📌 PDFSHIFT_API_KEY:", PDFSHIFT_API_KEY);
+    console.log("📌 RESEND_API_KEY:", RESEND_API_KEY);
+
+    if (!PDFSHIFT_API_KEY) {
+      console.log("❌ ERROR: PDFSHIFT_API_KEY está vacío o no existe");
+      return new Response(
+        JSON.stringify({ error: "PDF API KEY no configurada" }),
+        { status: 500, headers: corsHeaders }
+      );
+    }
+
     const pedido = await req.json();
     const { cliente } = pedido;
+
+    console.log("📦 Pedido recibido:", pedido);
 
     if (!cliente?.correo || !cliente?.nombre) {
       return new Response(
         JSON.stringify({ error: "Faltan datos del cliente" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: corsHeaders }
       );
     }
 
-    // HTML SIMPLE PARA PDF
+    // ============================
+    // 1️⃣ GENERAR HTML DEL PDF
+    // ============================
     const html = `
       <h1>Orden de Pedido</h1>
       <p><strong>Cliente:</strong> ${cliente.nombre}</p>
       <p><strong>Email:</strong> ${cliente.correo}</p>
+      <h3>Productos:</h3>
+      <pre>${JSON.stringify(pedido.productos, null, 2)}</pre>
     `;
 
-    // 🧾 GENERAR PDF
+    // ============================
+    // 2️⃣ GENERAR PDF EN PDFSHIFT
+    // ============================
+    console.log("📨 Enviando HTML a PDFShift...");
+
     const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
       method: "POST",
       headers: {
@@ -57,20 +72,25 @@ serve(async (req: Request) => {
     });
 
     if (!pdfResponse.ok) {
-      throw new Error("Error generando PDF");
+      console.log("❌ Respuesta PDFShift:", await pdfResponse.text());
+      throw new Error("Error generando PDF en PDFShift");
     }
 
-    const pdfBuffer = await pdfResponse.arrayBuffer();
-    const pdfBase64 = btoa(
-      String.fromCharCode(...new Uint8Array(pdfBuffer))
-    );
+    console.log("✅ PDF generado correctamente");
 
-    // 📩 ENVIAR CORREO
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfBuffer)));
+
+    // ============================
+    // 3️⃣ ENVIAR CORREO CON RESEND
+    // ============================
+    console.log("📨 Enviando correo con Resend...");
+
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: "onboarding@resend.dev",
@@ -88,19 +108,24 @@ serve(async (req: Request) => {
     });
 
     if (!emailResponse.ok) {
-      throw new Error("Error enviando correo");
+      console.log("❌ Respuesta Resend:", await emailResponse.text());
+      throw new Error("Error enviando correo con Resend");
     }
 
+    console.log("📧 Correo enviado correctamente");
+
     return new Response(
-      JSON.stringify({ message: "PDF generado y correos enviados" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        message: "PDF generado y correos enviados exitosamente",
+      }),
+      { status: 200, headers: corsHeaders }
     );
 
-  } catch (err) {
-    console.error("Error interno:", err);
+  } catch (error) {
+    console.log("🔥 Error interno:", error.message);
     return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: `Error interno del servidor: ${error.message}` }),
+      { status: 500, headers: corsHeaders }
     );
   }
 });
