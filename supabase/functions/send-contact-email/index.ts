@@ -10,7 +10,6 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-  // OPTIONS (CORS)
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -23,13 +22,13 @@ serve(async (req: Request) => {
   }
 
   try {
-    // 📩 Datos enviados desde el frontend
-    const { orden_id, pdf_url, nombre_cliente, correo } = await req.json();
+    // 📩 Datos del formulario de contacto
+    const { name, email, message } = await req.json();
 
-    // ❌ Validación real
-    if (!orden_id || !pdf_url || !nombre_cliente || !correo) {
+    // ❌ Validación
+    if (!name || !email || !message) {
       return new Response(
-        JSON.stringify({ message: "Faltan campos requeridos." }),
+        JSON.stringify({ message: "Faltan campos requeridos: nombre, email o mensaje." }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -39,21 +38,17 @@ serve(async (req: Request) => {
 
     // 📧 Email a enviar
     const emailPayload = {
-      from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", correo], // Admin + cliente
-      subject: `Pedido recibido - Orden ${orden_id}`,
+      from: "onboarding@resend.dev", // O tu email de envío
+      to: ["jeki18ros@gmail.com"], // Solo al administrador
+      subject: `Mensaje de Contacto de: ${name}`,
       html: `
-        <h2>Nuevo Pedido Recibido</h2>
+        <h2>Nuevo Mensaje de Contacto</h2>
 
-        <p><strong>Cliente:</strong> ${nombre_cliente}</p>
-        <p><strong>Email:</strong> ${correo}</p>
-        <p><strong>ID del Pedido:</strong> ${orden_id}</p>
-
-        <p>Puedes descargar el PDF aquí:</p>
-        <p><a href="${pdf_url}" target="_blank">${pdf_url}</a></p>
-
-        <br/>
-        <p>Gracias por su compra.</p>
+        <p><strong>De:</strong> ${name}</p>
+        <p><strong>Correo:</strong> ${email}</p>
+        <hr/>
+        <p><strong>Mensaje:</strong></p>
+        <p>${message}</p>
       `
     };
 
@@ -69,10 +64,10 @@ serve(async (req: Request) => {
 
     if (!resendResponse.ok) {
       const err = await resendResponse.clone().json();
-      console.error("Resend Error:", err);
+      console.error("Resend Error (Contacto):", err);
 
       return new Response(
-        JSON.stringify({ message: "Error al enviar correo." }),
+        JSON.stringify({ message: "Error al enviar correo de contacto." }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -81,7 +76,7 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Correo enviado correctamente." }),
+      JSON.stringify({ message: "Correo de contacto enviado correctamente." }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
