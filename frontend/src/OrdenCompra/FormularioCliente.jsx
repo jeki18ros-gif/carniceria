@@ -29,15 +29,16 @@ export function FormularioCliente({
   const handleSubmit = (e) => {
     e.preventDefault();
     const datosCliente = {
-      nombre,
-      telefono,
-      correo,
-      direccion,
-      entrega,
-      fechaEntrega,
-      horario,
-      comentarios
-    };
+  nombre_cliente: nombre,
+  telefono,
+  correo,
+  direccion,
+  entrega,
+  fechaEntrega,
+  horario,
+  comentarios
+};
+
     // CAMBIO AQUÍ: Enviamos datosCliente y seleccionados al padre.
     onSubmit(e, datosCliente, seleccionados);
   };

@@ -158,7 +158,7 @@ export default function OrdenDeCompra() {
 
   const pedidoFinal = {
     cliente: {
-      nombre: datosCliente.nombre,
+      nombre_cliente: datosCliente.nombre,
       telefono: datosCliente.telefono,
       correo: datosCliente.correo,
       direccion: datosCliente.direccion,
