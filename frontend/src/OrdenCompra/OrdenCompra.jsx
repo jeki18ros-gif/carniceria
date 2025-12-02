@@ -197,16 +197,33 @@ const response = await fetch(
       throw new Error(data.error || "Error al procesar el pedido");
     }
 
-    // ===========================================================
-    // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
-    // ===========================================================
+// ===========================================================
+// 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
+// ===========================================================
+const emailResponse = await fetch(
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({
+      orden_id: data.orden_id,
+      pdf_url: data.pdf_url,
+      nombre_cliente: pedidoFinal.cliente.nombre_cliente,
+      correo: pedidoFinal.cliente.correo,
+    }),
+  }
+);
 
-    const emailData = await emailResponse.json();
+const emailData = await emailResponse.json();
 
-    if (!emailResponse.ok) {
-      console.error("Error email:", emailData);
-      alert("El pedido se generó, pero hubo un error al enviar el correo.");
-    }
+if (!emailResponse.ok) {
+  console.error("Error email:", emailData);
+  alert("El pedido se generó, pero hubo un error al enviar el correo.");
+}
+
 
     // ===========================================================
     // 3️⃣ MOSTRAR CONFIRMACIÓN

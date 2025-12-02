@@ -32,15 +32,16 @@ export function FormularioCliente({
     e.preventDefault();
 
     const datosCliente = {
-      nombre_cliente: nombre.trim(),
-      correo_cliente: correo.trim(),
-      telefono_cliente: telefono.trim(),
-      direccion_cliente: direccion.trim(),
-      metodo_entrega: entrega,
-      fecha_entrega: fechaEntrega,
-      horario_entrega: horario,
-      comentarios: comentarios.trim()
-    };
+  nombre_cliente: nombre.trim(),
+  correo: correo.trim(),
+  telefono: telefono.trim(),
+  direccion: direccion.trim(),
+  entrega: entrega,   
+  fecha_entrega: fechaEntrega,  
+  horario_entrega: horario,
+  comentarios: comentarios.trim()
+};
+
 
     onSubmit(e, datosCliente, seleccionados);
   };

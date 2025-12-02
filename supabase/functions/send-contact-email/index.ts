@@ -10,6 +10,7 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
+  // OPTIONS (CORS)
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -22,10 +23,11 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { customerName, customerEmail, pdfBase64, orderSummaryHtml } =
-      await req.json();
+    // 📩 Datos enviados desde el frontend
+    const { orden_id, pdf_url, nombre_cliente, correo } = await req.json();
 
-    if (!customerName || !customerEmail || !pdfBase64) {
+    // ❌ Validación real
+    if (!orden_id || !pdf_url || !nombre_cliente || !correo) {
       return new Response(
         JSON.stringify({ message: "Faltan campos requeridos." }),
         {
@@ -35,43 +37,42 @@ serve(async (req: Request) => {
       );
     }
 
-    const emailToSend = {
+    // 📧 Email a enviar
+    const emailPayload = {
       from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", customerEmail], // admin + cliente
-      subject: `Nuevo Pedido de ${customerName}`,
+      to: ["jeki18ros@gmail.com", correo], // Admin + cliente
+      subject: `Pedido recibido - Orden ${orden_id}`,
       html: `
-        <h2>Nuevo Pedido</h2>
-        <p><strong>Cliente:</strong> ${customerName}</p>
-        <p><strong>Email:</strong> ${customerEmail}</p>
-        <hr/>
-        ${orderSummaryHtml || "<p>Pedido adjunto en PDF.</p>"}
-      `,
-      attachments: [
-        {
-          filename: "pedido.pdf",
-          content: pdfBase64,
-          encoding: "base64",
-        },
-      ],
+        <h2>Nuevo Pedido Recibido</h2>
+
+        <p><strong>Cliente:</strong> ${nombre_cliente}</p>
+        <p><strong>Email:</strong> ${correo}</p>
+        <p><strong>ID del Pedido:</strong> ${orden_id}</p>
+
+        <p>Puedes descargar el PDF aquí:</p>
+        <p><a href="${pdf_url}" target="_blank">${pdf_url}</a></p>
+
+        <br/>
+        <p>Gracias por su compra.</p>
+      `
     };
 
+    // 📤 Enviar a Resend
     const resendResponse = await fetch(RESEND_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(emailToSend),
+      body: JSON.stringify(emailPayload),
     });
 
     if (!resendResponse.ok) {
-      const resendError = await resendResponse.clone().json();
-      console.error("Error Resend:", resendError);
+      const err = await resendResponse.clone().json();
+      console.error("Resend Error:", err);
 
       return new Response(
-        JSON.stringify({
-          message: "Error al enviar el correo con Resend.",
-        }),
+        JSON.stringify({ message: "Error al enviar correo." }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -80,11 +81,16 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Pedido enviado con éxito." }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ message: "Correo enviado correctamente." }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
     );
-  } catch (error) {
-    console.error("Error en Edge Function:", error);
+
+  } catch (err) {
+    console.error("Error en send-contact-email:", err);
+
     return new Response(
       JSON.stringify({ message: "Error interno del servidor." }),
       {
