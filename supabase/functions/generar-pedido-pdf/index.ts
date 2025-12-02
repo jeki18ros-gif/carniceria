@@ -5,16 +5,22 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://les-aliments-benito.vercel.app",
-  "Access-Control-Allow-Headers": "apikey, content-type, authorization",
+  "Access-Control-Allow-Headers":
+    "apikey, content-type, authorization, x-client-info, x-supabase-api-version",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 serve(async (req: Request) => {
-  // Preflight
+
+  // 🔥 PRE-FLIGHT OPTIONS
   if (req.method === "OPTIONS") {
-    return new Response("ok", { status: 200, headers: corsHeaders });
+    return new Response("ok", {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
+  // ❌ Métodos no permitidos
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({ error: "Método no permitido" }),
@@ -24,9 +30,7 @@ serve(async (req: Request) => {
 
   try {
     const pedido = await req.json();
-
-    const cliente = pedido.cliente;
-    const productos = pedido.productos;
+    const { cliente } = pedido;
 
     if (!cliente?.correo || !cliente?.nombre) {
       return new Response(
@@ -35,43 +39,14 @@ serve(async (req: Request) => {
       );
     }
 
-    if (!productos || productos.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "El pedido no tiene productos" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const productosHTML = productos
-      .map((p) => `
-        <li style="margin-bottom: 8px;">
-          <strong>${p.nombre}</strong><br/>
-          Cant: ${p.cantidad_valor} ${p.cantidad_unidad}<br/>
-          ${p.tipo_corte ? `Tipo de corte: ${p.tipo_corte}<br/>` : ""}
-          ${p.parte ? `Parte: ${p.parte}<br/>` : ""}
-          ${p.estado ? `Estado: ${p.estado}<br/>` : ""}
-          ${p.hueso ? `Hueso: ${p.hueso}<br/>` : ""}
-          ${p.grasa ? `Grasa: ${p.grasa}<br/>` : ""}
-          ${p.empaque ? `Empaque: ${p.empaque}<br/>` : ""}
-          ${p.coccion ? `Cocción: ${p.coccion}<br/>` : ""}
-          ${p.fecha_deseada ? `Fecha deseada: ${p.fecha_deseada}<br/>` : ""}
-          ${p.observacion ? `Obs: ${p.observacion}<br/>` : ""}
-        </li>
-      `)
-      .join("");
-
+    // HTML SIMPLE PARA PDF
     const html = `
       <h1>Orden de Pedido</h1>
       <p><strong>Cliente:</strong> ${cliente.nombre}</p>
       <p><strong>Email:</strong> ${cliente.correo}</p>
-      <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
-      <p><strong>Dirección:</strong> ${cliente.direccion}</p>
-      <p><strong>Método de entrega:</strong> ${cliente.entrega}</p>
-      <p><strong>Comentarios:</strong> ${cliente.comentarios || "Ninguno"}</p>
-      <h3>Productos solicitados:</h3>
-      <ul>${productosHTML}</ul>
     `;
 
+    // 🧾 GENERAR PDF
     const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
       method: "POST",
       headers: {
@@ -82,26 +57,26 @@ serve(async (req: Request) => {
     });
 
     if (!pdfResponse.ok) {
-      return new Response(
-        JSON.stringify({ error: "Error generando PDF" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error("Error generando PDF");
     }
 
-    const pdfArrayBuffer = await pdfResponse.arrayBuffer();
-    const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfArrayBuffer)));
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    const pdfBase64 = btoa(
+      String.fromCharCode(...new Uint8Array(pdfBuffer))
+    );
 
+    // 📩 ENVIAR CORREO
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "onboarding@resend.dev",
         to: ["jeki18ros@gmail.com", cliente.correo],
         subject: `Nuevo Pedido de ${cliente.nombre}`,
-        html: "<p>Adjuntamos el PDF de su pedido.</p>",
+        html: "<p>Adjuntamos el PDF del pedido.</p>",
         attachments: [
           {
             filename: "pedido.pdf",
@@ -113,21 +88,18 @@ serve(async (req: Request) => {
     });
 
     if (!emailResponse.ok) {
-      return new Response(
-        JSON.stringify({ error: "Error enviando correo" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error("Error enviando correo");
     }
 
     return new Response(
-      JSON.stringify({ message: "Pedido enviado correctamente" }),
+      JSON.stringify({ message: "PDF generado y correos enviados" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
-  } catch (error) {
-    console.error("Error general:", error);
+  } catch (err) {
+    console.error("Error interno:", err);
     return new Response(
-      JSON.stringify({ error: "Error interno del servidor" }),
+      JSON.stringify({ error: err.message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
