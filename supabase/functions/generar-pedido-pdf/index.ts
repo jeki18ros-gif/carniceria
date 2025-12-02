@@ -1,33 +1,98 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { PDFDocument, StandardFonts, rgb } from "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.esm.min.js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// =========================================
+// ENVIRONMENT VARIABLES
+// =========================================
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
+// Supabase admin client
+const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
+// =========================================
+// CORS
+// =========================================
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "apikey, content-type, authorization",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+// =========================================
+// SERVIDOR PRINCIPAL
+// =========================================
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
   try {
+    // =========================================
+    // 1️⃣ RECIBIR DATA DEL FRONTEND
+    // =========================================
     const pedido = await req.json();
-    const { cliente, productos, fecha_entrega } = pedido;
+    const { cliente, productos, fecha_entrega, comentarios } = pedido;
 
     if (!cliente?.nombre || !cliente?.correo) {
       return new Response(
-        JSON.stringify({ error: "Faltan datos del cliente" }),
+        JSON.stringify({ error: "Datos insuficientes del cliente." }),
         { status: 400, headers: corsHeaders }
       );
     }
 
-    // ============================
-    // 1️⃣ CREAR PDF (PDF-LIB via CDN)
-    // ============================
+    // =========================================
+    // 2️⃣ INSERTAR ORDEN
+    // =========================================
+    const { data: ordenData, error: ordenError } = await supabase
+      .from("ordenes")
+      .insert({
+        nombre_cliente: cliente.nombre,
+        cliente_telefono: cliente.telefono || null,
+        cliente_correo: cliente.correo,
+        cliente_direccion: cliente.direccion || null,
+        entrega: cliente.entrega || null,
+        comentarios: cliente.comentarios || comentarios || null,
+        fecha_entrega: fecha_entrega || null,
+      })
+      .select()
+      .single();
+
+    if (ordenError) throw ordenError;
+
+    const orden_id = ordenData.id;
+
+    // =========================================
+    // 3️⃣ INSERTAR PRODUCTOS
+    // =========================================
+    const productosList = productos.map((p: any) => ({
+      orden_id,
+      producto_id: p.id,
+      nombre: p.nombre,
+      cantidad_valor: p.cantidad_valor,
+      cantidad_unidad: p.cantidad_unidad,
+      tipo_corte: p.tipo_corte,
+      parte: p.parte,
+      estado: p.estado,
+      hueso: p.hueso,
+      grasa: p.grasa,
+      empaque: p.empaque,
+      coccion: p.coccion,
+      fecha_deseada: p.fecha_deseada,
+      observacion: p.observacion,
+    }));
+
+    const { error: productosError } = await supabase
+      .from("ordenes_productos")
+      .insert(productosList);
+
+    if (productosError) throw productosError;
+
+    // =========================================
+    // 4️⃣ GENERAR PDF
+    // =========================================
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 800]);
 
@@ -46,48 +111,68 @@ serve(async (req: Request) => {
       y -= size + 6;
     };
 
-    // Título
-    page.drawText("Orden de Pedido", {
-      x: 200,
-      y,
-      size: 22,
-      font: bold,
-    });
+    // Header
+    page.drawText("Orden de Pedido", { x: 200, y, size: 22, font: bold });
     y -= 40;
 
-    // DATOS DEL CLIENTE
+    // Datos del Cliente
     line("Datos del Cliente", 16, true);
     line(`Nombre: ${cliente.nombre}`);
     line(`Correo: ${cliente.correo}`);
     line(`Teléfono: ${cliente.telefono || "No indicado"}`);
     line(`Dirección: ${cliente.direccion || "No indicada"}`);
-    line(`Tipo de entrega: ${cliente.entrega || "No indicado"}`);
-    line(`Fecha de entrega: ${fecha_entrega || "No indicada"}`);
+    line(`Entrega: ${cliente.entrega || "No indicado"}`);
+    line(`Fecha de Entrega: ${fecha_entrega || "No indicada"}`);
     line(`Comentarios: ${cliente.comentarios || "Ninguno"}`);
 
     y -= 10;
 
-    // PRODUCTOS
+    // Productos
     line("Productos Solicitados", 16, true);
-
     productos.forEach((p: any, index: number) => {
       line(`Producto ${index + 1}: ${p.nombre}`, 14, true);
-
-      Object.entries(p).forEach(([key, value]: [string, any]) => {
-        if (key !== "nombre") {
-          line(`- ${key}: ${value || "N/A"}`);
-        }
+      Object.entries(p).forEach(([key, value]) => {
+        if (key !== "nombre") line(`- ${key}: ${value || "N/A"}`);
       });
-
       y -= 10;
     });
 
     const pdfBytes = await pdfDoc.save();
+
+    // =========================================
+    // 5️⃣ SUBIR PDF A SUPABASE STORAGE
+    // =========================================
+    const filename = `pedido-${orden_id}-${Date.now()}.pdf`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("pedidos-pdf")
+      .upload(filename, pdfBytes, {
+        contentType: "application/pdf",
+      });
+
+    if (uploadError) throw uploadError;
+
+    // Obtener URL pública
+    const { data: publicURL } = supabase
+      .storage
+      .from("pedidos-pdf")
+      .getPublicUrl(filename);
+
+    const pdf_url = publicURL.publicUrl;
+
+    // =========================================
+    // 6️⃣ GUARDAR URL EN TABLA pedidos_pdf
+    // =========================================
+    await supabase.from("pedidos_pdf").insert({
+      orden_id,
+      pdf_url,
+    });
+
+    // =========================================
+    // 7️⃣ ENVIAR CORREO CON RESEND
+    // =========================================
     const pdfBase64 = btoa(String.fromCharCode(...pdfBytes));
 
-    // ============================
-    // 2️⃣ ENVIAR CORREO
-    // ============================
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -97,11 +182,11 @@ serve(async (req: Request) => {
       body: JSON.stringify({
         from: "onboarding@resend.dev",
         to: [cliente.correo],
-        subject: `Pedido de ${cliente.nombre}`,
-        html: "<p>Adjuntamos el PDF de su pedido.</p>",
+        subject: `Pedido registrado - Orden #${orden_id}`,
+        html: `<p>Su pedido fue registrado correctamente. Puede descargar su comprobante en el siguiente enlace:<br><a href="${pdf_url}" target="_blank">Descargar PDF</a></p>`,
         attachments: [
           {
-            filename: "pedido.pdf",
+            filename: `pedido-${orden_id}.pdf`,
             content: pdfBase64,
             encoding: "base64",
           },
@@ -110,16 +195,24 @@ serve(async (req: Request) => {
     });
 
     if (!emailResponse.ok) {
-      console.log("❌ Error Resend:", await emailResponse.text());
+      console.error("Error Resend:", await emailResponse.text());
       throw new Error("No se pudo enviar el correo");
     }
 
+    // =========================================
+    // 8️⃣ RESPUESTA FINAL
+    // =========================================
     return new Response(
-      JSON.stringify({ message: "PDF enviado correctamente" }),
+      JSON.stringify({
+        message: "Pedido procesado correctamente",
+        orden_id,
+        pdf_url,
+      }),
       { status: 200, headers: corsHeaders }
     );
 
   } catch (error) {
+    console.error("❌ Error general:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: corsHeaders }
