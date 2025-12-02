@@ -5,7 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useProductosData } from "./productosData";
 import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useTheme } from "../Theme/ThemeContext"; // Corregida la ruta
+import { useTheme } from "../Theme/ThemeContext";
+
+/* =============================================================
+   🔧 Función utilitaria para normalización de cadenas
+   ============================================================= */
+const normalizeKey = (str) =>
+  str
+    ?.toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, "_");
 
 export function MiniCarritoModal({
   seleccionados,
@@ -18,15 +30,17 @@ export function MiniCarritoModal({
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  
-  // Usamos el hook modificado para obtener los productos de Supabase
-  const { productos } = useProductosData(); 
 
-  // Convertimos seleccionados en array con datos del producto
+  const { productos } = useProductosData();
+
+  /* =============================================================
+     🧾 Armamos el array del carrito (productos + selección)
+     ============================================================= */
   const itemsEnCarrito = Object.entries(seleccionados || {})
     .map(([idStr, data]) => {
       const id = parseInt(idStr);
-      const productoInfo = productos.find((p) => p.id === id); 
+      const productoInfo = productos.find((p) => p.id === id);
+
       return {
         id,
         nombre: productoInfo?.nombre || t("miniCart.unknown_product"),
@@ -38,10 +52,14 @@ export function MiniCarritoModal({
     })
     .filter((item) => item.cantidad);
 
-  // Si no hay nada seleccionado ni visible, no mostrar nada
+  /* =============================================================
+     ⛔ Si está oculto y vacío → no mostrar nada
+     ============================================================= */
   if (!isVisible && itemsEnCarrito.length === 0) return null;
 
-  // 🛒 Botón flotante
+  /* =============================================================
+     🟡 Botón flotante mini carrito (cuando está oculto)
+     ============================================================= */
   if (!isVisible && itemsEnCarrito.length > 0) {
     return (
       <motion.button
@@ -62,77 +80,65 @@ export function MiniCarritoModal({
     );
   }
 
-  // 🔁 Función para traducir valores según la clave JSON
+  /* =============================================================
+     🌎 Función para traducir especificaciones dinámicas
+     ============================================================= */
   const traducirValor = (key, value) => {
     if (!value) return "";
 
-    // Normaliza: minúsculas, sin tildes, con guiones bajos
-    const normalize = (str) =>
-      str
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/\s+/g, "_");
+    let normalized = normalizeKey(value);
 
-    let normalizedValue = normalize(value);
-
-    // 🧩 Correcciones de excepciones más comunes (esto podría simplificarse)
-    const reemplazos = {
-      "a_la_parrilla": "parrilla", "al_vacio": "vacuum", "al_horno": "horno",
-      "bandeja": "tray", "bolsa": "bag", "con_grasa": "con_grasa", 
-      "sin_grasa": "sin_grasa", "con_hueso": "con_hueso", "sin_hueso": "sin_hueso",
-      "fileteado": "fileteado", "en_trozos": "trozos", "en_tiras": "tiras",
-      "entero": "entero", "molido": "molido", "fresco": "fresca",
-      "curado": "curada", 
+    const EXCEPTION_MAP = {
+      a_la_parrilla: "parrilla",
+      al_vacio: "vacuum",
+      al_horno: "horno",
+      bandeja: "tray",
+      bolsa: "bag",
+      con_grasa: "con_grasa",
+      sin_grasa: "sin_grasa",
+      con_hueso: "con_hueso",
+      sin_hueso: "sin_hueso",
+      fileteado: "fileteado",
+      en_trozos: "trozos",
+      en_tiras: "tiras",
+      entero: "entero",
+      molido: "molido",
+      fresco: "fresca",
+      curado: "curada",
     };
 
-    if (reemplazos[normalizedValue]) {
-      normalizedValue = reemplazos[normalizedValue];
+    if (EXCEPTION_MAP[normalized]) {
+      normalized = EXCEPTION_MAP[normalized];
     }
 
-    switch (key) {
-      case "tipoCorte":
-        return t(
-          `detalleProductoModal.sections.presentacion.tipo_corte.options.${normalizedValue}`,
-          value
-        );
-      case "parte":
-        return t(
-          `detalleProductoModal.sections.presentacion.parte_especifica.options.${normalizedValue}`,
-          value
-        );
-      case "estado":
-        return t(
-          `detalleProductoModal.sections.estado_producto.estado.options.${normalizedValue}`,
-          value
-        );
-      case "hueso":
-        return t(
-          `detalleProductoModal.sections.estado_producto.hueso.options.${normalizedValue}`,
-          value
-        );
-      case "grasa":
-        return t(
-          `detalleProductoModal.sections.empaque_grasa.grasa.options.${normalizedValue}`,
-          value
-        );
-      case "empaque":
-        return t(
-          `detalleProductoModal.sections.empaque_grasa.empaque.options.${normalizedValue}`,
-          value
-        );
-      case "coccion":
-        return t(
-          `detalleProductoModal.sections.tipo_coccion.options.${normalizedValue}`,
-          value
-        );
-      default:
-        return value;
+    const PATHS = {
+      tipoCorte:
+        "detalleProductoModal.sections.presentacion.tipo_corte.options.",
+      parte:
+        "detalleProductoModal.sections.presentacion.parte_especifica.options.",
+      estado:
+        "detalleProductoModal.sections.estado_producto.estado.options.",
+      hueso:
+        "detalleProductoModal.sections.estado_producto.hueso.options.",
+      grasa:
+        "detalleProductoModal.sections.empaque_grasa.grasa.options.",
+      empaque:
+        "detalleProductoModal.sections.empaque_grasa.empaque.options.",
+      coccion:
+        "detalleProductoModal.sections.tipo_coccion.options.",
+    };
+
+    // Si existe key en PATHS → usar traducción
+    if (PATHS[key]) {
+      return t(PATHS[key] + normalized, value);
     }
+
+    return value;
   };
 
-  // 🧾 Modal del carrito
+  /* =============================================================
+     🧾 Render del modal
+     ============================================================= */
   return (
     <AnimatePresence>
       {isVisible && itemsEnCarrito.length > 0 && (
@@ -150,7 +156,12 @@ export function MiniCarritoModal({
             y: 0,
             transition: { duration: 0.4 },
           }}
-          exit={{ opacity: 0, scaleY: 0, y: 50, transition: { duration: 0.3 } }}
+          exit={{
+            opacity: 0,
+            scaleY: 0,
+            y: 50,
+            transition: { duration: 0.3 },
+          }}
           style={{
             transformOrigin: "bottom",
             maxHeight: "90vh",
@@ -158,13 +169,12 @@ export function MiniCarritoModal({
             flexDirection: "column",
           }}
         >
-          {/* Botón de cerrar */}
+          {/* Cerrar */}
           <button
             onClick={onToggleVisibility}
             className={`absolute top-3 right-3 p-1 rounded-full transition-colors duration-200 ${
               isDark ? "hover:bg-gray-800" : "hover:bg-gray-100"
             }`}
-            title={t("miniCart.close")}
           >
             <XMarkIcon className="w-5 h-5 text-gray-500" />
           </button>
@@ -179,7 +189,7 @@ export function MiniCarritoModal({
             {t("miniCart.title")} ({itemsEnCarrito.length})
           </h3>
 
-          {/* Lista de items */}
+          {/* Items */}
           <div
             className="flex flex-col gap-4 px-4 py-4 overflow-y-auto"
             style={{ flexGrow: 1 }}
@@ -188,7 +198,7 @@ export function MiniCarritoModal({
               <div
                 key={item.id}
                 className={clsx(
-                  "flex items-start gap-3 border-b border-dashed pb-4 transition-colors duration-300",
+                  "flex items-start gap-3 border-b border-dashed pb-4",
                   isDark ? "border-gray-700" : "border-gray-300"
                 )}
               >
@@ -197,32 +207,39 @@ export function MiniCarritoModal({
                   alt={item.nombre}
                   className="w-14 h-14 object-cover rounded-lg flex-shrink-0 shadow-md"
                   onError={(e) => {
-                    e.target.onerror = null;
                     e.target.src =
                       "https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item";
                   }}
                 />
+
                 <div className="flex-grow min-w-0">
-                  <p className="font-semibold text-base leading-tight truncate">
+                  <p className="font-semibold text-base truncate">
                     {item.nombre}
                   </p>
-                  {/* ✅ MEJORA: Incluir la unidad traducida */}
+
+                  {/* Cantidad + unidad traducida */}
                   <p className="text-sm text-yellow-500 mt-0.5">
                     {t("miniCart.quantity")}{" "}
-<span className="font-bold">
-  {item.cantidad} {t(`detalleProductoModal.quantity.units.${(item.cantidadUnidad || '').toLowerCase()}`)}
-</span>
+                    <span className="font-bold">
+                      {item.cantidad}{" "}
+                      {t(
+                        `detalleProductoModal.quantity.units.${normalizeKey(
+                          item.cantidadUnidad
+                        )}`,
+                        item.cantidadUnidad
+                      )}
+                    </span>
                   </p>
 
                   {/* Especificaciones */}
                   {Object.entries(item.especificaciones || {}).map(
                     ([key, value]) =>
-                      value &&
-                      key !== "observacion" && (
+                      key !== "observacion" &&
+                      value && (
                         <p
                           key={key}
                           className={`text-xs mt-0.5 truncate ${
-                            isDark ? "text-gray-400" : "text-gray-500"
+                            isDark ? "text-gray-400" : "text-gray-600"
                           }`}
                         >
                           {t(`miniCart.fields.${key}`, key)}:{" "}
@@ -236,7 +253,7 @@ export function MiniCarritoModal({
                   {item.especificaciones?.observacion && (
                     <p
                       className={`text-xs italic mt-0.5 truncate ${
-                        isDark ? "text-gray-400" : "text-gray-500"
+                        isDark ? "text-gray-400" : "text-gray-600"
                       }`}
                     >
                       {t("miniCart.obs_prefix")}{" "}
@@ -245,18 +262,18 @@ export function MiniCarritoModal({
                   )}
                 </div>
 
-                {/* Botones de acción */}
-                <div className="flex flex-col gap-1 items-center flex-shrink-0 ml-2">
+                {/* Acciones */}
+                <div className="flex flex-col gap-1 items-center ml-2">
                   <button
                     onClick={() => onEditItem(item)}
-                    className="text-blue-500 hover:text-blue-400 text-sm font-medium transition-colors"
+                    className="text-blue-500 hover:text-blue-400 text-sm font-medium"
                   >
                     {t("miniCart.edit")}
                   </button>
+
                   <button
                     onClick={() => onRemoveItem(item.id)}
-                    className="text-red-500 hover:text-red-400 transition-colors"
-                    title={t("miniCart.delete_title")}
+                    className="text-red-500 hover:text-red-400"
                   >
                     <XMarkIcon className="w-5 h-5" />
                   </button>
@@ -265,16 +282,16 @@ export function MiniCarritoModal({
             ))}
           </div>
 
-          {/* Botón Continuar */}
+          {/* Continuar */}
           <div
             className={clsx(
-              "px-4 py-3 border-t flex flex-col gap-2 transition-colors duration-300",
+              "px-4 py-3 border-t",
               isDark ? "border-gray-700" : "border-gray-200"
             )}
           >
             <button
               onClick={onContinue}
-              className="py-2 rounded-lg font-semibold bg-yellow-500 hover:bg-yellow-400 text-black transition-colors shadow-md"
+              className="w-full py-2 rounded-lg font-semibold bg-yellow-500 hover:bg-yellow-400 text-black shadow-md"
             >
               {t("miniCart.continue")}
             </button>
