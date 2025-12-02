@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
-const PDFSHIFT_API_KEY = Deno.env.get("PDF_API_KEY");
+const PDFSHIFT_API_KEY = Deno.env.get("PDFSHIFT_API_KEY");
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
@@ -10,7 +10,6 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
-
   // Preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { status: 200, headers: corsHeaders });
@@ -73,7 +72,6 @@ serve(async (req: Request) => {
       <ul>${productosHTML}</ul>
     `;
 
-    // 🟦 GENERAR PDF
     const pdfResponse = await fetch("https://api.pdfshift.io/v3/convert/html", {
       method: "POST",
       headers: {
@@ -84,9 +82,6 @@ serve(async (req: Request) => {
     });
 
     if (!pdfResponse.ok) {
-      const errText = await pdfResponse.text();
-      console.error("PDFShift error:", errText);
-
       return new Response(
         JSON.stringify({ error: "Error generando PDF" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -96,7 +91,6 @@ serve(async (req: Request) => {
     const pdfArrayBuffer = await pdfResponse.arrayBuffer();
     const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfArrayBuffer)));
 
-    // 🟥 ENVIAR EMAIL
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -119,24 +113,19 @@ serve(async (req: Request) => {
     });
 
     if (!emailResponse.ok) {
-      const errEmail = await emailResponse.text();
-      console.error("Resend error:", errEmail);
-
       return new Response(
         JSON.stringify({ error: "Error enviando correo" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // 🟢 TODO OK
     return new Response(
-      JSON.stringify({ ok: true }),
+      JSON.stringify({ message: "Pedido enviado correctamente" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
   } catch (error) {
     console.error("Error general:", error);
-
     return new Response(
       JSON.stringify({ error: "Error interno del servidor" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
