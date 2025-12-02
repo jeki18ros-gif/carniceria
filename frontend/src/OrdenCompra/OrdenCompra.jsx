@@ -145,21 +145,22 @@ export default function OrdenDeCompra() {
       cantidad_valor,
       cantidad_unidad,
       tipo_corte: item.especificaciones?.tipoCorte || null,
-      parte: item.especificificaciones?.parte || null,
-      estado: item.especificificaciones?.estado || null,
-      hueso: item.especificificaciones?.hueso || null,
-      grasa: item.especificificaciones?.grasa || null,
-      empaque: item.especificificaciones?.empaque || null,
-      coccion: item.especificificaciones?.coccion || null,
-      fecha_deseada: item.especificificaciones?.fechaDeseada || null,
-      observacion: item.especificificaciones?.observacion || null,
+     parte: item.especificaciones?.parte || null,
+estado: item.especificaciones?.estado || null,
+hueso: item.especificaciones?.hueso || null,
+grasa: item.especificaciones?.grasa || null,
+empaque: item.especificaciones?.empaque || null,
+coccion: item.especificaciones?.coccion || null,
+fecha_deseada: item.especificaciones?.fechaDeseada || null,
+observacion: item.especificaciones?.observacion || null,
+
     };
   });
 
   // 🔹 SE AGREGA EL CAMPO CORRECTO: nombre_cliente
   const pedidoFinal = {
     cliente: {
-      nombre_cliente: datosCliente.nombre,
+      nombre_cliente: datosCliente.nombre_cliente || datosCliente.nombre,
       telefono: datosCliente.telefono,
       correo: datosCliente.correo,
       direccion: datosCliente.direccion,
