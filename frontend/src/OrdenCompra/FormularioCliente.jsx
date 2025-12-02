@@ -26,21 +26,22 @@ export function FormularioCliente({
   const { theme } = useTheme();
   const { t } = useTranslation();
 
+  const hoy = new Date().toISOString().split("T")[0];
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const datosCliente = {
-      nombre_cliente: nombre,
-      correo_cliente: correo,
-      telefono_cliente: telefono,
-      direccion_cliente: direccion,
+      nombre_cliente: nombre.trim(),
+      correo_cliente: correo.trim(),
+      telefono_cliente: telefono.trim(),
+      direccion_cliente: direccion.trim(),
       metodo_entrega: entrega,
       fecha_entrega: fechaEntrega,
       horario_entrega: horario,
-      comentarios
+      comentarios: comentarios.trim()
     };
 
-    // Enviamos datosCliente + seleccionados al componente padre.
     onSubmit(e, datosCliente, seleccionados);
   };
 
@@ -51,6 +52,8 @@ export function FormularioCliente({
     ${isDark ? 'bg-gray-800 border-gray-700 text-gray-100' 
              : 'bg-white border-gray-300 text-gray-900'}
   `;
+
+  const soloNumeros = (value) => value.replace(/[^0-9]/g, '');
 
   return (
     <div
@@ -96,9 +99,12 @@ export function FormularioCliente({
         <input
           required
           type="tel"
+          inputMode="numeric"
+          pattern="[0-9]+"
           placeholder={t('formularioCliente.fields.phone.placeholder')}
           value={telefono}
-          onChange={(e) => setTelefono(e.target.value)}
+          onChange={(e) => setTelefono(soloNumeros(e.target.value))}
+          onPaste={(e) => e.preventDefault()}
           className={inputStyle}
         />
 
@@ -139,6 +145,7 @@ export function FormularioCliente({
         <input
           required
           type="date"
+          min={hoy}
           value={fechaEntrega}
           onChange={(e) => setFechaEntrega(e.target.value)}
           className={`${inputStyle} md:col-span-2`}
@@ -191,9 +198,6 @@ export function FormularioCliente({
                     src={productoInfo?.imagen || 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item'}
                     alt={productoInfo?.nombre || item.nombre}
                     className="w-14 h-14 object-cover rounded-lg flex-shrink-0"
-                    onError={(e) => {
-                      e.target.src = 'https://placehold.co/80x80/AAAAAA/FFFFFF?text=Item';
-                    }}
                   />
 
                   <div className="flex-grow min-w-0">
@@ -205,7 +209,6 @@ export function FormularioCliente({
                   <button
                     onClick={() => onRemoveItem(id)}
                     className="text-red-500 hover:text-red-400 transition-colors font-bold text-xl p-1 leading-none"
-                    title={t('formularioCliente.actions.delete_item')}
                   >
                     ×
                   </button>

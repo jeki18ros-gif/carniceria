@@ -1,4 +1,4 @@
-// ========= generar-pedido-pdf (CORREGIDA) ========= //
+// ========= generar-pedido-pdf (CORREGIDA & SINCRONIZADA) ========= //
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { PDFDocument, StandardFonts } from "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm";
@@ -76,46 +76,88 @@ serve(async (req: Request) => {
         producto_id: p.id,
         cantidad_valor: p.cantidad_valor,
         cantidad_unidad: p.cantidad_unidad,
+
+        // ESPECIFICACIONES SINCRONIZADAS
+        tipo_corte: p.tipo_corte,
+        parte: p.parte,
+        estado: p.estado,
+        hueso: p.hueso,
+        grasa: p.grasa,
+        empaque: p.empaque,
+        coccion: p.coccion,
+        fecha_deseada: p.fecha_deseada,
+        observacion: p.observacion,
       });
     }
 
     // ===== GENERAR PDF =====
 
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 800]);
+    let page = pdfDoc.addPage([600, 800]);
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     let y = 760;
 
-    page.drawText("Pedido del Cliente", { x: 50, y, size: 22, font });
-    y -= 40;
+    const drawPageHeader = () => {
+      page.drawText("Pedido del Cliente", { x: 50, y, size: 22, font });
+      y -= 40;
 
-    page.drawText(`Nombre: ${cliente.nombre_cliente}`, { x: 50, y, size: 14, font });
-    y -= 20;
-
-    if (cliente.telefono) {
-      page.drawText(`Teléfono: ${cliente.telefono}`, { x: 50, y, size: 14, font });
+      page.drawText(`Nombre: ${cliente.nombre_cliente}`, { x: 50, y, size: 14, font });
       y -= 20;
-    }
 
-    page.drawText(`Correo: ${cliente.correo}`, { x: 50, y, size: 14, font });
-    y -= 30;
-
-    page.drawText("Productos:", { x: 50, y, size: 16, font });
-    y -= 20;
-
-    for (const p of productos) {
-      if (y < 80) {
-        pdfDoc.addPage();
-        y = 760;
+      if (cliente.telefono) {
+        page.drawText(`Teléfono: ${cliente.telefono}`, { x: 50, y, size: 14, font });
+        y -= 20;
       }
 
-      page.drawText(
-        `• ${p.nombre} — ${p.cantidad_valor} ${p.cantidad_unidad}`,
-        { x: 50, y, size: 12, font }
-      );
+      page.drawText(`Correo: ${cliente.correo}`, { x: 50, y, size: 14, font });
+      y -= 30;
 
+      page.drawText("Productos:", { x: 50, y, size: 16, font });
       y -= 20;
+    };
+
+    drawPageHeader();
+
+    for (const p of productos) {
+      if (y < 120) {
+        page = pdfDoc.addPage([600, 800]);
+        y = 760;
+        drawPageHeader();
+      }
+
+      page.drawText(`• ${p.nombre} — ${p.cantidad_valor} ${p.cantidad_unidad}`, {
+        x: 50,
+        y,
+        size: 12,
+        font,
+      });
+
+      y -= 15;
+
+      const specs = [
+        p.tipo_corte && `Corte: ${p.tipo_corte}`,
+        p.parte && `Parte: ${p.parte}`,
+        p.estado && `Estado: ${p.estado}`,
+        p.hueso && `Hueso: ${p.hueso}`,
+        p.grasa && `Grasa: ${p.grasa}`,
+        p.empaque && `Empaque: ${p.empaque}`,
+        p.coccion && `Cocción: ${p.coccion}`,
+        p.fecha_deseada && `Fecha deseada: ${p.fecha_deseada}`,
+        p.observacion && `Obs: ${p.observacion}`,
+      ].filter(Boolean);
+
+      for (const s of specs) {
+        if (y < 80) {
+          page = pdfDoc.addPage([600, 800]);
+          y = 760;
+        }
+
+        page.drawText(`   - ${s}`, { x: 60, y, size: 10, font });
+        y -= 12;
+      }
+
+      y -= 10;
     }
 
     page.drawText(`TOTAL GENERAL: S/ ${totalGeneral}`, {
@@ -126,8 +168,6 @@ serve(async (req: Request) => {
     });
 
     const pdfBytes = await pdfDoc.save();
-
-    // Conversión correcta a base64 para Deno
     const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
 
     // ===== SUBIR PDF =====
@@ -154,41 +194,50 @@ serve(async (req: Request) => {
     // ===== ENVIAR EMAIL (Resend) =====
 
     const orderSummaryHtml = productos
-      .map((p) => `<p>• ${p.nombre} — ${p.cantidad_valor} ${p.cantidad_unidad}</p>`)
+      .map(
+        (p) => `
+        <div style="margin-bottom:10px">
+          <strong>${p.nombre}</strong> — ${p.cantidad_valor} ${p.cantidad_unidad}<br/>
+          ${p.tipo_corte ? `Corte: ${p.tipo_corte}<br/>` : ""}
+          ${p.parte ? `Parte: ${p.parte}<br/>` : ""}
+          ${p.estado ? `Estado: ${p.estado}<br/>` : ""}
+          ${p.hueso ? `Hueso: ${p.hueso}<br/>` : ""}
+          ${p.grasa ? `Grasa: ${p.grasa}<br/>` : ""}
+          ${p.empaque ? `Empaque: ${p.empaque}<br/>` : ""}
+          ${p.coccion ? `Cocción: ${p.coccion}<br/>` : ""}
+          ${p.fecha_deseada ? `Fecha deseada: ${p.fecha_deseada}<br/>` : ""}
+          ${p.observacion ? `Obs: ${p.observacion}<br/>` : ""}
+        </div>
+      `
+      )
       .join("");
 
-    const emailData = {
-      from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", cliente.correo],
-      subject: `Nuevo Pedido de ${cliente.nombre_cliente}`,
-      html: `
-        <h2>Nuevo Pedido Registrado</h2>
-        <p><strong>Cliente:</strong> ${cliente.nombre_cliente}</p>
-        <p><strong>Correo:</strong> ${cliente.correo}</p>
-        <hr/>
-        ${orderSummaryHtml}
-      `,
-      attachments: [
-        {
-          filename: "pedido.pdf",
-          content: pdfBase64,
-          encoding: "base64",
-        },
-      ],
-    };
-
-    const sendEmail = await fetch(RESEND_ENDPOINT, {
+    await fetch(RESEND_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify(emailData),
+      body: JSON.stringify({
+        from: "onboarding@resend.dev",
+        to: ["jeki18ros@gmail.com", cliente.correo],
+        subject: `Nuevo Pedido de ${cliente.nombre_cliente}`,
+        html: `
+          <h2>Nuevo Pedido Registrado</h2>
+          <p><strong>Cliente:</strong> ${cliente.nombre_cliente}</p>
+          <p><strong>Correo:</strong> ${cliente.correo}</p>
+          <hr/>
+          ${orderSummaryHtml}
+        `,
+        attachments: [
+          {
+            filename: "pedido.pdf",
+            content: pdfBase64,
+            encoding: "base64",
+          },
+        ],
+      }),
     });
-
-    if (!sendEmail.ok) {
-      console.error("Error al enviar correo:", await sendEmail.text());
-    }
 
     // ===== RESPUESTA FINAL =====
 
@@ -200,7 +249,6 @@ serve(async (req: Request) => {
       }),
       { status: 200, headers: corsHeaders }
     );
-
   } catch (err) {
     console.error("ERROR GENERAL:", err);
     return new Response(

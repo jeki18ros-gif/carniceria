@@ -176,17 +176,20 @@ observacion: item.especificaciones?.observacion || null,
     // ===========================================================
     // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
     // ===========================================================
-    const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify(pedidoFinal),
-      }
-    );
+const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+           ...pedidoFinal,
+           totalGeneral: 0,
+        }),
+      }
+    );
 
     const data = await response.json();
 
@@ -197,23 +200,6 @@ observacion: item.especificaciones?.observacion || null,
     // ===========================================================
     // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
     // ===========================================================
-    const emailResponse = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-          customerName: data.customerName,
-          customerEmail: data.customerEmail,
-          pdfBase64: data.pdfBase64,
-          pdfUrl: data.pdf_url,
-          orderSummaryHtml: data.orderSummaryHtml,
-        }),
-      }
-    );
 
     const emailData = await emailResponse.json();
 
