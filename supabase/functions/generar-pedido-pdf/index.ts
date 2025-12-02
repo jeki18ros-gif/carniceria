@@ -56,7 +56,7 @@ serve(async (req: Request) => {
     y -= 40;
 
     // DATOS DEL CLIENTE
-    line("📌 Datos del Cliente", 16, true);
+    line("Datos del Cliente", 16, true);
     line(`Nombre: ${cliente.nombre}`);
     line(`Correo: ${cliente.correo}`);
     line(`Teléfono: ${cliente.telefono || "No indicado"}`);
@@ -68,7 +68,7 @@ serve(async (req: Request) => {
     y -= 10;
 
     // PRODUCTOS
-    line("📦 Productos Solicitados", 16, true);
+    line("Productos Solicitados", 16, true);
 
     productos.forEach((p: any, index: number) => {
       line(`Producto ${index + 1}: ${p.nombre}`, 14, true);
