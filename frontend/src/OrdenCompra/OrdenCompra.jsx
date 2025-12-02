@@ -145,17 +145,18 @@ export default function OrdenDeCompra() {
       cantidad_valor,
       cantidad_unidad,
       tipo_corte: item.especificaciones?.tipoCorte || null,
-      parte: item.especificaciones?.parte || null,
-      estado: item.especificaciones?.estado || null,
-      hueso: item.especificaciones?.hueso || null,
-      grasa: item.especificaciones?.grasa || null,
-      empaque: item.especificaciones?.empaque || null,
-      coccion: item.especificaciones?.coccion || null,
-      fecha_deseada: item.especificaciones?.fechaDeseada || null,
-      observacion: item.especificaciones?.observacion || null,
+      parte: item.especificificaciones?.parte || null,
+      estado: item.especificificaciones?.estado || null,
+      hueso: item.especificificaciones?.hueso || null,
+      grasa: item.especificificaciones?.grasa || null,
+      empaque: item.especificificaciones?.empaque || null,
+      coccion: item.especificificaciones?.coccion || null,
+      fecha_deseada: item.especificificaciones?.fechaDeseada || null,
+      observacion: item.especificificaciones?.observacion || null,
     };
   });
 
+  // 🔹 SE AGREGA EL CAMPO CORRECTO: nombre_cliente
   const pedidoFinal = {
     cliente: {
       nombre_cliente: datosCliente.nombre,
@@ -171,6 +172,9 @@ export default function OrdenDeCompra() {
   };
 
   try {
+    // ===========================================================
+    // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
+    // ===========================================================
     const response = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
       {
@@ -189,6 +193,37 @@ export default function OrdenDeCompra() {
       throw new Error(data.error || "Error al procesar el pedido");
     }
 
+    // ===========================================================
+    // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
+    // ===========================================================
+    const emailResponse = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          pdfBase64: data.pdfBase64,
+          pdfUrl: data.pdf_url,
+          orderSummaryHtml: data.orderSummaryHtml,
+        }),
+      }
+    );
+
+    const emailData = await emailResponse.json();
+
+    if (!emailResponse.ok) {
+      console.error("Error email:", emailData);
+      alert("El pedido se generó, pero hubo un error al enviar el correo.");
+    }
+
+    // ===========================================================
+    // 3️⃣ MOSTRAR CONFIRMACIÓN
+    // ===========================================================
     setDatosDelPedido({
       ...pedidoFinal,
       orden_id: data.orden_id,
@@ -205,6 +240,7 @@ export default function OrdenDeCompra() {
     setCargandoPedido(false);
   }
 };
+
 
 
   // ============================

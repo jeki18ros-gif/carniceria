@@ -168,36 +168,37 @@ serve(async (req: Request) => {
       pdf_url,
     });
 
-    // =========================================
-    // 7️⃣ ENVIAR CORREO CON RESEND
-    // =========================================
-    const pdfBase64 = btoa(String.fromCharCode(...pdfBytes));
+   // =========================================
+// 7️⃣ PREPARAMOS LOS DATOS PARA EL FRONTEND
+// =========================================
 
-    const emailResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "onboarding@resend.dev",
-        to: [cliente.correo],
-        subject: `Pedido registrado - Orden #${orden_id}`,
-        html: `<p>Su pedido fue registrado correctamente. Puede descargar su comprobante en el siguiente enlace:<br><a href="${pdf_url}" target="_blank">Descargar PDF</a></p>`,
-        attachments: [
-          {
-            filename: `pedido-${orden_id}.pdf`,
-            content: pdfBase64,
-            encoding: "base64",
-          },
-        ],
-      }),
-    });
+const pdfBase64 = btoa(String.fromCharCode(...pdfBytes));
 
-    if (!emailResponse.ok) {
-      console.error("Error Resend:", await emailResponse.text());
-      throw new Error("No se pudo enviar el correo");
-    }
+const orderSummaryHtml = `
+  <h2>Pedido registrado</h2>
+  <p><strong>Cliente:</strong> ${cliente.nombre}</p>
+  <p><strong>Email:</strong> ${cliente.correo}</p>
+  <p><strong>Fecha de entrega:</strong> ${fecha_entrega}</p>
+  <hr/>
+  <h3>Productos</h3>
+  <ul>
+    ${productos.map(p => `<li>${p.nombre}</li>`).join("")}
+  </ul>
+`;
+
+return new Response(
+  JSON.stringify({
+    message: "Pedido generado",
+    orden_id,
+    pdf_url,
+    pdfBase64,
+    customerName: cliente.nombre,
+    customerEmail: cliente.correo,
+    orderSummaryHtml
+  }),
+  { status: 200, headers: corsHeaders }
+);
+
 
     // =========================================
     // 8️⃣ RESPUESTA FINAL
