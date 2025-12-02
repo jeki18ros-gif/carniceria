@@ -30,14 +30,15 @@ export function FormularioCliente({
     e.preventDefault();
     const datosCliente = {
   nombre_cliente: nombre,
-  telefono,
-  correo,
-  direccion,
-  entrega,
-  fechaEntrega,
-  horario,
+  correo_cliente: correo,
+  telefono_cliente: telefono,
+  direccion_cliente: direccion,
+  metodo_entrega: entrega,
+  fecha_entrega: fechaEntrega,
+  horario_entrega: horario,
   comentarios
 };
+
 
     // CAMBIO AQUÍ: Enviamos datosCliente y seleccionados al padre.
     onSubmit(e, datosCliente, seleccionados);
