@@ -29,10 +29,10 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { productos,cliente } = await req.json();
+    // --- parse request
+    const { productos, cliente } = await req.json();
 
     // ===== VALIDACIÓN =====
-
     if (!cliente?.nombre_cliente || !cliente?.correo) {
       return new Response(
         JSON.stringify({ message: "Datos insuficientes del cliente." }),
@@ -48,29 +48,30 @@ serve(async (req: Request) => {
     }
 
     // ===== CREAR ORDEN =====
-
     const { data: orden, error: ordenError } = await supabase
       .from("ordenes")
       .insert({
         nombre_cliente: cliente.nombre_cliente,
         telefono: cliente.telefono || null,
         correo: cliente.correo,
-        descripcion: productos.map((p) => p.nombre).join(", "),
+        descripcion: productos.map((p: any) => p.nombre).join(", "),
       })
       .select()
       .single();
 
     if (ordenError) {
       console.error("Error insertando orden:", ordenError);
-      throw new Error("No se pudo registrar la orden");
+      return new Response(
+        JSON.stringify({ message: "No se pudo registrar la orden.", detail: ordenError }),
+        { status: 500, headers: corsHeaders }
+      );
     }
 
-    const orden_id = orden.id;
+    const orden_id = (orden as any).id;
 
     // ===== GUARDAR PRODUCTOS =====
-
     for (const p of productos) {
-      await supabase.from("ordenes_productos").insert({
+      const { error: prodError } = await supabase.from("ordenes_productos").insert({
         orden_id,
         producto_id: p.id,
         cantidad_valor: p.cantidad_valor,
@@ -87,10 +88,14 @@ serve(async (req: Request) => {
         fecha_deseada: p.fecha_deseada,
         observacion: p.observacion,
       });
+
+      if (prodError) {
+        console.error("Error insertando producto en ordenes_productos:", prodError, "producto:", p);
+        // no abortamos toda la operación, pero lo reportamos
+      }
     }
 
     // ===== GENERAR PDF =====
-
     const pdfDoc = await PDFDocument.create();
     let page = pdfDoc.addPage([600, 800]);
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -159,35 +164,49 @@ serve(async (req: Request) => {
       y -= 10;
     }
 
-    const pdfBytes = await pdfDoc.save();
+    const pdfBytes = await pdfDoc.save(); // Uint8Array
+
+    // convertir a base64 para adjunto
+    // Nota: en Deno, String.fromCharCode sobre grandes buffers puede fallar en extremo; si tu PDF es muy grande
+    // podrías necesitar una función más robusta. Para la mayoría de PDFs pequeños/medianos esto funciona.
     const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
 
     // ===== SUBIR PDF =====
-
     const fileName = `pedido_${orden_id}.pdf`;
-    const { error: uploadError } = await supabase.storage
+
+    // create a Blob (compatible upload body)
+    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from("pdfs")
-      .upload(fileName, pdfBytes, {
+      .upload(fileName, pdfBlob, {
         contentType: "application/pdf",
         upsert: true,
       });
 
     if (uploadError) {
       console.error("Error subiendo PDF:", uploadError);
-      throw new Error("No se pudo subir el PDF");
+      return new Response(
+        JSON.stringify({ message: "No se pudo subir el PDF", detail: uploadError }),
+        { status: 500, headers: corsHeaders }
+      );
     }
 
-    const { data: urlData } = supabase.storage
+    // ===== OBTENER URL PÚBLICA =====
+    const { data: urlData, error: urlError } = await supabase.storage
       .from("pdfs")
       .getPublicUrl(fileName);
 
-    const pdf_url = urlData.publicUrl;
+    if (urlError) {
+      console.error("Error obteniendo publicUrl:", urlError);
+    }
+
+    const pdf_url = urlData?.publicUrl || null;
 
     // ===== ENVIAR EMAIL (Resend) =====
-
     const orderSummaryHtml = productos
       .map(
-        (p) => `
+        (p: any) => `
         <div style="margin-bottom:10px">
           <strong>${p.nombre}</strong> — ${p.cantidad_valor} ${p.cantidad_unidad}<br/>
           ${p.tipo_corte ? `Corte: ${p.tipo_corte}<br/>` : ""}
@@ -204,35 +223,40 @@ serve(async (req: Request) => {
       )
       .join("");
 
-    await fetch(RESEND_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "onboarding@resend.dev",
-        to: ["jeki18ros@gmail.com", cliente.correo],
-        subject: `Nuevo Pedido de ${cliente.nombre_cliente}`,
-        html: `
-          <h2>Nuevo Pedido Registrado</h2>
-          <p><strong>Cliente:</strong> ${cliente.nombre_cliente}</p>
-          <p><strong>Correo:</strong> ${cliente.correo}</p>
-          <hr/>
-          ${orderSummaryHtml}
-        `,
-        attachments: [
-          {
-            filename: "pedido.pdf",
-            content: pdfBase64,
-            encoding: "base64",
-          },
-        ],
-      }),
-    });
+    if (!RESEND_API_KEY) {
+      console.warn("RESEND_API_KEY no está definido; se omitirá el envío de correo.");
+    } else {
+      await fetch(RESEND_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: "onboarding@resend.dev",
+          to: ["jeki18ros@gmail.com", cliente.correo],
+          subject: `Nuevo Pedido de ${cliente.nombre_cliente}`,
+          html: `
+            <h2>Nuevo Pedido Registrado</h2>
+            <p><strong>Cliente:</strong> ${cliente.nombre_cliente}</p>
+            <p><strong>Correo:</strong> ${cliente.correo}</p>
+            <hr/>
+            ${orderSummaryHtml}
+          `,
+          attachments: [
+            {
+              filename: "pedido.pdf",
+              content: pdfBase64,
+              encoding: "base64",
+            },
+          ],
+        }),
+      }).catch((err) => {
+        console.error("Error enviando email con Resend:", err);
+      });
+    }
 
     // ===== RESPUESTA FINAL =====
-
     return new Response(
       JSON.stringify({
         message: "Pedido generado y enviado correctamente.",
@@ -241,10 +265,10 @@ serve(async (req: Request) => {
       }),
       { status: 200, headers: corsHeaders }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error("ERROR GENERAL:", err);
     return new Response(
-      JSON.stringify({ message: "Error interno del servidor", error: err.message }),
+      JSON.stringify({ message: "Error interno del servidor", error: err?.message ?? String(err) }),
       { status: 500, headers: corsHeaders }
     );
   }
