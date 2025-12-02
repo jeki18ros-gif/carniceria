@@ -29,7 +29,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { productos, totalGeneral, cliente } = await req.json();
+    const { productos,cliente } = await req.json();
 
     // ===== VALIDACIÓN =====
 
@@ -56,7 +56,6 @@ serve(async (req: Request) => {
         telefono: cliente.telefono || null,
         correo: cliente.correo,
         descripcion: productos.map((p) => p.nombre).join(", "),
-        total_general: totalGeneral,
       })
       .select()
       .single();
@@ -159,13 +158,6 @@ serve(async (req: Request) => {
 
       y -= 10;
     }
-
-    page.drawText(`TOTAL GENERAL: S/ ${totalGeneral}`, {
-      x: 50,
-      y: y - 20,
-      size: 16,
-      font,
-    });
 
     const pdfBytes = await pdfDoc.save();
     const pdfBase64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));

@@ -24,10 +24,7 @@ export default function OrdenDeCompra() {
   const [view, setView] = useState(() => {
     return localStorage.getItem("view") || "productos";
   });
-
-  // ============================
   //   THEME DETECTION
-  // ============================
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
     setTheme(storedTheme === "dark" ? "dark" : "light");
@@ -53,10 +50,8 @@ export default function OrdenDeCompra() {
   useEffect(() => {
     localStorage.setItem("view", view);
   }, [view]);
-
-  // ============================
   //      FUNCIONES
-  // ============================
+
   const toggleMiniCarrito = () => setMostrarCarrito((prev) => !prev);
 
   const handleSelectProduct = (producto) => {
@@ -108,10 +103,7 @@ export default function OrdenDeCompra() {
     setView("formulario");
     window.scrollTo(0, 0);
   };
-
-  // ============================
   //   DESCARGAR PDF DESDE BACKEND
-  // ============================
   const descargarPDF = async (url) => {
     const link = document.createElement("a");
     link.href = url;
@@ -122,9 +114,7 @@ export default function OrdenDeCompra() {
     link.remove();
   };
 
-  // ============================
   //   ENVIAR PEDIDO FINAL
-  // ============================
  const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
   e.preventDefault();
 
@@ -157,7 +147,6 @@ observacion: item.especificaciones?.observacion || null,
     };
   });
 
-  // 🔹 SE AGREGA EL CAMPO CORRECTO: nombre_cliente
   const pedidoFinal = {
     cliente: {
       nombre_cliente: datosCliente.nombre_cliente || datosCliente.nombre,
@@ -173,33 +162,30 @@ observacion: item.especificaciones?.observacion || null,
   };
 
   try {
-    // ===========================================================
     // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
-    // ===========================================================
 const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-        },
-        body: JSON.stringify({
-           ...pedidoFinal,
-           totalGeneral: 0,
-        }),
-      }
-    );
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({
+      cliente: pedidoFinal.cliente,
+      productos: productosArray
+    }),
+  }
+);
+
 
     const data = await response.json();
 
     if (!response.ok) {
       throw new Error(data.error || "Error al procesar el pedido");
     }
-
-// ===========================================================
 // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
-// ===========================================================
+
 const emailResponse = await fetch(
   `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`,
   {
@@ -223,11 +209,7 @@ if (!emailResponse.ok) {
   console.error("Error email:", emailData);
   alert("El pedido se generó, pero hubo un error al enviar el correo.");
 }
-
-
-    // ===========================================================
     // 3️⃣ MOSTRAR CONFIRMACIÓN
-    // ===========================================================
     setDatosDelPedido({
       ...pedidoFinal,
       orden_id: data.orden_id,
@@ -244,12 +226,7 @@ if (!emailResponse.ok) {
     setCargandoPedido(false);
   }
 };
-
-
-
-  // ============================
   //   RENDER PRINCIPAL
-  // ============================
   return (
     <div
       className={`min-h-screen flex flex-col pt-24 sm:pt-28 transition-colors duration-300 ${
