@@ -162,7 +162,7 @@ const { data: orden, error: ordenError } = await supabase
     const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
     const { error: uploadError } = await supabase.storage
-      .from("pedido-pdf")
+      .from("pedidos-pdf")
       .upload(fileName, pdfBlob, {
         contentType: "application/pdf",
         upsert: true,
@@ -178,7 +178,7 @@ const { data: orden, error: ordenError } = await supabase
 
     // ===== OBTENER URL PÚBLICA =====
     const { data: urlData, error: urlError } = await supabase.storage
-      .from("pdfs")
+      .from("pedidos-pdf")
       .getPublicUrl(fileName);
 
     if (urlError || !urlData?.publicUrl) {
