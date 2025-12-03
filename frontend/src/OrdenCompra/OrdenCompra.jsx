@@ -195,7 +195,7 @@ const response = await fetch(
 // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
 
 const emailResponse = await fetch(
-  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`,
+  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`,
   {
     method: "POST",
     headers: {
