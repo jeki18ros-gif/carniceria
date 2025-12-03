@@ -140,12 +140,12 @@ const handleAdd = () => {
                   step="any"
                   className={`flex-grow transition-all input-ah-theme ${error ? 'input-error' : 'input-normal'}`}
                 />
-                <select value={cantidadUnidad} onChange={(e) => setCantidadUnidad(e.target.value)} className="w-32 select-ah-theme">
-                  <option value="kg">{t('detalleProductoModal.quantity.units.kg')}</option>
-                  <option value="lb">{t('detalleProductoModal.quantity.units.lb')}</option>
-                  <option value="unidad">{t('detalleProductoModal.quantity.units.units')}</option>
-                  <option value="caja">{t('detalleProductoModal.quantity.units.boxes')}</option>
-                </select>
+            <select value={cantidadUnidad} onChange={(e) => setCantidadUnidad(e.target.value)} className="w-32 select-ah-theme">
+                <option value="kg">{t('detalleProductoModal.quantity.units.kg')}</option>
+                <option value="lb">{t('detalleProductoModal.quantity.units.lb')}</option>
+                <option value="units">{t('detalleProductoModal.quantity.units.units')}</option> 
+                <option value="boxes">{t('detalleProductoModal.quantity.units.boxes')}</option> 
+            </select>
               </div>
               {error && <p className="text-sm text-red-500 mt-1 mb-4">{t('detalleProductoModal.quantity.invalid')}</p>}
 
