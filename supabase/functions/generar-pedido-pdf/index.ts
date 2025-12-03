@@ -162,7 +162,7 @@ const { data: orden, error: ordenError } = await supabase
     const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
     const { error: uploadError } = await supabase.storage
-      .from("pdfs")
+      .from("pedido-pdf")
       .upload(fileName, pdfBlob, {
         contentType: "application/pdf",
         upsert: true,
