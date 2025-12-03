@@ -46,13 +46,13 @@ serve(async (req: Request) => {
     // 📧 Email a enviar
     const emailPayload = {
       from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", cliente_correo], // Admin + cliente
+      to: ["jeki18ros@gmail.com", correo], // Admin + cliente
       subject: `Pedido recibido - Orden ${orden_id}`,
       html: `
         <h2>Nuevo Pedido Recibido</h2>
 
         <p><strong>Cliente:</strong> ${nombre_cliente}</p>
-        <p><strong>Email:</strong> ${cliente_correo}</p>
+        <p><strong>Email:</strong> ${correo}</p>
         <p><strong>ID del Pedido:</strong> ${orden_id}</p>
 
         <p>Puedes descargar el PDF aquí:</p>
