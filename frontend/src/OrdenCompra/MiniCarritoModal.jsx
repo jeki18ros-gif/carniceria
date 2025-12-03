@@ -217,20 +217,6 @@ export function MiniCarritoModal({
                     {item.nombre}
                   </p>
 
-                  {/* Cantidad + unidad traducida */}
-                  <p className="text-sm text-yellow-500 mt-0.5">
-                    {t("miniCart.quantity")}{" "}
-                    <span className="font-bold">
-                      {item.cantidad}{" "}
-                      {t(
-                        `detalleProductoModal.quantity.units.${normalizeKey(
-                          item.cantidadUnidad
-                        )}`,
-                        item.cantidadUnidad
-                      )}
-                    </span>
-                  </p>
-
                   {/* Especificaciones */}
                   {Object.entries(item.especificaciones || {}).map(
                     ([key, value]) =>
