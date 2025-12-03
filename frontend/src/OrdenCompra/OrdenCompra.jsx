@@ -114,47 +114,44 @@ export default function OrdenDeCompra() {
     link.click();
     link.remove();
   };
+ //   ENVIAR PEDIDO FINAL
+const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
+  e.preventDefault();
 
-  //   ENVIAR PEDIDO FINAL
- const handleSubmitOrder = async (e, datosCliente, productosSeleccionados) => {
-  e.preventDefault();
+  if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
+    alert("Debes seleccionar al menos un producto.");
+    return;
+  }
 
-  if (!productosSeleccionados || Object.keys(productosSeleccionados).length === 0) {
-    alert("Debes seleccionar al menos un producto.");
-    return;
-  }
+  setCargandoPedido(true);
 
-  setCargandoPedido(true);
+  const productosArray = Object.values(productosSeleccionados).map((item) => {
+    const cantidad_valor = item.cantidad_valor ?? item.cantidad.split(" ")[0];
+    const cantidad_unidad = item.cantidad_unidad ?? item.cantidad.split(" ")[1] ?? "kg";
 
-  const productosArray = Object.values(productosSeleccionados).map((item) => {
-    const cantidad_valor = item.cantidad_valor ?? item.cantidad.split(" ")[0];
-    const cantidad_unidad = item.cantidad_unidad ?? item.cantidad.split(" ")[1] ?? "kg";
+    return {
+      id: item.id,
+      nombre: item.nombre,
+      cantidad_valor,
+      cantidad_unidad,
+      tipo_corte: item.especificaciones?.tipoCorte || null,
+      parte: item.especificaciones?.parte || null,
+      estado: item.especificaciones?.estado || null,
+      hueso: item.especificaciones?.hueso || null,
+      grasa: item.especificaciones?.grasa || null,
+      empaque: item.especificaciones?.empaque || null,
+      coccion: item.especificaciones?.coccion || null,
+      fecha_deseada: item.especificaciones?.fechaDeseada || null,
+      observacion: item.especificaciones?.observacion || null,
+    };
+  });
 
-    return {
-      id: item.id,
-      nombre: item.nombre,
-      cantidad_valor,
-      cantidad_unidad,
-      tipo_corte: item.especificaciones?.tipoCorte || null,
-     parte: item.especificaciones?.parte || null,
-estado: item.especificaciones?.estado || null,
-hueso: item.especificaciones?.hueso || null,
-grasa: item.especificaciones?.grasa || null,
-empaque: item.especificaciones?.empaque || null,
-coccion: item.especificaciones?.coccion || null,
-fecha_deseada: item.especificaciones?.fechaDeseada || null,
-observacion: item.especificaciones?.observacion || null,
-
-    };
-  });
-
-const pedidoFinal = {
+  const pedidoFinal = {
     cliente: {
       nombre_cliente: datosCliente.nombre_cliente || datosCliente.nombre,
-      // Usar las claves que vienen del FormularioCliente AHORA CORREGIDAS:
-      cliente_telefono: datosCliente.cliente_telefono, // ⬅️ CAMBIADO
-      cliente_correo: datosCliente.cliente_correo, // ⬅️ CAMBIADO
-      cliente_direccion: datosCliente.cliente_direccion, // ⬅️ CAMBIADO
+      cliente_telefono: datosCliente.cliente_telefono,
+      cliente_correo: datosCliente.cliente_correo,
+      cliente_direccion: datosCliente.cliente_direccion,
       entrega: datosCliente.entrega,
       comentarios: datosCliente.comentarios,
     },
@@ -163,81 +160,84 @@ const pedidoFinal = {
     comentarios: datosCliente.comentarios || null,
   };
 
-  try {
-    // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
-const response = await fetch(
-  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify({
-        cliente: {
-            nombre_cliente: pedidoFinal.cliente.nombre_cliente,
-            telefono: pedidoFinal.cliente.cliente_telefono, // Mapear la clave del frontend a la clave esperada por el DB (en el Edge Function)
-            correo: pedidoFinal.cliente.cliente_correo, // Mapear la clave del frontend a la clave esperada por el DB (en el Edge Function)
-            direccion: pedidoFinal.cliente.cliente_direccion,
-            entrega: pedidoFinal.cliente.entrega,
-            comentarios: pedidoFinal.cliente.comentarios,
-        },
-        productos: productosArray
+  try {
+    // 1️⃣ PRIMERA LLAMADA → GENERA EL PEDIDO Y EL PDF
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-pedido-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          cliente: {
+            nombre_cliente: pedidoFinal.cliente.nombre_cliente,
+            telefono: pedidoFinal.cliente.cliente_telefono,
+            correo: pedidoFinal.cliente.cliente_correo,
+            direccion: pedidoFinal.cliente.cliente_direccion,
+            entrega: pedidoFinal.cliente.entrega,
+            comentarios: pedidoFinal.cliente.comentarios,
+        },
+        productos: productosArray,
       }),
-  }
-);
-// Archivo: OrdenDeCompra.jsx (dentro de handleSubmitOrder, después de la llamada a emailResponse)
+    }
+  );
 
-    const data = await response.json();
+    const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || "Error al procesar el pedido");
-    }
-// 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
-
-const emailResponse = await fetch(
-  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify({
+    if (!response.ok) {
+      throw new Error(data.error || "Error al procesar el pedido");
+    }
+    
+    // 2️⃣ SEGUNDA LLAMADA → ENVÍA EL CORREO CON RESEND
+    const emailResponse = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          orden_id: data.orden_id,
+          pdf_url: data.pdf_url,
+          nombre_cliente: pedidoFinal.cliente.nombre_cliente,
+          correo: pedidoFinal.cliente.cliente_correo,
+          pdfBase64: data.pdfBase64,
+        }),
+      }
+    );
+    
+    const emailData = await emailResponse.json();
+    const ADMIN_EMAIL = "jeki18ros@gmail.com"; // ⬅️ Definido localmente para el mensaje
+    
+    if (!emailResponse.ok) {
+      console.error("Error email:", emailData);
+      alert("El pedido se generó, pero hubo un error al enviar el correo. Revisa la consola.");
+      // Mensaje de error para el usuario
+      setMensajeEmail(`El pedido se generó (ID: ${data.orden_id}), pero hubo un error al intentar enviar el correo. Revisa la consola para más detalles.`);
+    } else {
+      // Mensaje de éxito para la demostración
+      setMensajeEmail(`El comprobante de pedido se envió correctamente a ${datosCliente.cliente_correo}. (NOTA: En esta versión DEMO, la copia de prueba se envió al administrador ${ADMIN_EMAIL}).`);
+    }
+    
+    // 3️⃣ MOSTRAR CONFIRMACIÓN
+    setDatosDelPedido({
+      ...pedidoFinal,
       orden_id: data.orden_id,
       pdf_url: data.pdf_url,
-      nombre_cliente: pedidoFinal.cliente.nombre_cliente,
-      correo: pedidoFinal.cliente.cliente_correo, // ⬅️ CAMBIADO
-      pdfBase64: data.pdfBase64, // ¡Asegúrate de incluir esto para el adjunto!
-    }),
+    });
+
+    setMostrarConfirmacion(true);
+    setView("productos");
+    setSeleccionados({});
+  } catch (error) {
+    console.error("Error al enviar el pedido:", error);
+    alert(`Hubo un error: ${error.message}`);
+  } finally {
+    setCargandoPedido(false);
   }
-);
-const emailData = await emailResponse.json();
-
-if (!emailResponse.ok) {
-  console.error("Error email:", emailData);
-  alert("El pedido se generó, pero hubo un error al enviar el correo.");
-  setMensajeEmail("El pedido se generó, pero hubo un error al enviar el correo."); // <--- Mensaje de error (opcional)
-} else {
-  // Mensaje de éxito para la demostración
-  setMensajeEmail(`El comprobante de pedido se envió correctamente a ${datosCliente.cliente_correo}. (NOTA: En esta versión DEMO, se ha enviado una copia de prueba al administrador jeki18ros@gmail.com).`);
-}
-    // 3️⃣ MOSTRAR CONFIRMACIÓN
-    setDatosDelPedido({
-      ...pedidoFinal,
-      orden_id: data.orden_id,
-      pdf_url: data.pdf_url,
-    });
-
-    setMostrarConfirmacion(true);
-    setView("productos");
-    setSeleccionados({});
-  } catch (error) {
-    console.error("Error al enviar el pedido:", error);
-    alert(`Hubo un error: ${error.message}`);
-  } finally {
-    setCargandoPedido(false);
-  }
 };
   //   RENDER PRINCIPAL
   return (
