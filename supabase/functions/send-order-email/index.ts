@@ -28,12 +28,12 @@ serve(async (req: Request) => {
       orden_id, 
       pdf_url, 
       nombre_cliente, 
-      cliente_correo, 
+      correo, 
       pdfBase64, // ¡Este es el campo clave para el adjunto!
     } = await req.json();
 
     // ❌ Validación
-    if (!orden_id || !pdf_url || !nombre_cliente || !cliente_correo || !pdfBase64) {
+    if (!orden_id || !pdf_url || !nombre_cliente || !correo || !pdfBase64) {
       return new Response(
         JSON.stringify({ message: "Faltan campos requeridos para enviar el email del pedido." }),
         {
