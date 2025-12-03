@@ -223,9 +223,11 @@ export function MiniCarritoModal({
                     <span className="font-bold">
                       {item.cantidad}{" "}
                       {t(
-  `detalleProductoModal.quantity.units.${normalizeKey(item.cantidadUnidad)}`,
-  { defaultValue: item.cantidadUnidad || "" }
-)}
+                    `detalleProductoModal.quantity.units.${normalizeKey(item.cantidadUnidad)}`,
+                    { 
+                        defaultValue: item.cantidadUnidad || "" 
+                    }
+                )}
                     </span>
                   </p>
 
