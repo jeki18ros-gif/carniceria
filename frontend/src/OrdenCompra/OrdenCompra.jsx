@@ -19,6 +19,7 @@ export default function OrdenDeCompra() {
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [datosDelPedido, setDatosDelPedido] = useState(null);
   const [cargandoPedido, setCargandoPedido] = useState(false);
+  const [mensajeEmail, setMensajeEmail] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const [view, setView] = useState(() => {
@@ -185,7 +186,21 @@ const response = await fetch(
       }),
   }
 );
+// Archivo: OrdenDeCompra.jsx (dentro de handleSubmitOrder, después de la llamada a emailResponse)
 
+const emailData = await emailResponse.json();
+
+if (!emailResponse.ok) {
+  console.error("Error email:", emailData);
+  alert("El pedido se generó, pero hubo un error al enviar el correo.");
+  setMensajeEmail("El pedido se generó, pero hubo un error al enviar el correo."); // <--- Mensaje de error (opcional)
+} else {
+  // Mensaje de éxito para la demostración
+  setMensajeEmail(`El comprobante de pedido se envió correctamente a ${datosCliente.cliente_correo}. (NOTA: En esta versión DEMO, se ha enviado una copia de prueba al administrador jeki18ros@gmail.com).`);
+}
+
+// 3️⃣ MOSTRAR CONFIRMACIÓN (Esta sección no cambia mucho)
+// ...
 
     const data = await response.json();
 
@@ -358,6 +373,16 @@ if (!emailResponse.ok) {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {t("ordenCompra.confirmation.message")}
               </p>
+              {mensajeEmail && ( // ⬅️ AÑADIR ESTE BLOQUE
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-sm font-semibold text-red-500 dark:text-yellow-400 mb-4 p-2 border-2 border-red-500 dark:border-yellow-400 rounded"
+                >
+                  {mensajeEmail}
+                </motion.p>
+              )}
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button

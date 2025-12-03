@@ -45,14 +45,15 @@ serve(async (req: Request) => {
 
     // 📧 Email a enviar
     const emailPayload = {
-      from: "onboarding@resend.dev",
-      to: ["jeki18ros@gmail.com", correo], // Admin + cliente
-      subject: `Pedido recibido - Orden ${orden_id}`,
-      html: `
-        <h2>Nuevo Pedido Recibido</h2>
-
-        <p><strong>Cliente:</strong> ${nombre_cliente}</p>
-        <p><strong>Email:</strong> ${correo}</p>
+      from: "onboarding@resend.dev",
+      // to: ["jeki18ros@gmail.com", correo], // Admin + cliente
+      to: ["jeki18ros@gmail.com"], // ✅ SOLO AL ADMIN PARA DEMOSTRACIÓN
+      subject: `Pedido recibido - Orden ${orden_id} (DEMO)`, // Añadimos (DEMO) al sujeto
+      html: `
+        <h2>Nuevo Pedido Recibido</h2>
+        <p style="color: red; font-weight: bold;">[MODO DEMOSTRACIÓN: Este correo se envió solo al administrador. El correo del cliente (${correo}) se incluirá al verificar un dominio.]</p>
+        <p><strong>Cliente:</strong> ${nombre_cliente}</p>
+        <p><strong>Email del Cliente:</strong> ${correo}</p>
         <p><strong>ID del Pedido:</strong> ${orden_id}</p>
 
         <p>Puedes descargar el PDF aquí:</p>
