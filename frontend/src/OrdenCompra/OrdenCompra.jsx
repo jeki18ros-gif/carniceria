@@ -188,20 +188,6 @@ const response = await fetch(
 );
 // Archivo: OrdenDeCompra.jsx (dentro de handleSubmitOrder, después de la llamada a emailResponse)
 
-const emailData = await emailResponse.json();
-
-if (!emailResponse.ok) {
-  console.error("Error email:", emailData);
-  alert("El pedido se generó, pero hubo un error al enviar el correo.");
-  setMensajeEmail("El pedido se generó, pero hubo un error al enviar el correo."); // <--- Mensaje de error (opcional)
-} else {
-  // Mensaje de éxito para la demostración
-  setMensajeEmail(`El comprobante de pedido se envió correctamente a ${datosCliente.cliente_correo}. (NOTA: En esta versión DEMO, se ha enviado una copia de prueba al administrador jeki18ros@gmail.com).`);
-}
-
-// 3️⃣ MOSTRAR CONFIRMACIÓN (Esta sección no cambia mucho)
-// ...
-
     const data = await response.json();
 
     if (!response.ok) {
@@ -226,12 +212,15 @@ const emailResponse = await fetch(
     }),
   }
 );
-
 const emailData = await emailResponse.json();
 
 if (!emailResponse.ok) {
-  console.error("Error email:", emailData);
-  alert("El pedido se generó, pero hubo un error al enviar el correo.");
+  console.error("Error email:", emailData);
+  alert("El pedido se generó, pero hubo un error al enviar el correo.");
+  setMensajeEmail("El pedido se generó, pero hubo un error al enviar el correo."); // <--- Mensaje de error (opcional)
+} else {
+  // Mensaje de éxito para la demostración
+  setMensajeEmail(`El comprobante de pedido se envió correctamente a ${datosCliente.cliente_correo}. (NOTA: En esta versión DEMO, se ha enviado una copia de prueba al administrador jeki18ros@gmail.com).`);
 }
     // 3️⃣ MOSTRAR CONFIRMACIÓN
     setDatosDelPedido({
